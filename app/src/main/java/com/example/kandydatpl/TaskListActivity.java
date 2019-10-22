@@ -27,9 +27,9 @@ public class TaskListActivity extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_list);
 
-        itemET = findViewById(R.id.item_edit_text);
-        btn = findViewById(R.id.add_btn);
-        itemsList = findViewById(R.id.items_list);
+        itemET = findViewById(R.id.editText);
+        btn = findViewById(R.id.addBtn);
+        itemsList = findViewById(R.id.list);
 
         items = FileHelper.readData(this);
 
@@ -43,7 +43,7 @@ public class TaskListActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.add_btn:
+            case R.id.addBtn:
                 String itemEntered = itemET.getText().toString();
                 adapter.add(itemEntered);
                 itemET.setText("");
