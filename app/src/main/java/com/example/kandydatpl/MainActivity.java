@@ -19,8 +19,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initializeAppSync();
-
-
     }
 
     private void initializeAppSync() {
