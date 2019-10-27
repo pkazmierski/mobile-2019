@@ -1,4 +1,4 @@
-package com.example.kandydatpl;
+package com.example.kandydatpl.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +9,7 @@ import com.amazonaws.mobile.client.AWSMobileClient;
 import com.amazonaws.mobile.client.Callback;
 import com.amazonaws.mobile.client.SignInUIOptions;
 import com.amazonaws.mobile.client.UserStateDetails;
+import com.example.kandydatpl.R;
 
 public class AuthenticationActivity extends AppCompatActivity {
 
