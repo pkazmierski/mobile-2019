@@ -19,10 +19,12 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <activity android:name=".activities.MainActivity" />
+        <activity android:name=".activities.QuestionsActivity" />
 
         <service android:name="org.eclipse.paho.android.service.MqttService" />
 
-        <activity android:name=".activities.AuthenticationActivity"
+        <activity
+            android:name=".activities.AuthenticationActivity"
             android:label="@string/app_name"
             android:noHistory="true">
             <intent-filter>

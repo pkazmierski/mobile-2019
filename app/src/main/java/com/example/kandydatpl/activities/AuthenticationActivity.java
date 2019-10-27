@@ -9,7 +9,10 @@ import com.amazonaws.mobile.client.AWSMobileClient;
 import com.amazonaws.mobile.client.Callback;
 import com.amazonaws.mobile.client.SignInUIOptions;
 import com.amazonaws.mobile.client.UserStateDetails;
+import com.amazonaws.mobile.config.AWSConfiguration;
+import com.amazonaws.mobileconnectors.appsync.AWSAppSyncClient;
 import com.example.kandydatpl.R;
+import com.example.kandydatpl.logic.Logic;
 
 public class AuthenticationActivity extends AppCompatActivity {
 
