@@ -1,8 +1,12 @@
 package com.example.kandydatpl;
 
 import android.content.Intent;
+import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -18,38 +22,64 @@ public class TaskListActivity extends AppCompatActivity implements View.OnClickL
 
     private EditText itemET;
     private Button btn;
-    private ListView itemsList;
     private ArrayList<String> items;
-    private ArrayAdapter<String> adapter;
+    private RecyclerViewAdapter adapter;
+
+    private ArrayList<ChecklistItem> testArray;
+    public static int newItemRequest = 1;
+    public static int editItemRequest = 2;
+    private RecyclerView recyclerView;
+    private FloatingActionButton floatingActionButton;
+
+    public TaskListActivity() {
+        testArray = new ArrayList<>();
+        testArray.add(new ChecklistItem("FirstTask", false));
+        testArray.add(new ChecklistItem("Second", false));
+
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_list);
 
-        itemET = findViewById(R.id.editText);
-        btn = findViewById(R.id.addBtn);
-        itemsList = findViewById(R.id.list);
+        recyclerView = findViewById(R.id.taskListView);
+        floatingActionButton = findViewById(R.id.addTaskButton);
+        floatingActionButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, AddEditListItemActivity.class);
+            intent.putExtra("item", new ChecklistItem());
+            intent.putExtra("requestCode", newItemRequest);
+            startActivityForResult(intent, newItemRequest);
+        });
 
         items = FileHelper.readData(this);
 
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
-        itemsList.setAdapter(adapter);
-
-        btn.setOnClickListener(this);
-        itemsList.setOnItemClickListener(this);
+        adapter = new RecyclerViewAdapter(testArray, this);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
     @Override
-    public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.addBtn:
-                String itemEntered = itemET.getText().toString();
-                adapter.add(itemEntered);
-                itemET.setText("");
-                FileHelper.writeData(items, this);
-                Toast.makeText(this, "Item Added!", Toast.LENGTH_SHORT).show();
-                break;
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == newItemRequest) {
+            if (resultCode == RESULT_OK) {
+                if (data != null) {
+                    ChecklistItem item = (ChecklistItem) data.getSerializableExtra("newItem");
+                    adapter.add(item);
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        } else if (requestCode == editItemRequest) {
+            if (resultCode == RESULT_OK) {
+                if (data != null) {
+                    ChecklistItem item = (ChecklistItem) data.getSerializableExtra("newItem");
+                    int index = data.getIntExtra("index", -1);
+                    adapter.edit(item, index);
+                    adapter.notifyDataSetChanged();
+                }
+            }
         }
     }
 
@@ -59,5 +89,11 @@ public class TaskListActivity extends AppCompatActivity implements View.OnClickL
         adapter.notifyDataSetChanged();
         FileHelper.writeData(items, this);
         Toast.makeText(this, "Delete", Toast.LENGTH_SHORT).show();
+    }
+
+
+    @Override
+    public void onClick(View v) {
+
     }
 }

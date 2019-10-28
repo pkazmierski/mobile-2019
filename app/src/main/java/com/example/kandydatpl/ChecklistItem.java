@@ -1,8 +1,10 @@
 package com.example.kandydatpl;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
-public class ChecklistItem {
+public class ChecklistItem implements Serializable {
 
     private static int id;
     private String title;
@@ -10,6 +12,23 @@ public class ChecklistItem {
     private boolean userCrated;
     private boolean done;
     private Date deadline;
+
+    public ChecklistItem() {
+        deadline = new Date();
+    }
+
+    public ChecklistItem(String title, String description, boolean done, Date deadline) {
+        this.title = title;
+        this.description = description;
+        this.done = done;
+        this.deadline = deadline;
+    }
+
+    public ChecklistItem(String title, boolean done) {
+        this.title = title;
+        this.done = done;
+        this.deadline = new Date();
+    }
 
     public static int getId() {
         return id;
