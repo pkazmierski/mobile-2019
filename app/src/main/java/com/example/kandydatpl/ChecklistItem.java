@@ -14,7 +14,6 @@ public class ChecklistItem implements Serializable {
     private Date deadline;
 
     public ChecklistItem() {
-        deadline = new Date();
     }
 
     public ChecklistItem(String title, String description, boolean done, Date deadline) {

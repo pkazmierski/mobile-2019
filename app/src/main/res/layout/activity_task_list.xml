@@ -11,8 +11,8 @@
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/addTaskButton"
-            android:layout_width="70dp"
-            android:layout_height="69dp"
+            android:layout_width="56dp"
+            android:layout_height="57dp"
             android:clickable="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

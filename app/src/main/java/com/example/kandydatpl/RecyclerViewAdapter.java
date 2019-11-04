@@ -1,7 +1,6 @@
 package com.example.kandydatpl;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -11,8 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -63,17 +60,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             item.setDone(isChecked);
             //notifyDataSetChanged();
         });
-        viewHolder.removeItem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "onClick: onClick: clicked on: " + listItemTexts.get(i));
-                listItemTexts.remove(i);
-                notifyDataSetChanged();
-            }
-        });
-        viewHolder.view.setOnClickListener(v -> {
+
+        viewHolder.editItem.setOnClickListener(v -> {
             Intent intent = new Intent(context, AddEditListItemActivity.class);
-            intent.putExtra("index", i);
+            intent.putExtra("index", viewHolder.getAdapterPosition());
             intent.putExtra("item", item);
             context.startActivityForResult(intent, TaskListActivity.editItemRequest);
         });
@@ -88,14 +78,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         TextView listItem;
         CheckBox listItemCheckbox;
-        Button removeItem;
+        Button editItem;
         View view;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             listItem = itemView.findViewById(R.id.itemText);
             listItemCheckbox = itemView.findViewById(R.id.itemCheckBox);
-            removeItem = itemView.findViewById(R.id.removeItemButton);
+            editItem = itemView.findViewById(R.id.editItemButton);
             this.view = itemView;
         }
     }

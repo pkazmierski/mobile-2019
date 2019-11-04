@@ -10,8 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        tools:layout_editor_absoluteX="-116dp"
-        tools:layout_editor_absoluteY="-170dp">
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp">
 
         <TextView
             android:id="@+id/titleTextView"
@@ -47,13 +47,20 @@
             android:layout_height="wrap_content"
             android:text="Date" />
 
-        <EditText
-            android:id="@+id/dateEditText"
+        <Button
+            android:id="@+id/pickDateButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="Set date" />
+
+        <EditText
+            android:id="@+id/dateDisplay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:editable="false"
             android:ems="10"
-            android:hint="Enter date"
-            android:inputType="date" />
+            android:hint="Date"
+            android:inputType="textPersonName" />
 
         <Button
             android:id="@+id/saveButton"
