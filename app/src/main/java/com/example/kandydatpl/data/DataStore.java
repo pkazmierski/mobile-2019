@@ -60,29 +60,8 @@ public class DataStore {
         questions.clear();
 
         for (ListQuestionsQuery.Item item : items) {
-            ArrayList<Comment> comments = new ArrayList<>();
-
-            if(item.comments() != null) {
-                
-            }
-
-//            if(item.comments() != null) {
-//                Log.d(TAG, "item.comments().nextToken(): " + item.comments().nextToken());
-//                Log.d(TAG, "item.comments().toString(): " + item.comments().toString());
-//            } else {
-//                Log.d(TAG, "setQuestions: item.comments() is null");
-//            }
-//            if(item.comments() != null) {
-//                for (ListQuestionsQuery.Comments queryComment : item.comments().;) {
-//                    Comment cm = new Comment(queryComment., queryComment.content());
-//                    comments.add(cm);
-//                }
-//            }
-//            else {
-//                Log.d(TAG, "Comments are null for question " + item.content() + "(id: " + item.id() + ')');
-//            }
-
-            Question question = new Question(item.id(), item.content(), comments);
+            ArrayList<String> commentIds = new ArrayList<>(item.commentIds());
+            Question question = new Question(item.id(), item.content(), commentIds);
             questions.add(question);
 
             Log.d(TAG, "setQuestions: adding new user question: " + question.toString());

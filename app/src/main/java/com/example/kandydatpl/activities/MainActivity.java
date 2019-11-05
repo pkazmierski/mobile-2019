@@ -31,10 +31,10 @@ public class MainActivity extends AppCompatActivity {
 
         Logic.initAppSync(getApplicationContext());
 
-//        String qid = "3152ab8a-fa1a-4c9f-8f55-cb23f524210e";
-//        mutationAddComment(new Comment(null, "At XYZ.", qid));
-//        mutationAddComment(new Comment(null, "At ABC.", qid));
-//        mutationAddComment(new Comment(null, "At DEF.", qid));
+        String qid = "3152ab8a-fa1a-4c9f-8f55-cb23f524210e";
+        mutationAddComment(new Comment(null, "At XYZ.", qid));
+        mutationAddComment(new Comment(null, "At ABC.", qid));
+        mutationAddComment(new Comment(null, "At DEF.", qid));
     }
 
     public void goToQuestions(View view) {
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     public void mutationAddComment(Comment comment){
         CreateCommentInput createCommentInput = CreateCommentInput.builder()
                 .content(comment.getContent())
-                .commentQuestionId(comment.getQuestionId())
+                .questionId(comment.getQuestionId())
                 .build();
 
         Logic.AppSync.mutate(CreateCommentMutation.builder().input(createCommentInput).build())

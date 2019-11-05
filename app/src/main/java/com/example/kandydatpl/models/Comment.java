@@ -42,4 +42,13 @@ public class Comment {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+    @Override
+    public String toString() {
+        return "Comment{" +
+                "id='" + id + '\'' +
+                ", content='" + content + '\'' +
+                ", questionId='" + questionId + '\'' +
+                '}';
+    }
 }

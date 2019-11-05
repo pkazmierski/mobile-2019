@@ -1,6 +1,5 @@
 package com.example.kandydatpl.models;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -8,18 +7,18 @@ import java.util.Objects;
 public class Question {
     private String id;
     private String content;
-    private ArrayList<Comment> comments;
+    private ArrayList<String> commentIds;
 
     public Question(String id, String content) {
         this.id = id;
         this.content = content;
-        this.comments = new ArrayList<>();
+        this.commentIds = new ArrayList<>();
     }
 
-    public Question(String id, String content, ArrayList<Comment> comments) {
+    public Question(String id, String content, ArrayList<String> commentIds) {
         this.id = id;
         this.content = content;
-        this.comments = comments;
+        this.commentIds = commentIds;
     }
 
     public String getId() {
@@ -30,8 +29,8 @@ public class Question {
         return content;
     }
 
-    public List<Comment> getComments() {
-        return comments;
+    public List<String> getCommentIds() {
+        return commentIds;
     }
 
     @Override
@@ -45,5 +44,14 @@ public class Question {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Question{" +
+                "id='" + id + '\'' +
+                ", content='" + content + '\'' +
+                ", commentIds=" + commentIds +
+                '}';
     }
 }
