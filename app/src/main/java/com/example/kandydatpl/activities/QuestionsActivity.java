@@ -8,7 +8,6 @@ import android.util.Log;
 
 
 import com.amazonaws.amplify.generated.graphql.ListQuestionsQuery;
-import com.amazonaws.amplify.generated.graphql.ListQuestionsQuery;
 import com.amazonaws.mobileconnectors.appsync.fetcher.AppSyncResponseFetchers;
 import com.apollographql.apollo.GraphQLCall;
 import com.apollographql.apollo.api.Response;
@@ -16,9 +15,6 @@ import com.apollographql.apollo.exception.ApolloException;
 import com.example.kandydatpl.R;
 import com.example.kandydatpl.adapters.QuestionsRecyclerViewAdapter;
 import com.example.kandydatpl.data.DataStore;
-import com.example.kandydatpl.models.Event;
-
-import java.sql.Date;
 
 import javax.annotation.Nonnull;
 
@@ -38,13 +34,11 @@ public class QuestionsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_questions);
 
-        runQuery();
+        runListQuestionsQuery();
         initRecyclerView();
-
-
     }
 
-    public void runQuery() {
+    public void runListQuestionsQuery() {
         AppSync.query(ListQuestionsQuery.builder()
                 .build())
                 .responseFetcher(AppSyncResponseFetchers.CACHE_AND_NETWORK)
@@ -58,7 +52,7 @@ public class QuestionsActivity extends AppCompatActivity {
             DataStore.setQuestions(response.data().listQuestions().items());
             runOnUiThread(new Runnable(){
                 public void run() {
-                    Log.i("UI", "Updating RecyclerView");
+                    Log.i("UI", "QuestionsActivity: Updating RecyclerView");
                     adapter.notifyDataSetChanged();
                 }
             });
@@ -73,7 +67,7 @@ public class QuestionsActivity extends AppCompatActivity {
 
     private void initRecyclerView() {
         Log.d(TAG, "initRecyclerView: init recyclerview");
-        recyclerView = findViewById(R.id.recycler_view);
+        recyclerView = findViewById(R.id.questionsListRecyclerView);
         adapter = new QuestionsRecyclerViewAdapter(this, DataStore.getQuestions());
 
         recyclerView.setAdapter(adapter);

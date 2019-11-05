@@ -32,6 +32,14 @@ public class DataStore {
 //        DataStore.events = events;
 //    }
 
+    public static Question getQuestion(String questionId) {
+        for (Question q : questions) {
+            if(q.getId().equals(questionId))
+                return q;
+        }
+        return null;
+    }
+
     public static void setEvents(List<ListUserEventsQuery.Item> items) {
         events.clear();
         for (ListUserEventsQuery.Item item : items) {
@@ -60,7 +68,12 @@ public class DataStore {
         questions.clear();
 
         for (ListQuestionsQuery.Item item : items) {
-            ArrayList<String> commentIds = new ArrayList<>(item.commentIds());
+
+            ArrayList<String> commentIds;
+            if(item.commentIds() != null)
+                commentIds = new ArrayList<>(item.commentIds());
+            else
+                commentIds = new ArrayList<>();
             Question question = new Question(item.id(), item.content(), commentIds);
             questions.add(question);
 

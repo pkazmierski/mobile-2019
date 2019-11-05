@@ -18,7 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name=".QuestionDetailsActivity"></activity>
+        <activity android:name=".activities.QuestionDetailsActivity" />
         <activity android:name=".activities.MainActivity" />
         <activity android:name=".activities.QuestionsActivity" />
 

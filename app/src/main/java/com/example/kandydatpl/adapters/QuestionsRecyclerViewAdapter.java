@@ -1,6 +1,7 @@
 package com.example.kandydatpl.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -9,9 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.kandydatpl.R;
+import com.example.kandydatpl.activities.QuestionDetailsActivity;
 import com.example.kandydatpl.models.Question;
 
 import java.util.ArrayList;
@@ -42,14 +43,38 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
         Log.d(TAG, "onBindViewHolder: called");
 
-        holder.questionText.setText(questions.get(position).getContent());
+        holder.questionTxt.setText(questions.get(position).getContent());
 
-        holder.parentLayout.setOnClickListener(new View.OnClickListener() {
+        holder.commentsCountTxt.setText(String.valueOf(questions.get(position).getCommentIds().size()));
+
+        //todo zmniejszyć duplikację kodu
+        holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "onClick: clicked on: " + questions.get(position));
+                Log.d(TAG, "QuestionsList => onClick: clicked on title: " + questions.get(position));
 
-                Toast.makeText(ctx, questions.get(position).getId(), Toast.LENGTH_SHORT).show();
+                Intent questionDetailsIntent = new Intent(ctx, QuestionDetailsActivity.class);
+
+                questionDetailsIntent.putExtra("questionId", questions.get(position).getId());
+                Log.d(TAG, "QuestionsList onClick: " + questions.get(position).getContent() + " | id: " + questions.get(position).getId());
+                ctx.startActivity(questionDetailsIntent);
+
+//                Toast.makeText(ctx, questions.get(position).getId(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        holder.cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "QuestionsList => onClick: clicked on card: " + questions.get(position));
+
+                Intent questionDetailsIntent = new Intent(ctx, QuestionDetailsActivity.class);
+
+                questionDetailsIntent.putExtra("questionId", questions.get(position).getId());
+                Log.d(TAG, "QuestionsList onClick: " + questions.get(position).getContent() + " | id: " + questions.get(position).getId());
+                ctx.startActivity(questionDetailsIntent);
+
+//                Toast.makeText(ctx, questions.get(position).getId(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -61,13 +86,15 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         //holds individual entries in memory
-        TextView questionText;
-        CardView parentLayout;
+        TextView questionTxt;
+        TextView commentsCountTxt;
+        CardView cardView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            questionText = itemView.findViewById(R.id.questionTxt);
-            parentLayout = itemView.findViewById(R.id.parent_layout);
+            questionTxt = itemView.findViewById(R.id.questionTxt);
+            commentsCountTxt = itemView.findViewById(R.id.commentsCountTxt);
+            cardView = itemView.findViewById(R.id.recyclerQuestionItemCardView);
         }
     }
 }

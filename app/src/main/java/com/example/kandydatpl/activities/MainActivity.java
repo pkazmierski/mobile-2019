@@ -15,6 +15,10 @@ import com.apollographql.apollo.exception.ApolloException;
 import com.example.kandydatpl.R;
 import com.example.kandydatpl.logic.Logic;
 import com.example.kandydatpl.models.Comment;
+import com.example.kandydatpl.models.Question;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Nonnull;
 
@@ -31,10 +35,20 @@ public class MainActivity extends AppCompatActivity {
 
         Logic.initAppSync(getApplicationContext());
 
-        String qid = "3152ab8a-fa1a-4c9f-8f55-cb23f524210e";
-        mutationAddComment(new Comment(null, "At XYZ.", qid));
-        mutationAddComment(new Comment(null, "At ABC.", qid));
-        mutationAddComment(new Comment(null, "At DEF.", qid));
+//        String qid = "b13e9428-d1db-4f51-81a7-7aa24a2256ae";
+//        mutationAddComment(new Comment(null, "At XYZ.", qid));
+//        mutationAddComment(new Comment(null, "At ABC.", qid));
+//        mutationAddComment(new Comment(null, "At DEF.", qid));
+
+//        List<String> commentIds = new ArrayList<>();
+//        commentIds.add("4597f234-3e3c-4cb9-a785-9a8435c97959");
+//        commentIds.add("79e33384-1f37-4b2e-971f-5111bfad2cf7");
+//        commentIds.add("bc44ea2f-0399-43dd-87bd-2993353824c4");
+//
+//        mutationAddQuestion("Where can I get some cheap and tasty food?", commentIds);
+//        mutationAddQuestion("What is the minimum level of English proficiency required?");
+//        mutationAddQuestion("How much does the student housing cost per month?");
+//        mutationAddQuestion("When is the deadline for application?");
     }
 
     public void goToQuestions(View view) {
@@ -64,9 +78,10 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    public void mutationAddQuestion(String content){
+    public void mutationAddQuestion(String content, List<String> commentIds){
         CreateQuestionInput createTodoInput = CreateQuestionInput.builder()
                 .content(content)
+                .commentIds(commentIds)
                 .build();
 
         Logic.AppSync.mutate(CreateQuestionMutation.builder().input(createTodoInput).build())
