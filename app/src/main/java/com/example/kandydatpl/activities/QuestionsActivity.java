@@ -38,11 +38,10 @@ public class QuestionsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_questions);
 
-        Event testEvent = new Event("testId", "testTitle", "testDesc", new Date(2019, 10, 20), true, false);
-        DataStore.getEvents().add(testEvent);
-
         runQuery();
         initRecyclerView();
+
+
     }
 
     public void runQuery() {

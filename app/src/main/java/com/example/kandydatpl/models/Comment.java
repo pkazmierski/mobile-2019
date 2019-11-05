@@ -5,10 +5,17 @@ import java.util.Objects;
 public class Comment {
     private String id;
     private String content;
+    private String questionId;
 
-    public Comment(String id, String content) {
+//    public Comment(String id, String content) {
+//        this.id = id;
+//        this.content = content;
+//    }
+
+    public Comment(String id, String content, String questionId) {
         this.id = id;
         this.content = content;
+        this.questionId = questionId;
     }
 
     public String getId() {
@@ -17,6 +24,10 @@ public class Comment {
 
     public String getContent() {
         return content;
+    }
+
+    public String getQuestionId() {
+        return questionId;
     }
 
     @Override

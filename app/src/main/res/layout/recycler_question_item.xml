@@ -42,7 +42,7 @@
                     android:paddingLeft="10dp"
                     android:paddingBottom="10dp"
                     android:scaleType="fitXY"
-                    card_view:srcCompat="@drawable/ic_star" />
+                    card_view:srcCompat="@drawable/ic_bookmark_border_gray_20dp" />
 
 
                 <Space
@@ -73,7 +73,7 @@
                         android:layout_height="30dp"
                         android:scaleType="fitXY"
                         android:background="@android:color/transparent"
-                        card_view:srcCompat="@drawable/ic_comment" />
+                        card_view:srcCompat="@drawable/ic_comment_gray_20dp" />
                 </LinearLayout>
 
             </LinearLayout>

@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.amazonaws.amplify.generated.graphql.ListQuestionsQuery;
 import com.amazonaws.amplify.generated.graphql.ListUserEventsQuery;
+import com.apollographql.apollo.api.ResponseWriter;
 import com.example.kandydatpl.logic.Logic;
 import com.example.kandydatpl.models.Comment;
 import com.example.kandydatpl.models.Event;
@@ -62,11 +63,24 @@ public class DataStore {
             ArrayList<Comment> comments = new ArrayList<>();
 
             if(item.comments() != null) {
-                for (ListQuestionsQuery.Comment queryComment : Objects.requireNonNull(item.comments())) {
-                    Comment cm = new Comment(queryComment.id(), queryComment.content());
-                    comments.add(cm);
-                }
+                
             }
+
+//            if(item.comments() != null) {
+//                Log.d(TAG, "item.comments().nextToken(): " + item.comments().nextToken());
+//                Log.d(TAG, "item.comments().toString(): " + item.comments().toString());
+//            } else {
+//                Log.d(TAG, "setQuestions: item.comments() is null");
+//            }
+//            if(item.comments() != null) {
+//                for (ListQuestionsQuery.Comments queryComment : item.comments().;) {
+//                    Comment cm = new Comment(queryComment., queryComment.content());
+//                    comments.add(cm);
+//                }
+//            }
+//            else {
+//                Log.d(TAG, "Comments are null for question " + item.content() + "(id: " + item.id() + ')');
+//            }
 
             Question question = new Question(item.id(), item.content(), comments);
             questions.add(question);
