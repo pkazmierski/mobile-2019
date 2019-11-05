@@ -7,7 +7,8 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
 
-import com.amazonaws.amplify.generated.graphql.ListUserEventsQuery;
+import com.amazonaws.amplify.generated.graphql.ListQuestionsQuery;
+import com.amazonaws.amplify.generated.graphql.ListQuestionsQuery;
 import com.amazonaws.mobileconnectors.appsync.fetcher.AppSyncResponseFetchers;
 import com.apollographql.apollo.GraphQLCall;
 import com.apollographql.apollo.api.Response;
@@ -45,24 +46,24 @@ public class QuestionsActivity extends AppCompatActivity {
     }
 
     public void runQuery() {
-        AppSync.query(ListUserEventsQuery.builder()
+        AppSync.query(ListQuestionsQuery.builder()
                 .build())
                 .responseFetcher(AppSyncResponseFetchers.CACHE_AND_NETWORK)
-                .enqueue(listUserEventsCallback);
+                .enqueue(listQuestionsCallback);
     }
 
-    private GraphQLCall.Callback<ListUserEventsQuery.Data> listUserEventsCallback = new GraphQLCall.Callback<ListUserEventsQuery.Data>() {
+    private GraphQLCall.Callback<ListQuestionsQuery.Data> listQuestionsCallback = new GraphQLCall.Callback<ListQuestionsQuery.Data>() {
         @Override
-        public void onResponse(@Nonnull Response<ListUserEventsQuery.Data> response) {
+        public void onResponse(@Nonnull Response<ListQuestionsQuery.Data> response) {
             assert response.data() != null;
-            DataStore.setEvents(response.data().listUserEvents().items());
+            DataStore.setQuestions(response.data().listQuestions().items());
             runOnUiThread(new Runnable(){
                 public void run() {
                     Log.i("UI", "Updating RecyclerView");
                     adapter.notifyDataSetChanged();
                 }
             });
-            Log.i("Results", response.data().listUserEvents().toString());
+            Log.i("Results", response.data().listQuestions().toString());
         }
 
         @Override
@@ -74,7 +75,7 @@ public class QuestionsActivity extends AppCompatActivity {
     private void initRecyclerView() {
         Log.d(TAG, "initRecyclerView: init recyclerview");
         recyclerView = findViewById(R.id.recycler_view);
-        adapter = new QuestionsRecyclerViewAdapter(this, DataStore.getEvents());
+        adapter = new QuestionsRecyclerViewAdapter(this, DataStore.getQuestions());
 
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
