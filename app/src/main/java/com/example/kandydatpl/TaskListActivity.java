@@ -38,8 +38,6 @@ public class TaskListActivity extends AppCompatActivity implements View.OnClickL
         testArray = new ArrayList<>();
         testArray.add(new ChecklistItem("FirstTask", false));
         testArray.add(new ChecklistItem("Second", false));
-
-
     }
 
     @Override
@@ -115,6 +113,7 @@ public class TaskListActivity extends AppCompatActivity implements View.OnClickL
         adapter.notifyDataSetChanged();
         FileHelper.writeData(items, this);
         Toast.makeText(this, "Delete", Toast.LENGTH_SHORT).show();
+
     }
 
 

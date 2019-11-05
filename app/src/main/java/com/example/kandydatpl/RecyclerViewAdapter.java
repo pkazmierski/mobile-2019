@@ -61,7 +61,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             //notifyDataSetChanged();
         });
 
-        viewHolder.editItem.setOnClickListener(v -> {
+//        viewHolder.editItem.setOnClickListener(v -> {
+//            Intent intent = new Intent(context, AddEditListItemActivity.class);
+//            intent.putExtra("index", viewHolder.getAdapterPosition());
+//            intent.putExtra("item", item);
+//            context.startActivityForResult(intent, TaskListActivity.editItemRequest);
+//        });
+
+        viewHolder.view.setOnClickListener(v -> {
             Intent intent = new Intent(context, AddEditListItemActivity.class);
             intent.putExtra("index", viewHolder.getAdapterPosition());
             intent.putExtra("item", item);
