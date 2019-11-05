@@ -5,28 +5,27 @@
     android:id="@+id/parent_layout">
 
     <CheckBox
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/itemCheckBox"
-        />
-    <TextView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Placeholder"
-        android:layout_toRightOf="@+id/itemCheckBox"
-        android:id="@+id/itemText"
-        />
+        android:layout_height="wrap_content" />
 
-    <Button
-        android:id="@+id/editItemButton"
+    <TextView
+        android:id="@+id/itemText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="6dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginRight="32dp"
-        android:text="Edit" />
+        android:layout_marginLeft="34dp"
+        android:layout_toRightOf="@+id/itemCheckBox"
+        android:text="Placeholder" />
+
+    <TextView
+        android:id="@+id/dateDisplay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/itemText"
+        android:layout_alignStart="@+id/itemText"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="5dp"
+        android:editable="false"
+        android:text="TextView" />
 
 </RelativeLayout>
