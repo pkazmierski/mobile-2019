@@ -79,12 +79,12 @@ public class MainActivity extends AppCompatActivity {
     };
 
     public void mutationAddQuestion(String content, List<String> commentIds){
-        CreateQuestionInput createTodoInput = CreateQuestionInput.builder()
+        CreateQuestionInput createQuestionInput = CreateQuestionInput.builder()
                 .content(content)
                 .commentIds(commentIds)
                 .build();
 
-        Logic.AppSync.mutate(CreateQuestionMutation.builder().input(createTodoInput).build())
+        Logic.AppSync.mutate(CreateQuestionMutation.builder().input(createQuestionInput).build())
                 .enqueue(addQuestionCallback);
     }
 

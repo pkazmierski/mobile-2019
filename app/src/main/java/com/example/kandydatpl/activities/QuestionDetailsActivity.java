@@ -5,25 +5,27 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.amazonaws.amplify.generated.graphql.CreateCommentMutation;
+import com.amazonaws.amplify.generated.graphql.CreateQuestionMutation;
 import com.amazonaws.amplify.generated.graphql.ListCommentsQuery;
-import com.amazonaws.amplify.generated.graphql.ListQuestionsQuery;
 import com.amazonaws.mobileconnectors.appsync.fetcher.AppSyncResponseFetchers;
 import com.apollographql.apollo.GraphQLCall;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
 import com.example.kandydatpl.R;
 import com.example.kandydatpl.adapters.CommentsRecyclerViewAdapter;
-import com.example.kandydatpl.adapters.QuestionsRecyclerViewAdapter;
 import com.example.kandydatpl.data.DataStore;
-import com.example.kandydatpl.models.Comment;
+import com.example.kandydatpl.logic.Logic;
 import com.example.kandydatpl.models.Question;
-
-import java.util.ArrayList;
 
 import javax.annotation.Nonnull;
 
+import type.CreateCommentInput;
 import type.ModelCommentFilterInput;
 import type.ModelStringFilterInput;
 
@@ -34,6 +36,7 @@ public class QuestionDetailsActivity extends AppCompatActivity {
     private static final String TAG = "QuestionDetailsActivity";
     RecyclerView recyclerView;
     CommentsRecyclerViewAdapter adapter;
+    EditText sendCommentContentTxt;
     private Question question;
 
     @Override
@@ -45,15 +48,51 @@ public class QuestionDetailsActivity extends AppCompatActivity {
         TextView questionDetailsContentTxt = findViewById(R.id.questionDetailsContentTxt);
         questionDetailsContentTxt.setText(question.getContent());
 
+        sendCommentContentTxt = findViewById(R.id.sendCommentContentTxt);
+
         runListCommentsQuery();
         initRecyclerView();
     }
+
+    public void SendNewComment(View view) {
+        sendNewCommentMutation(sendCommentContentTxt.getText().toString());
+    }
+
+    public void sendNewCommentMutation(String content){
+        CreateCommentInput createCommentInput = CreateCommentInput.builder()
+                .content(content)
+                .questionId(question.getId())
+                .build();
+
+        Logic.AppSync.mutate(CreateCommentMutation.builder().input(createCommentInput).build())
+                .enqueue(createCommentCallback);
+    }
+
+    private GraphQLCall.Callback<CreateCommentMutation.Data> createCommentCallback = new GraphQLCall.Callback<CreateCommentMutation.Data>() {
+        @Override
+        public void onResponse(@Nonnull Response<CreateCommentMutation.Data> response) {
+            runOnUiThread(new Runnable(){
+                public void run() {
+                    sendCommentContentTxt.setText("");
+                    Toast.makeText(getApplicationContext(), "Comment sent", Toast.LENGTH_SHORT).show();
+                }
+            });
+            runListCommentsQuery(); //todo zamienić na subskrypcję!
+            Log.i("Results", "Added comment: " + response.data().toString());
+        }
+
+        @Override
+        public void onFailure(@Nonnull ApolloException e) {
+            Log.e("Error", e.toString());
+        }
+    };
 
     public void runListCommentsQuery() {
         ModelStringFilterInput questionIdFilter = ModelStringFilterInput.builder().eq(question.getId()).build();
         ModelCommentFilterInput commentFilter = ModelCommentFilterInput.builder().questionId(questionIdFilter).build();
 
         AppSync.query(ListCommentsQuery.builder()
+                .filter(commentFilter)
                 .build())
                 .responseFetcher(AppSyncResponseFetchers.CACHE_AND_NETWORK)
                 .enqueue(listCommentsCallback);
@@ -66,6 +105,9 @@ public class QuestionDetailsActivity extends AppCompatActivity {
             assert response.data().listComments().items() != null;
 
             question.setComments(response.data().listComments().items());
+
+
+
             runOnUiThread(new Runnable(){
                 public void run() {
                     Log.i("UI", "QuestionDetailsActivity: Updating RecyclerView");
