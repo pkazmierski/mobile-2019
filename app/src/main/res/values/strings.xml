@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">KandydatPL</string>
+    <string name="snack_bar_text">1 Item deleted</string>
+    <string name="snack_bar_undo">Undo</string>
 </resources>

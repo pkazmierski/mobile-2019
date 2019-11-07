@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.util.Calendar;
+
 public class MainActivity extends AppCompatActivity {
 
 
@@ -28,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void openChecklist(View view) {
         Intent intent = new Intent(this, TaskListActivity.class);
+        //uncomment to filter
+        //intent.putExtra("filterDate", Calendar.getInstance().getTime());
         startActivity(intent);
     }
 

@@ -29,6 +29,14 @@ public class ChecklistItem implements Serializable {
         this.deadline = new Date();
     }
 
+    public ChecklistItem(String title, String description, boolean userCrated, boolean done, Date deadline) {
+        this.title = title;
+        this.description = description;
+        this.userCrated = userCrated;
+        this.done = done;
+        this.deadline = deadline;
+    }
+
     public static int getId() {
         return id;
     }
@@ -76,4 +84,6 @@ public class ChecklistItem implements Serializable {
     public void setDeadline(Date deadline) {
         this.deadline = deadline;
     }
+
+
 }
