@@ -22,6 +22,13 @@ public class Comment {
         return id;
     }
 
+    public void setId(String id) {
+        if(this.id.equals(""))
+            this.id = id;
+        else
+            throw new Error("Cannot set comment ID: current ID is not empty.");
+    }
+
     public String getContent() {
         return content;
     }

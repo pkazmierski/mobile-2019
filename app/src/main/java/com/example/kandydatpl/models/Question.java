@@ -6,23 +6,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 public class Question {
     private String id;
     private String content;
-    private ArrayList<String> commentIds;
+    private int commentCount;
     private ArrayList<Comment> comments;
 
-    public Question(String id, String content) {
+    public Question(@Nonnull String id, @Nonnull String content) {
         this.id = id;
         this.content = content;
-        this.commentIds = new ArrayList<>();
+        this.commentCount = 0;
         this.comments = new ArrayList<>();
     }
 
-    public Question(String id, String content, ArrayList<String> commentIds) {
+    public Question(@Nonnull String id, @Nonnull String content, @Nonnull int commentCount) {
         this.id = id;
         this.content = content;
-        this.commentIds = commentIds;
+        this.commentCount = commentCount;
         this.comments = new ArrayList<>();
     }
 
@@ -30,16 +33,23 @@ public class Question {
         return id;
     }
 
+    public void setId(String id) {
+        if (this.id.equals(""))
+            this.id = id;
+        else
+            throw new Error("Cannot set question ID: question ID is not empty.");
+    }
+
     public String getContent() {
         return content;
     }
 
-    public List<String> getCommentIds() {
-        return commentIds;
+    public int getCommentCount() {
+        return commentCount;
     }
 
-    public void setCommentIds(ArrayList<String> commentIds) {
-        this.commentIds = commentIds;
+    public void setCommentCount(int commentCount) {
+        this.commentCount = commentCount;
     }
 
     public ArrayList<Comment> getComments() {
@@ -47,18 +57,13 @@ public class Question {
     }
 
     public void setComments(ArrayList<Comment> comments) {
-        this.comments = comments;
+        this.comments.clear();
+        this.comments.addAll(comments);
     }
 
-    public void setComments(List<ListCommentsQuery.Item> dbComments) {
-        comments.clear();
-
-        for (ListCommentsQuery.Item item : dbComments) {
-            comments.add(new Comment(item.id(), item.content(), item.questionId()));
-        }
+    public void addComment(Comment comment) {
+        comments.add(comment);
     }
-
-
 
     @Override
     public boolean equals(Object o) {
@@ -78,7 +83,7 @@ public class Question {
         return "Question{" +
                 "id='" + id + '\'' +
                 ", content='" + content + '\'' +
-                ", commentIds=" + commentIds +
+                ", commentCount=" + commentCount +
                 '}';
     }
 }

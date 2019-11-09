@@ -8,23 +8,19 @@ import android.view.View;
 
 import com.amazonaws.amplify.generated.graphql.CreateCommentMutation;
 import com.amazonaws.amplify.generated.graphql.CreateQuestionMutation;
-import com.amazonaws.amplify.generated.graphql.UpdateQuestionMutation;
 import com.apollographql.apollo.GraphQLCall;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
 import com.example.kandydatpl.R;
 import com.example.kandydatpl.logic.Logic;
 import com.example.kandydatpl.models.Comment;
-import com.example.kandydatpl.models.Question;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
 
 import type.CreateCommentInput;
 import type.CreateQuestionInput;
-import type.UpdateQuestionInput;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -55,48 +51,4 @@ public class MainActivity extends AppCompatActivity {
         Intent questionsIntent = new Intent(this, QuestionsActivity.class);
         startActivity(questionsIntent);
     }
-
-    public void mutationAddComment(Comment comment){
-        CreateCommentInput createCommentInput = CreateCommentInput.builder()
-                .content(comment.getContent())
-                .questionId(comment.getQuestionId())
-                .build();
-
-        Logic.AppSync.mutate(CreateCommentMutation.builder().input(createCommentInput).build())
-                .enqueue(createCommentCallback);
-    }
-
-    private GraphQLCall.Callback<CreateCommentMutation.Data> createCommentCallback = new GraphQLCall.Callback<CreateCommentMutation.Data>() {
-        @Override
-        public void onResponse(@Nonnull Response<CreateCommentMutation.Data> response) {
-            Log.i("Results", "Added comment: " + response.data().toString());
-        }
-
-        @Override
-        public void onFailure(@Nonnull ApolloException e) {
-            Log.e("Error", e.toString());
-        }
-    };
-
-    public void mutationAddQuestion(String content, List<String> commentIds){
-        CreateQuestionInput createQuestionInput = CreateQuestionInput.builder()
-                .content(content)
-                .commentIds(commentIds)
-                .build();
-
-        Logic.AppSync.mutate(CreateQuestionMutation.builder().input(createQuestionInput).build())
-                .enqueue(addQuestionCallback);
-    }
-
-    private GraphQLCall.Callback<CreateQuestionMutation.Data> addQuestionCallback = new GraphQLCall.Callback<CreateQuestionMutation.Data>() {
-        @Override
-        public void onResponse(@Nonnull Response<CreateQuestionMutation.Data> response) {
-            Log.i("Results", "Added question: " + response.data().toString());
-        }
-
-        @Override
-        public void onFailure(@Nonnull ApolloException e) {
-            Log.e("Error", e.toString());
-        }
-    };
 }

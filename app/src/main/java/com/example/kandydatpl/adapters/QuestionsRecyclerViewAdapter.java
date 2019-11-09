@@ -45,7 +45,7 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
 
         holder.questionTxt.setText(questions.get(position).getContent());
 
-        holder.commentsCountTxt.setText(String.valueOf(questions.get(position).getCommentIds().size()));
+        holder.commentsCountTxt.setText(String.valueOf(questions.get(position).getCommentCount()));
 
         //todo zmniejszyć duplikację kodu
         holder.cardView.setOnClickListener(new View.OnClickListener() {
