@@ -3836,7 +3836,18 @@
                     {
                         "name": "onUpdateQuestion",
                         "description": null,
-                        "args": [],
+                        "args": [
+                            {
+                                "name": "owner",
+                                "description": null,
+                                "type": {
+                                    "kind": "SCALAR",
+                                    "name": "String",
+                                    "ofType": null
+                                },
+                                "defaultValue": null
+                            }
+                        ],
                         "type": {
                             "kind": "OBJECT",
                             "name": "Question",
