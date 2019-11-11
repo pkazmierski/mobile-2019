@@ -18,11 +18,19 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
+        <activity
+            android:name=".activities.AddQuestionActivity"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.AppCompat.DayNight.Dialog.MinWidth"
+            android:label="Add a new question"/>
+        <activity android:name=".activities.QuestionDetailsActivity" />
         <activity android:name=".activities.MainActivity" />
+        <activity android:name=".activities.QuestionsActivity" />
 
         <service android:name="org.eclipse.paho.android.service.MqttService" />
 
-        <activity android:name=".activities.AuthenticationActivity"
+        <activity
+            android:name=".activities.AuthenticationActivity"
             android:label="@string/app_name"
             android:noHistory="true">
             <intent-filter>
