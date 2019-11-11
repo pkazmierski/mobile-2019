@@ -10,26 +10,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.amazonaws.amplify.generated.graphql.CreateCommentMutation;
-import com.amazonaws.amplify.generated.graphql.ListCommentsQuery;
-import com.amazonaws.mobileconnectors.appsync.fetcher.AppSyncResponseFetchers;
-import com.apollographql.apollo.GraphQLCall;
-import com.apollographql.apollo.api.Response;
-import com.apollographql.apollo.exception.ApolloException;
 import com.example.kandydatpl.R;
 import com.example.kandydatpl.adapters.CommentsRecyclerViewAdapter;
 import com.example.kandydatpl.data.DataStore;
-import com.example.kandydatpl.logic.Logic;
 import com.example.kandydatpl.models.Comment;
 import com.example.kandydatpl.models.Question;
 
-import javax.annotation.Nonnull;
+import java.util.Date;
 
-import type.CreateCommentInput;
-import type.ModelCommentFilterInput;
-import type.ModelStringFilterInput;
-
-import static com.example.kandydatpl.logic.Logic.appSyncClient;
 import static com.example.kandydatpl.logic.Logic.dataProvider;
 
 public class QuestionDetailsActivity extends AppCompatActivity {
@@ -52,41 +40,32 @@ public class QuestionDetailsActivity extends AppCompatActivity {
 
         sendCommentContentTxt = findViewById(R.id.sendCommentContentTxt);
 
-        dataProvider.getComments(afterCommentListAcquired, question);
+        dataProvider.getComments(afterCommentListAcquiredSuccess, afterCommentListAcquiredFailure, question);
         initRecyclerView();
     }
 
     public void SendNewComment(View view) {
-        Comment comment = new Comment("", sendCommentContentTxt.getText().toString(), question.getId());
-        dataProvider.addComment(afterCommentSent, comment);
+        if(!sendCommentContentTxt.getText().toString().equals("")) {
+            Comment comment = new Comment("", sendCommentContentTxt.getText().toString(), question.getId(), new Date());
+            dataProvider.addComment(afterCommentSentSuccess, afterCommentSentFailure, comment);
+        }
     }
 
-    private Runnable afterCommentSent = new Runnable(){
-        @Override
-        public void run() {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    sendCommentContentTxt.setText("");
-                    Toast.makeText(getApplicationContext(), "Comment sent", Toast.LENGTH_SHORT).show();
-                    adapter.notifyDataSetChanged();
-                }
-            });
-        }
-    };
+    private Runnable afterCommentSentSuccess = () -> runOnUiThread(() -> {
+        sendCommentContentTxt.setText("");
+        Toast.makeText(getApplicationContext(), "Comment sent", Toast.LENGTH_SHORT).show();
+        adapter.notifyItemInserted(0);
+        recyclerView.smoothScrollToPosition(0);
+    });
 
-    private Runnable afterCommentListAcquired = new Runnable(){
-        @Override
-        public void run() {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Log.i("UI", "QuestionDetailsActivity: Updating RecyclerView");
-                    adapter.notifyDataSetChanged();
-                }
-            });
-        }
-    };
+    private Runnable afterCommentSentFailure = () -> runOnUiThread(() ->
+            Toast.makeText(getApplicationContext(), "Failed to send the comment", Toast.LENGTH_LONG).show());
+
+    private Runnable afterCommentListAcquiredSuccess = () -> runOnUiThread(() ->
+            adapter.notifyDataSetChanged());
+
+    private Runnable afterCommentListAcquiredFailure = () -> runOnUiThread(() ->
+            Toast.makeText(getApplicationContext(), "Get comment list failed", Toast.LENGTH_LONG).show());
 
     private void initRecyclerView() {
         Log.d(TAG, "initRecyclerView: init recyclerview");

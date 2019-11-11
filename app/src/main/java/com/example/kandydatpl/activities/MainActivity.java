@@ -8,6 +8,7 @@ import android.view.View;
 
 import com.amazonaws.amplify.generated.graphql.CreateCommentMutation;
 import com.amazonaws.amplify.generated.graphql.CreateQuestionMutation;
+import com.amazonaws.mobile.client.AWSMobileClient;
 import com.apollographql.apollo.GraphQLCall;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
@@ -22,6 +23,8 @@ import javax.annotation.Nonnull;
 import type.CreateCommentInput;
 import type.CreateQuestionInput;
 
+import static com.example.kandydatpl.logic.Logic.dataProvider;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -30,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Logic.initAppSync(getApplicationContext());
+
+        dataProvider.getUserData(null, null);
 
 //        String qid = "b13e9428-d1db-4f51-81a7-7aa24a2256ae";
 //        mutationAddComment(new Comment(null, "At XYZ.", qid));
@@ -49,6 +54,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void goToQuestions(View view) {
         Intent questionsIntent = new Intent(this, QuestionsActivity.class);
+        startActivity(questionsIntent);
+    }
+
+    public void goToBookmarks(View view) {
+        Intent questionsIntent = new Intent(this, QuestionsActivity.class);
+        questionsIntent.putExtra("bookmarksOnly", true);
         startActivity(questionsIntent);
     }
 }

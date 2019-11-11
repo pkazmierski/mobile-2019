@@ -3,6 +3,7 @@ package com.example.kandydatpl.models;
 import com.amazonaws.amplify.generated.graphql.ListCommentsQuery;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -14,19 +15,22 @@ public class Question {
     private String content;
     private int commentCount;
     private ArrayList<Comment> comments;
+    private Date createdAt;
 
-    public Question(@Nonnull String id, @Nonnull String content) {
+    public Question(@Nonnull String id, @Nonnull String content, @Nonnull Date createdAt) {
         this.id = id;
         this.content = content;
         this.commentCount = 0;
         this.comments = new ArrayList<>();
+        this.createdAt = createdAt;
     }
 
-    public Question(@Nonnull String id, @Nonnull String content, @Nonnull int commentCount) {
+    public Question(@Nonnull String id, @Nonnull String content, @Nonnull int commentCount, @Nonnull Date createdAt) {
         this.id = id;
         this.content = content;
         this.commentCount = commentCount;
         this.comments = new ArrayList<>();
+        this.createdAt = createdAt;
     }
 
     public String getId() {
@@ -62,7 +66,15 @@ public class Question {
     }
 
     public void addComment(Comment comment) {
-        comments.add(comment);
+        comments.add(0, comment);
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 
     @Override

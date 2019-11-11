@@ -5,44 +5,60 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 
-import com.amazonaws.amplify.generated.graphql.ListCommentsQuery;
-import com.amazonaws.mobileconnectors.appsync.fetcher.AppSyncResponseFetchers;
-import com.apollographql.apollo.GraphQLCall;
-import com.apollographql.apollo.api.Response;
-import com.apollographql.apollo.exception.ApolloException;
 import com.example.kandydatpl.R;
 import com.example.kandydatpl.adapters.QuestionsRecyclerViewAdapter;
 import com.example.kandydatpl.data.DataStore;
 import com.example.kandydatpl.models.Question;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-import type.ModelCommentFilterInput;
-import type.ModelStringFilterInput;
-
-import static com.example.kandydatpl.logic.Logic.appSyncClient;
 import static com.example.kandydatpl.logic.Logic.dataProvider;
 
 public class QuestionsActivity extends AppCompatActivity {
 
     private static final String TAG = "QuestionsActivity";
+    EditText searchQuestionsTxt;
     RecyclerView recyclerView;
     QuestionsRecyclerViewAdapter adapter;
+    ArrayList<Question> questions = DataStore.getQuestions();
+    private boolean bookmarksOnly;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_questions);
+        searchQuestionsTxt = findViewById(R.id.searchQuestionsTxt);
+        searchQuestionsTxt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                filter(s.toString());
+            }
+        });
+
+        bookmarksOnly = getIntent().getBooleanExtra("bookmarksOnly", false);
         initRecyclerView();
-        dataProvider.getQuestions(afterQuestionsAcquired);
+        dataProvider.getQuestions(afterQuestionsAcquiredSuccess, afterQuestionsAcquiredFailure);
     }
 
     @Override
@@ -51,37 +67,69 @@ public class QuestionsActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
     }
 
-    private Runnable afterQuestionsAcquired = new Runnable(){
-        @Override
-        public void run() {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    adapter.notifyDataSetChanged();
-                }
-            });
+    private void filter(String text) {
+        ArrayList<Question> filteredQuestions = new ArrayList<Question>();
+
+        for (Question question : questions) {
+            if(question.getContent().toLowerCase().contains(text.toLowerCase()))
+                filteredQuestions.add(question);
         }
-    };
+
+        adapter.filterList(filteredQuestions);
+    }
+
+    private void filterBookmarksOnly() {
+        questions.clear();
+        for (Question question : DataStore.getQuestions()) {
+            if (DataStore.getUserData().isQuestionBookmarked(question))
+                questions.add(question);
+        }
+    }
+
+    private Runnable afterQuestionsAcquiredSuccess = () -> runOnUiThread(() -> {
+        if(bookmarksOnly) {
+            filterBookmarksOnly();
+        }
+        adapter.notifyDataSetChanged();
+    });
+
+    private Runnable afterQuestionsAcquiredFailure = () -> runOnUiThread(() ->
+            Toast.makeText(getApplicationContext(), "Get questions failed", Toast.LENGTH_LONG).show());
 
     public void addNewQuestion(View view) {
         Intent goToNewQuestionActivity = new Intent(this, AddQuestionActivity.class);
         startActivityForResult(goToNewQuestionActivity, 1);
     }
 
-
     private void initRecyclerView() {
-        Log.d(TAG, "initRecyclerView: init recyclerview");
+        Log.d(TAG, "initRecyclerView: init recyclerview, bookmarksOnly: " + bookmarksOnly);
         recyclerView = findViewById(R.id.questionsListRecyclerView);
-        adapter = new QuestionsRecyclerViewAdapter(this, DataStore.getQuestions());
+
+        if(bookmarksOnly) {
+            questions = new ArrayList<>();
+        }
+        adapter = new QuestionsRecyclerViewAdapter(this, questions);
 
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+//        filter("");
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == 1) {
-            adapter.notifyDataSetChanged();
+        if (requestCode == 1) {
+            adapter.notifyItemInserted(0);
+            recyclerView.smoothScrollToPosition(0);
         }
+    }
+
+    public boolean isBookmarksOnly() {
+        return bookmarksOnly;
+    }
+
+    public void updateUI(@Nullable HashMap<String, String> params) {
+        assert params != null;
+        questions.remove(DataStore.getQuestion(params.get("questionId")));
+        adapter.notifyDataSetChanged();
     }
 }

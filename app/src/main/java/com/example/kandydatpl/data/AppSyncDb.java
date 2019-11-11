@@ -1,24 +1,34 @@
 package com.example.kandydatpl.data;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
 
 import com.amazonaws.amplify.generated.graphql.CreateCommentMutation;
 import com.amazonaws.amplify.generated.graphql.CreateQuestionMutation;
 import com.amazonaws.amplify.generated.graphql.DeleteCommentMutation;
+import com.amazonaws.amplify.generated.graphql.GetUserQuery;
 import com.amazonaws.amplify.generated.graphql.ListCommentsQuery;
 import com.amazonaws.amplify.generated.graphql.ListQuestionsQuery;
 import com.amazonaws.amplify.generated.graphql.UpdateCommentMutation;
 import com.amazonaws.amplify.generated.graphql.UpdateQuestionMutation;
+import com.amazonaws.amplify.generated.graphql.UpdateUserMutation;
 import com.amazonaws.mobileconnectors.appsync.fetcher.AppSyncResponseFetchers;
 import com.apollographql.apollo.GraphQLCall;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
+import com.example.kandydatpl.logic.Logic;
 import com.example.kandydatpl.models.Comment;
 import com.example.kandydatpl.models.Question;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.TimeZone;
 
 import javax.annotation.Nonnull;
 
@@ -29,6 +39,7 @@ import type.ModelCommentFilterInput;
 import type.ModelStringFilterInput;
 import type.UpdateCommentInput;
 import type.UpdateQuestionInput;
+import type.UpdateUserInput;
 
 import static com.example.kandydatpl.logic.Logic.appSyncClient;
 
@@ -41,13 +52,19 @@ public class AppSyncDb implements DataProvider {
 
     private static AppSyncDb instance = null;
     private static final String TAG = "AppSyncDb";
+    private static final @SuppressLint("SimpleDateFormat")
+    DateFormat awsDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
-    private AppSyncDb() { }
+    private AppSyncDb() {
+        TimeZone tz = TimeZone.getTimeZone("UTC");
+        awsDateFormat.setTimeZone(tz);
+    }
 
     public static AppSyncDb getInstance() {
-        if(instance == null) {
+        if (instance == null) {
             instance = new AppSyncDb();
         }
+
         return instance;
     }
 
@@ -57,8 +74,19 @@ public class AppSyncDb implements DataProvider {
         ArrayList<Question> questions = new ArrayList<>();
 
         for (ListQuestionsQuery.Item item : dbQuestions) {
-            questions.add(new Question(item.id(), item.content(), item.commentCount()));
+            try {
+                questions.add(new Question(item.id(), item.content(), item.commentCount(), awsDateFormat.parse(item.createdAt())));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
+
+        Collections.sort(questions, new Comparator<Question>() {
+            @Override
+            public int compare(Question lhs, Question rhs) {
+                return lhs.getCreatedAt().compareTo(rhs.getCreatedAt()) > 0 ? -1 : 1;
+            }
+        });
 
         return questions;
     }
@@ -67,14 +95,41 @@ public class AppSyncDb implements DataProvider {
         ArrayList<Comment> comments = new ArrayList<>();
 
         for (ListCommentsQuery.Item item : dbComments) {
-            comments.add(new Comment(item.id(), item.content(), item.questionId()));
+            try {
+                if (item.likedBy() != null) {
+                    comments.add(new Comment(
+                            item.id(),
+                            item.content(),
+                            item.questionId(),
+                            awsDateFormat.parse(item.createdAt()),
+                            new ArrayList<>(item.likedBy())
+                    ));
+                } else {
+                    comments.add(new Comment(
+                            item.id(),
+                            item.content(),
+                            item.questionId(),
+                            awsDateFormat.parse(item.createdAt()),
+                            null
+                    ));
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
+
+        Collections.sort(comments, new Comparator<Comment>() {
+            @Override
+            public int compare(Comment lhs, Comment rhs) {
+                return lhs.getCreatedAt().compareTo(rhs.getCreatedAt()) > 0 ? -1 : 1;
+            }
+        });
 
         return comments;
     }
 
     @Override
-    public void getQuestions(Runnable runnable) {
+    public void getQuestions(Runnable onSuccess, Runnable onFailure) {
         GraphQLCall.Callback<ListQuestionsQuery.Data> listQuestionsCallback = new GraphQLCall.Callback<ListQuestionsQuery.Data>() {
             @Override
             public void onResponse(@Nonnull Response<ListQuestionsQuery.Data> response) {
@@ -90,14 +145,17 @@ public class AppSyncDb implements DataProvider {
                     Log.i("Results", "listQuestions() is null");
                 }
 
-                if (runnable != null) {
-                    runnable.run();
+                if (onSuccess != null) {
+                    onSuccess.run();
                 }
             }
 
             @Override
             public void onFailure(@Nonnull ApolloException e) {
                 Log.e("ERROR", e.toString());
+                if (onFailure != null) {
+                    onFailure.run();
+                }
             }
         };
 
@@ -113,7 +171,7 @@ public class AppSyncDb implements DataProvider {
     }
 
     @Override
-    public void getNextQuestions(Runnable runnable) {
+    public void getNextQuestions(Runnable onSuccess, Runnable onFailure) {
         if (moreQuestionsAvailable()) {
             GraphQLCall.Callback<ListQuestionsQuery.Data> listQuestionsCallback = new GraphQLCall.Callback<ListQuestionsQuery.Data>() {
                 @Override
@@ -128,14 +186,17 @@ public class AppSyncDb implements DataProvider {
                         Log.i("Results", "listQuestions() is null");
                     }
 
-                    if (runnable != null) {
-                        runnable.run();
+                    if (onSuccess != null) {
+                        onSuccess.run();
                     }
                 }
 
                 @Override
                 public void onFailure(@Nonnull ApolloException e) {
                     Log.e("ERROR", e.toString());
+                    if (onFailure != null) {
+                        onFailure.run();
+                    }
                 }
             };
 
@@ -148,7 +209,7 @@ public class AppSyncDb implements DataProvider {
     }
 
     @Override
-    public void addQuestion(Runnable runnable, Question question) {
+    public void addQuestion(Runnable onSuccess, Runnable onFailure, Question question) {
         if (question.getId().equals("")) { //new local (unpushed) question
             GraphQLCall.Callback<CreateQuestionMutation.Data> addQuestionCallback = new GraphQLCall.Callback<CreateQuestionMutation.Data>() {
                 @Override
@@ -158,20 +219,26 @@ public class AppSyncDb implements DataProvider {
                     question.setId(response.data().createQuestion().id());
                     DataStore.addQuestion(question);
 
-                    if (runnable != null) {
-                        runnable.run();
+                    if (onSuccess != null) {
+                        onSuccess.run();
                     }
                 }
 
                 @Override
                 public void onFailure(@Nonnull ApolloException e) {
                     Log.e("Error", e.toString());
+                    if (onFailure != null) {
+                        onFailure.run();
+                    }
                 }
             };
+
+            String isoDateTime = awsDateFormat.format(question.getCreatedAt());
 
             CreateQuestionInput createQuestionInput = CreateQuestionInput.builder()
                     .content(question.getContent())
                     .commentCount(question.getCommentCount())
+                    .createdAt(isoDateTime)
                     .build();
 
             appSyncClient.mutate(CreateQuestionMutation.builder().input(createQuestionInput).build())
@@ -205,12 +272,48 @@ public class AppSyncDb implements DataProvider {
     }
 
     @Override
-    public void bookmarkQuestion(Runnable runnable, Question question) {
-        //tbd
+    public void bookmarkQuestion(Runnable onSuccess, Runnable onFailure, Question question, boolean add) {
+        GraphQLCall.Callback<UpdateUserMutation.Data> updateUserDataCallback = new GraphQLCall.Callback<UpdateUserMutation.Data>() {
+            @Override
+            public void onResponse(@Nonnull Response<UpdateUserMutation.Data> response) {
+                Log.i("Results", "Added bookmark: " + response.data().toString());
+
+                if(add)
+                    DataStore.getUserData().addQuestionBookmark(question);
+                else
+                    DataStore.getUserData().removeQuestionBookmark(question);
+
+                if (onSuccess != null) {
+                    onSuccess.run();
+                }
+            }
+
+            @Override
+            public void onFailure(@Nonnull ApolloException e) {
+                Log.e("Error", e.toString());
+                if (onFailure != null) {
+                    onFailure.run();
+                }
+            }
+        };
+
+        ArrayList<String> newBookmarks = new ArrayList<>(DataStore.getUserData().getQuestionBookmarks());
+        if(add)
+            newBookmarks.add(question.getId());
+        else
+            newBookmarks.remove(question.getId());
+
+        UpdateUserInput updateUserDataInput = UpdateUserInput.builder()
+                .id(DataStore.getUserData().getLogin())
+                .bookmarks(newBookmarks)
+                .build();
+
+        appSyncClient.mutate(UpdateUserMutation.builder().input(updateUserDataInput).build())
+                .enqueue(updateUserDataCallback);
     }
 
     @Override
-    public void getComments(Runnable runnable, Question question) {
+    public void getComments(Runnable onSuccess, Runnable onFailure, Question question) {
         GraphQLCall.Callback<ListCommentsQuery.Data> listCommentsCallback = new GraphQLCall.Callback<ListCommentsQuery.Data>() {
             @Override
             public void onResponse(@Nonnull Response<ListCommentsQuery.Data> response) {
@@ -218,14 +321,17 @@ public class AppSyncDb implements DataProvider {
 
                 question.setComments(commentsToArrayList(response.data().listComments().items()));
 
-                if (runnable != null) {
-                    runnable.run();
+                if (onSuccess != null) {
+                    onSuccess.run();
                 }
             }
 
             @Override
             public void onFailure(@Nonnull ApolloException e) {
                 Log.e("ERROR", e.toString());
+                if (onFailure != null) {
+                    onFailure.run();
+                }
             }
         };
 
@@ -240,7 +346,7 @@ public class AppSyncDb implements DataProvider {
     }
 
     @Override
-    public void addComment(Runnable runnable, Comment comment) {
+    public void addComment(Runnable onSuccess, Runnable onFailure, Comment comment) {
         if (comment.getId().equals("")) { //new local (unpushed) comment
             GraphQLCall.Callback<CreateCommentMutation.Data> createCommentCallback = new GraphQLCall.Callback<CreateCommentMutation.Data>() {
                 @Override
@@ -256,20 +362,26 @@ public class AppSyncDb implements DataProvider {
 
                     DataStore.getQuestion(comment.getQuestionId()).addComment(comment);
 
-                    if (runnable != null) {
-                        runnable.run();
+                    if (onSuccess != null) {
+                        onSuccess.run();
                     }
                 }
 
                 @Override
                 public void onFailure(@Nonnull ApolloException e) {
                     Log.e("Error", e.toString());
+                    if (onFailure != null) {
+                        onFailure.run();
+                    }
                 }
             };
+
+            String isoDateTime = awsDateFormat.format(comment.getCreatedAt());
 
             CreateCommentInput createCommentInput = CreateCommentInput.builder()
                     .content(comment.getContent())
                     .questionId(comment.getQuestionId())
+                    .createdAt(isoDateTime)
                     .build();
 
             appSyncClient.mutate(CreateCommentMutation.builder().input(createCommentInput).build())
@@ -278,7 +390,7 @@ public class AppSyncDb implements DataProvider {
     }
 
     @Override
-    public void removeComment(Runnable runnable, Comment comment) {
+    public void removeComment(Runnable onSuccess, Runnable onFailure, Comment comment) {
         GraphQLCall.Callback<DeleteCommentMutation.Data> removeCommentCallback = new GraphQLCall.Callback<DeleteCommentMutation.Data>() {
             @Override
             public void onResponse(@Nonnull Response<DeleteCommentMutation.Data> response) {
@@ -288,14 +400,17 @@ public class AppSyncDb implements DataProvider {
                 assert question != null;
                 changeCommentCount(question, -1);
 
-                if (runnable != null) {
-                    runnable.run();
+                if (onSuccess != null) {
+                    onSuccess.run();
                 }
             }
 
             @Override
             public void onFailure(@Nonnull ApolloException e) {
                 Log.e("Error", e.toString());
+                if (onFailure != null) {
+                    onFailure.run();
+                }
             }
         };
 
@@ -308,20 +423,23 @@ public class AppSyncDb implements DataProvider {
     }
 
     @Override
-    public void modifyComment(Runnable runnable, Comment comment) {
+    public void modifyComment(Runnable onSuccess, Runnable onFailure, Comment comment) {
         GraphQLCall.Callback<UpdateCommentMutation.Data> updateCommentCallback = new GraphQLCall.Callback<UpdateCommentMutation.Data>() {
             @Override
             public void onResponse(@Nonnull Response<UpdateCommentMutation.Data> response) {
                 Log.i("Results", "Modified comment: " + response.data().toString());
 
-                if (runnable != null) {
-                    runnable.run();
+                if (onSuccess != null) {
+                    onSuccess.run();
                 }
             }
 
             @Override
             public void onFailure(@Nonnull ApolloException e) {
                 Log.e("Error", e.toString());
+                if (onFailure != null) {
+                    onFailure.run();
+                }
             }
         };
 
@@ -335,7 +453,80 @@ public class AppSyncDb implements DataProvider {
     }
 
     @Override
-    public void changeLikeStatusComment(Runnable runnable, Comment comment) {
-        //tbd
+    public void changeLikeStatusComment(Runnable onSuccess, Runnable onFailure, Comment comment, boolean add) {
+        GraphQLCall.Callback<UpdateCommentMutation.Data> updateCommentCallback = new GraphQLCall.Callback<UpdateCommentMutation.Data>() {
+            @Override
+            public void onResponse(@Nonnull Response<UpdateCommentMutation.Data> response) {
+                Log.i("Results", "Changed like list of the comment: " + response.data().toString());
+
+                if (onSuccess != null) {
+                    onSuccess.run();
+                }
+            }
+
+            @Override
+            public void onFailure(@Nonnull ApolloException e) {
+                Log.e("Error", e.toString());
+                if (onFailure != null) {
+                    onFailure.run();
+                }
+            }
+        };
+
+        ArrayList<String> newLikedBy = new ArrayList<>(comment.getLikedBy());
+        if (add && !newLikedBy.contains(DataStore.getUserData().getUserId())) {
+            newLikedBy.add(DataStore.getUserData().getUserId());
+        } else if (!add && newLikedBy.contains(DataStore.getUserData().getUserId())) {
+            newLikedBy.remove(DataStore.getUserData().getUserId());
+        } else {
+            throw new Error("Trying to set wrong likedBy list entries for comment: " + comment.toString() + "///Add status: " + add);
+        }
+
+        UpdateCommentInput updateCommentInput = UpdateCommentInput.builder()
+                .id(comment.getId())
+                .likedBy(newLikedBy)
+                .build();
+
+        appSyncClient.mutate(UpdateCommentMutation.builder().input(updateCommentInput).build())
+                .enqueue(updateCommentCallback);
+    }
+
+    //User
+
+    @Override
+    public void getUserData(Runnable onSuccess, Runnable onFailure) {
+        GraphQLCall.Callback<GetUserQuery.Data> getUserDataCallback = new GraphQLCall.Callback<GetUserQuery.Data>() {
+            @Override
+            public void onResponse(@Nonnull Response<GetUserQuery.Data> response) {
+                assert response.data() != null;
+                assert response.data().getUser() != null;
+                if(response.data().getUser().bookmarks() != null) {
+                    Log.i("Results", Objects.requireNonNull(response.data().getUser().bookmarks()).toString());
+                    DataStore.getUserData().setQuestionBookmarks(new ArrayList<String>(response.data().getUser().bookmarks()));
+                }
+                else {
+                    Log.i("Results", "No bookmarks for the user " + DataStore.getUserData().getLogin());
+                    DataStore.getUserData().setQuestionBookmarks(null);
+                }
+
+                if (onSuccess != null) {
+                    onSuccess.run();
+                }
+            }
+
+            @Override
+            public void onFailure(@Nonnull ApolloException e) {
+                Log.e("ERROR", e.toString());
+                if (onFailure != null) {
+                    onFailure.run();
+                }
+            }
+        };
+
+        appSyncClient.query(GetUserQuery.builder()
+                .id(DataStore.getUserData().getLogin())
+                .build())
+                .responseFetcher(AppSyncResponseFetchers.CACHE_AND_NETWORK)
+                .enqueue(getUserDataCallback);
     }
 }

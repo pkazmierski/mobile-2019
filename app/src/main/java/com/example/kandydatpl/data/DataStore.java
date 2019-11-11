@@ -13,6 +13,7 @@ import com.example.kandydatpl.adapters.QuestionsRecyclerViewAdapter;
 import com.example.kandydatpl.logic.Logic;
 import com.example.kandydatpl.models.Event;
 import com.example.kandydatpl.models.Question;
+import com.example.kandydatpl.models.UserData;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,6 +34,7 @@ import static com.example.kandydatpl.logic.Logic.appSyncClient;
 public class DataStore {
     private static final String TAG = "DataStore";
     private static ArrayList<Question> questions = new ArrayList<>();
+    private static UserData userData = UserData.getInstance();
 
     public static ArrayList<Question> getQuestions() {
         return questions;
@@ -52,10 +54,14 @@ public class DataStore {
     }
 
     public static void addQuestion(Question question) {
-        questions.add(question);
+        questions.add(0, question);
     }
 
     public static void removeQuestion(Question question) {
         questions.remove(question);
+    }
+
+    public static UserData getUserData() {
+        return userData;
     }
 }

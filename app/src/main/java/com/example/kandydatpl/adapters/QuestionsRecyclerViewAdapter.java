@@ -1,21 +1,30 @@
 package com.example.kandydatpl.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.kandydatpl.R;
 import com.example.kandydatpl.activities.QuestionDetailsActivity;
+import com.example.kandydatpl.activities.QuestionsActivity;
+import com.example.kandydatpl.data.DataStore;
 import com.example.kandydatpl.models.Question;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import static com.example.kandydatpl.logic.Logic.dataProvider;
 
 public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<QuestionsRecyclerViewAdapter.ViewHolder> {
     private static final String TAG = "QuestionsRVAdapter";
@@ -47,34 +56,55 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
 
         holder.commentsCountTxt.setText(String.valueOf(questions.get(position).getCommentCount()));
 
+        if(DataStore.getUserData().isQuestionBookmarked(questions.get(position)))
+            holder.bookmarkQuestionBtn.setImageDrawable(ResourcesCompat.getDrawable(ctx.getResources(), R.drawable.ic_bookmark_gray_20dp, null));
+        else
+            holder.bookmarkQuestionBtn.setImageDrawable(ResourcesCompat.getDrawable(ctx.getResources(), R.drawable.ic_bookmark_border_gray_20dp, null));
+
         //todo zmniejszyć duplikację kodu
-        holder.cardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "QuestionsList => onClick: clicked on title: " + questions.get(position));
+        holder.cardView.setOnClickListener(view -> {
+            Log.d(TAG, "QuestionsList => onClick: clicked on title: " + questions.get(position));
 
-                Intent questionDetailsIntent = new Intent(ctx, QuestionDetailsActivity.class);
+            Intent questionDetailsIntent = new Intent(ctx, QuestionDetailsActivity.class);
 
-                questionDetailsIntent.putExtra("questionId", questions.get(position).getId());
-                Log.d(TAG, "QuestionsList onClick: " + questions.get(position).getContent() + " | id: " + questions.get(position).getId());
-                ctx.startActivity(questionDetailsIntent);
+            questionDetailsIntent.putExtra("questionId", questions.get(position).getId());
+            Log.d(TAG, "QuestionsList onClick: " + questions.get(position).getContent() + " | id: " + questions.get(position).getId());
+            ctx.startActivity(questionDetailsIntent);
 
 //                Toast.makeText(ctx, questions.get(position).getId(), Toast.LENGTH_SHORT).show();
-            }
         });
 
-        holder.cardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "QuestionsList => onClick: clicked on card: " + questions.get(position));
 
-                Intent questionDetailsIntent = new Intent(ctx, QuestionDetailsActivity.class);
+        holder.bookmarkQuestionBtn.setOnClickListener(view -> {
+            Log.d(TAG, "Attempting to bookmark: " + questions.get(position));
 
-                questionDetailsIntent.putExtra("questionId", questions.get(position).getId());
-                Log.d(TAG, "QuestionsList onClick: " + questions.get(position).getContent() + " | id: " + questions.get(position).getId());
-                ctx.startActivity(questionDetailsIntent);
+            if (DataStore.getUserData().isQuestionBookmarked(questions.get(position))) {
+                Runnable afterUnBookmarkSuccess = () -> ((Activity) ctx).runOnUiThread(() -> {
+                    Toast.makeText(ctx, "Removed from bookmarks", Toast.LENGTH_SHORT).show();
+                    holder.bookmarkQuestionBtn.setImageDrawable(ResourcesCompat.getDrawable(ctx.getResources(), R.drawable.ic_bookmark_border_gray_20dp, null));
 
-//                Toast.makeText(ctx, questions.get(position).getId(), Toast.LENGTH_SHORT).show();
+                    if (ctx instanceof QuestionsActivity) {
+                        if(((QuestionsActivity) ctx).isBookmarksOnly()) {
+                            HashMap<String, String> params = new HashMap<>();
+                            params.put("questionId", questions.get(position).getId());
+                            ((QuestionsActivity) ctx).updateUI(params);
+                        }
+                    }
+                });
+                Runnable afterUnBookmarkFailure = () -> ((Activity) ctx).runOnUiThread(() ->
+                    Toast.makeText(ctx, "Failed to remove from bookmarks", Toast.LENGTH_LONG).show());
+
+                dataProvider.bookmarkQuestion(afterUnBookmarkSuccess, afterUnBookmarkFailure, questions.get(position), false);
+            } else {
+                Runnable afterBookmarkSuccess = () -> ((Activity) ctx).runOnUiThread(() -> {
+                    Toast.makeText(ctx, "Added to bookmarks", Toast.LENGTH_SHORT).show();
+                    holder.bookmarkQuestionBtn.setImageDrawable(ResourcesCompat.getDrawable(ctx.getResources(), R.drawable.ic_bookmark_gray_20dp, null));
+                });
+                Runnable afterBookmarkFailure = () -> ((Activity) ctx).runOnUiThread(() ->
+                        Toast.makeText(ctx, "Failed to bookmark", Toast.LENGTH_LONG).show());
+
+
+                dataProvider.bookmarkQuestion(afterBookmarkSuccess, afterBookmarkFailure, questions.get(position), true);
             }
         });
     }
@@ -88,13 +118,20 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
         //holds individual entries in memory
         TextView questionTxt;
         TextView commentsCountTxt;
+        ImageButton bookmarkQuestionBtn;
         CardView cardView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             questionTxt = itemView.findViewById(R.id.questionTxt);
             commentsCountTxt = itemView.findViewById(R.id.commentsCountTxt);
+            bookmarkQuestionBtn = itemView.findViewById(R.id.bookmarkQuestionBtn);
             cardView = itemView.findViewById(R.id.recyclerQuestionItemCardView);
         }
+    }
+
+    public void filterList(ArrayList<Question> filteredQuestions) {
+        questions = filteredQuestions;
+        notifyDataSetChanged();
     }
 }

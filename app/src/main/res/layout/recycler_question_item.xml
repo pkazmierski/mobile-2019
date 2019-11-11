@@ -34,7 +34,7 @@
                 android:orientation="horizontal">
 
                 <ImageButton
-                    android:id="@+id/favouriteQuestionBtn"
+                    android:id="@+id/bookmarkQuestionBtn"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:adjustViewBounds="true"
