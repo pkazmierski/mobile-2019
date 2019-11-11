@@ -10,25 +10,28 @@ public class Comment {
     private String questionId;
     private Date createdAt;
     private ArrayList<String> likedBy;
+    private String creator;
 
 //    public Comment(String id, String content) {
 //        this.id = id;
 //        this.content = content;
 //    }
 
-    public Comment(String id, String content, String questionId, Date createdAt) {
+    public Comment(String id, String content, String questionId, Date createdAt, String creator) {
         this.id = id;
         this.content = content;
         this.questionId = questionId;
         this.createdAt = createdAt;
         this.likedBy = new ArrayList<>();
+        this.creator = creator;
     }
 
-    public Comment(String id, String content, String questionId, Date createdAt, ArrayList<String> likedBy) {
+    public Comment(String id, String content, String questionId, Date createdAt, ArrayList<String> likedBy, String creator) {
         this.id = id;
         this.content = content;
         this.questionId = questionId;
         this.createdAt = createdAt;
+        this.creator = creator;
         if(likedBy != null) {
             this.likedBy = likedBy;
         } else {
@@ -42,6 +45,10 @@ public class Comment {
 
     public ArrayList<String> getLikedBy() {
         return likedBy;
+    }
+
+    public String getCreator() {
+        return creator;
     }
 
     public void setId(String id) {

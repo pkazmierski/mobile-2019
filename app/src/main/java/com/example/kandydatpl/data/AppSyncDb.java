@@ -16,7 +16,6 @@ import com.amazonaws.mobileconnectors.appsync.fetcher.AppSyncResponseFetchers;
 import com.apollographql.apollo.GraphQLCall;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
-import com.example.kandydatpl.logic.Logic;
 import com.example.kandydatpl.models.Comment;
 import com.example.kandydatpl.models.Question;
 
@@ -102,15 +101,15 @@ public class AppSyncDb implements DataProvider {
                             item.content(),
                             item.questionId(),
                             awsDateFormat.parse(item.createdAt()),
-                            new ArrayList<>(item.likedBy())
-                    ));
+                            new ArrayList<>(item.likedBy()),
+                            item.creator()));
                 } else {
                     comments.add(new Comment(
                             item.id(),
                             item.content(),
                             item.questionId(),
                             awsDateFormat.parse(item.createdAt()),
-                            null
+                            item.creator()
                     ));
                 }
             } catch (ParseException e) {
@@ -452,6 +451,8 @@ public class AppSyncDb implements DataProvider {
                 .enqueue(updateCommentCallback);
     }
 
+
+    //todo zrobic funckje lambda do tego lub przynajmniej pobierac liste like'ow przed dodaniem nowego
     @Override
     public void changeLikeStatusComment(Runnable onSuccess, Runnable onFailure, Comment comment, boolean add) {
         GraphQLCall.Callback<UpdateCommentMutation.Data> updateCommentCallback = new GraphQLCall.Callback<UpdateCommentMutation.Data>() {

@@ -1,14 +1,10 @@
 package com.example.kandydatpl.models;
 
-import com.amazonaws.amplify.generated.graphql.ListCommentsQuery;
-
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class Question {
     private String id;
@@ -16,6 +12,7 @@ public class Question {
     private int commentCount;
     private ArrayList<Comment> comments;
     private Date createdAt;
+    private String creator;
 
     public Question(@Nonnull String id, @Nonnull String content, @Nonnull Date createdAt) {
         this.id = id;

@@ -51,13 +51,7 @@ public class CommentsRecyclerViewAdapter extends RecyclerView.Adapter<CommentsRe
 
         Comment currentComment = comments.get(position);
 
-        //TODO: change to db query of user id
-        if(holder.fullNameTxt == null) {
-            Log.d(TAG, "onBindViewHolder: fullname is null");
-        }
-
-
-        holder.fullNameTxt.setText(DataStore.getUserData().getFullName());
+        holder.fullNameTxt.setText(currentComment.getCreator());
         holder.commentContentTxt.setText(currentComment.getContent());
 
         holder.commentLikeBtn.setOnClickListener(view -> {

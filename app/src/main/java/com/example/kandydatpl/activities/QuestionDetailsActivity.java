@@ -34,7 +34,7 @@ public class QuestionDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_question_details);
         Log.d(TAG, "onCreate: questionId" + getIntent().getExtras().getString("questionId"));
 
-        question = DataStore.getQuestion(getIntent().getExtras().getString("questionId")); //todo zmienic na parcelable albo cos innego
+        question = DataStore.getQuestion(getIntent().getExtras().getString("questionId"));
         TextView questionDetailsContentTxt = findViewById(R.id.questionDetailsContentTxt);
         questionDetailsContentTxt.setText(question.getContent());
 
@@ -46,7 +46,7 @@ public class QuestionDetailsActivity extends AppCompatActivity {
 
     public void SendNewComment(View view) {
         if(!sendCommentContentTxt.getText().toString().equals("")) {
-            Comment comment = new Comment("", sendCommentContentTxt.getText().toString(), question.getId(), new Date());
+            Comment comment = new Comment("", sendCommentContentTxt.getText().toString(), question.getId(), new Date(), DataStore.getUserData().getFullName());
             dataProvider.addComment(afterCommentSentSuccess, afterCommentSentFailure, comment);
         }
     }
