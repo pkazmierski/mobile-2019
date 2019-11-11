@@ -18,7 +18,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name=".activities.AddQuestionActivity"></activity>
+        <activity
+            android:name=".activities.AddQuestionActivity"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.AppCompat.DayNight.Dialog.MinWidth"
+            android:label="Add a new question"/>
         <activity android:name=".activities.QuestionDetailsActivity" />
         <activity android:name=".activities.MainActivity" />
         <activity android:name=".activities.QuestionsActivity" />

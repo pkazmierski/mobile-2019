@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+    android:layout_margin="10dp"
     tools:context=".activities.AddQuestionActivity">
 
     <EditText
@@ -12,8 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:ems="10"
-        android:gravity="start|top"
+        android:hint="Question"
         android:inputType="textMultiLine" />
 
     <Button

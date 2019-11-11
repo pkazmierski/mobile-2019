@@ -2,6 +2,7 @@ package com.example.kandydatpl.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -32,6 +33,7 @@ public class QuestionsActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     QuestionsRecyclerViewAdapter adapter;
     ArrayList<Question> questions = DataStore.getQuestions();
+    FloatingActionButton addNewQuestionBtn;
     private boolean bookmarksOnly;
 
     @Override
@@ -55,8 +57,13 @@ public class QuestionsActivity extends AppCompatActivity {
                 filter(s.toString());
             }
         });
+        addNewQuestionBtn = findViewById(R.id.addNewQuestionBtn);
+
 
         bookmarksOnly = getIntent().getBooleanExtra("bookmarksOnly", false);
+        if(bookmarksOnly) {
+            addNewQuestionBtn.hide();
+        }
         initRecyclerView();
         dataProvider.getQuestions(afterQuestionsAcquiredSuccess, afterQuestionsAcquiredFailure);
     }
