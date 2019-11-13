@@ -1,10 +1,13 @@
 package com.example.kandydatpl.activities;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -20,7 +23,7 @@ import java.util.Date;
 
 import static com.example.kandydatpl.logic.Logic.dataProvider;
 
-public class QuestionDetailsActivity extends AppCompatActivity {
+public class QuestionDetailsActivity extends NavigationDrawerActivity {
 
     private static final String TAG = "QuestionDetailsActivity";
     RecyclerView recyclerView;
@@ -31,7 +34,13 @@ public class QuestionDetailsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_question_details);
+//        setContentView(R.layout.activity_question_details);
+
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        @SuppressLint("InflateParams")
+        View contentView = inflater.inflate(R.layout.activity_question_details, null, false);
+        drawer.addView(contentView, 0);
+
         Log.d(TAG, "onCreate: questionId" + getIntent().getExtras().getString("questionId"));
 
         question = DataStore.getQuestion(getIntent().getExtras().getString("questionId"));

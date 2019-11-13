@@ -19,13 +19,26 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <activity
+            android:name=".activities.NavigationDrawerActivity"
+            android:label="@string/title_activity_navigation_drawer"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
             android:name=".activities.AddQuestionActivity"
             android:excludeFromRecents="true"
-            android:theme="@style/Theme.AppCompat.DayNight.Dialog.MinWidth"
-            android:label="Add a new question"/>
-        <activity android:name=".activities.QuestionDetailsActivity" />
-        <activity android:name=".activities.MainActivity" />
-        <activity android:name=".activities.QuestionsActivity" />
+            android:label="Add a new question"
+            android:theme="@style/Theme.AppCompat.DayNight.Dialog.MinWidth" />
+
+        <activity android:name=".activities.QuestionDetailsActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".activities.MainActivity"/>
+
+        <activity android:name=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity android:name=".activities.QuestionsActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".activities.MainActivity"/>
 
         <service android:name="org.eclipse.paho.android.service.MqttService" />
 

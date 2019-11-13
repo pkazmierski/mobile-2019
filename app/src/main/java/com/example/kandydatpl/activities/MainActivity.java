@@ -1,9 +1,12 @@
 package com.example.kandydatpl.activities;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 
 import com.amazonaws.amplify.generated.graphql.CreateCommentMutation;
@@ -25,12 +28,16 @@ import type.CreateQuestionInput;
 
 import static com.example.kandydatpl.logic.Logic.dataProvider;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends NavigationDrawerActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+//        setContentView(R.layout.activity_main);
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        @SuppressLint("InflateParams")
+        View contentView = inflater.inflate(R.layout.activity_main, null, false);
+        drawer.addView(contentView, 0);
 
         Logic.initAppSync(getApplicationContext());
 

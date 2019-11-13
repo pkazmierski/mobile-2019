@@ -1,5 +1,7 @@
 package com.example.kandydatpl.activities;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -9,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -26,7 +29,7 @@ import javax.annotation.Nullable;
 
 import static com.example.kandydatpl.logic.Logic.dataProvider;
 
-public class QuestionsActivity extends AppCompatActivity {
+public class QuestionsActivity extends NavigationDrawerActivity {
 
     private static final String TAG = "QuestionsActivity";
     EditText searchQuestionsTxt;
@@ -39,7 +42,12 @@ public class QuestionsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_questions);
+//        setContentView(R.layout.activity_questions);
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        @SuppressLint("InflateParams")
+        View contentView = inflater.inflate(R.layout.activity_questions, null, false);
+        drawer.addView(contentView, 0);
+
         searchQuestionsTxt = findViewById(R.id.searchQuestionsTxt);
         searchQuestionsTxt.addTextChangedListener(new TextWatcher() {
             @Override
@@ -139,4 +147,11 @@ public class QuestionsActivity extends AppCompatActivity {
         questions.remove(DataStore.getQuestion(params.get("questionId")));
         adapter.notifyDataSetChanged();
     }
+
+//    @Override
+//    public void onBackPressed() {
+//        this.finishAffinity();
+//
+//        super.onBackPressed();
+//    }
 }
