@@ -20,4 +20,10 @@ public interface DataProvider {
 
     //User
     void getUserData(Runnable onSuccess, Runnable onFailure);
+
+    //Contacts
+    void getContacts(Runnable onSuccess, Runnable onFailure);
+
+    //Files
+    void getFiles(Runnable onSuccess, Runnable onFailure);
 }

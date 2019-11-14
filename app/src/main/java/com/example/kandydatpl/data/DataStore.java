@@ -11,7 +11,9 @@ import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
 import com.example.kandydatpl.adapters.QuestionsRecyclerViewAdapter;
 import com.example.kandydatpl.logic.Logic;
+import com.example.kandydatpl.models.Contact;
 import com.example.kandydatpl.models.Event;
+import com.example.kandydatpl.models.File;
 import com.example.kandydatpl.models.Question;
 import com.example.kandydatpl.models.UserData;
 
@@ -35,6 +37,8 @@ public class DataStore {
     private static final String TAG = "DataStore";
     private static ArrayList<Question> questions = new ArrayList<>();
     private static UserData userData = UserData.getInstance();
+    private static ArrayList<Contact> contacts = new ArrayList<>();
+    private static ArrayList<File> files = new ArrayList<>();
 
     public static ArrayList<Question> getQuestions() {
         return questions;
@@ -63,5 +67,21 @@ public class DataStore {
 
     public static UserData getUserData() {
         return userData;
+    }
+
+    public static ArrayList<Contact> getContacts() {
+        return contacts;
+    }
+
+    public static void setContacts(ArrayList<Contact> contacts) {
+        DataStore.contacts = contacts;
+    }
+
+    public static ArrayList<File> getFiles() {
+        return files;
+    }
+
+    public static void setFiles(ArrayList<File> files) {
+        DataStore.files = files;
     }
 }

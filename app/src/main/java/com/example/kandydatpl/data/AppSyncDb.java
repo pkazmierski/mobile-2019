@@ -8,6 +8,8 @@ import com.amazonaws.amplify.generated.graphql.CreateQuestionMutation;
 import com.amazonaws.amplify.generated.graphql.DeleteCommentMutation;
 import com.amazonaws.amplify.generated.graphql.GetUserQuery;
 import com.amazonaws.amplify.generated.graphql.ListCommentsQuery;
+import com.amazonaws.amplify.generated.graphql.ListContactsQuery;
+import com.amazonaws.amplify.generated.graphql.ListFilesQuery;
 import com.amazonaws.amplify.generated.graphql.ListQuestionsQuery;
 import com.amazonaws.amplify.generated.graphql.UpdateCommentMutation;
 import com.amazonaws.amplify.generated.graphql.UpdateQuestionMutation;
@@ -17,6 +19,8 @@ import com.apollographql.apollo.GraphQLCall;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
 import com.example.kandydatpl.models.Comment;
+import com.example.kandydatpl.models.Contact;
+import com.example.kandydatpl.models.File;
 import com.example.kandydatpl.models.Question;
 
 import java.text.DateFormat;
@@ -68,6 +72,30 @@ public class AppSyncDb implements DataProvider {
     }
 
     private String questionsNextToken;
+
+    private ArrayList<Contact> contactsToArrayList(List<ListContactsQuery.Item> dbContacts) {
+        ArrayList<Contact> contacts = new ArrayList<>();
+
+        for (ListContactsQuery.Item dbContact : dbContacts) {
+            Contact contact = new Contact(dbContact.id());
+            contact.setEmail(dbContact.email() == null ? "" : dbContact.email());
+            contact.setPhone(dbContact.phone() == null ? -1 : Integer.valueOf(dbContact.phone()));
+            contacts.add(contact);
+        }
+
+        return contacts;
+    }
+
+    private ArrayList<File> filesToArrayList(List<ListFilesQuery.Item> dbFiles) {
+        ArrayList<File> files = new ArrayList<>();
+
+        for (ListFilesQuery.Item dbFile : dbFiles) {
+            File file = new File(dbFile.id(), dbFile.link());
+            files.add(file);
+        }
+
+        return files;
+    }
 
     private ArrayList<Question> questionsToArrayList(List<ListQuestionsQuery.Item> dbQuestions) {
         ArrayList<Question> questions = new ArrayList<>();
@@ -529,5 +557,61 @@ public class AppSyncDb implements DataProvider {
                 .build())
                 .responseFetcher(AppSyncResponseFetchers.CACHE_AND_NETWORK)
                 .enqueue(getUserDataCallback);
+    }
+
+    @Override
+    public void getContacts(Runnable onSuccess, Runnable onFailure) {
+        GraphQLCall.Callback<ListContactsQuery.Data> listContactsQueryCallback = new GraphQLCall.Callback<ListContactsQuery.Data>() {
+            @Override
+            public void onResponse(@Nonnull Response<ListContactsQuery.Data> response) {
+
+                DataStore.setContacts(contactsToArrayList(response.data().listContacts().items()));
+
+                if (onSuccess != null) {
+                    onSuccess.run();
+                }
+            }
+
+            @Override
+            public void onFailure(@Nonnull ApolloException e) {
+                Log.e("ERROR", e.toString());
+                if (onFailure != null) {
+                    onFailure.run();
+                }
+            }
+        };
+
+        appSyncClient.query(ListContactsQuery.builder()
+                .build())
+                .responseFetcher(AppSyncResponseFetchers.CACHE_AND_NETWORK)
+                .enqueue(listContactsQueryCallback);
+    }
+
+    @Override
+    public void getFiles(Runnable onSuccess, Runnable onFailure) {
+        GraphQLCall.Callback<ListFilesQuery.Data> listFilesQueryCallback = new GraphQLCall.Callback<ListFilesQuery.Data>() {
+            @Override
+            public void onResponse(@Nonnull Response<ListFilesQuery.Data> response) {
+
+                DataStore.setFiles(filesToArrayList(response.data().listFiles().items()));
+
+                if (onSuccess != null) {
+                    onSuccess.run();
+                }
+            }
+
+            @Override
+            public void onFailure(@Nonnull ApolloException e) {
+                Log.e("ERROR", e.toString());
+                if (onFailure != null) {
+                    onFailure.run();
+                }
+            }
+        };
+
+        appSyncClient.query(ListFilesQuery.builder()
+                .build())
+                .responseFetcher(AppSyncResponseFetchers.CACHE_AND_NETWORK)
+                .enqueue(listFilesQueryCallback);
     }
 }

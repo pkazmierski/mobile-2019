@@ -18,6 +18,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
+
+        <activity android:name=".activities.FileBrowserActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
             android:name=".activities.NavigationDrawerActivity"
             android:label="@string/title_activity_navigation_drawer"
