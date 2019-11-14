@@ -3,24 +3,13 @@ package com.example.kandydatpl.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.view.GravityCompat;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.view.MenuItem;
-import android.view.View;
-
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
-
 import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
+import android.view.MenuItem;
 
 import com.example.kandydatpl.R;
 
@@ -58,6 +47,10 @@ public class NavigationDrawerActivity extends AppCompatActivity implements Navig
         } else if (id == R.id.nav_question_bookmarks) {
             startAnimatedActivity(new Intent(getApplicationContext(), QuestionsActivity.class)
                     .putExtra("bookmarksOnly", true)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+        } else if (id == R.id.nav_checklist){
+            //intent.putExtra("filterDate", Calendar.getInstance().getTime());
+            startAnimatedActivity(new Intent(getApplicationContext(), TaskListActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
         }
 

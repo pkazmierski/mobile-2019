@@ -1,4 +1,4 @@
-package com.example.kandydatpl;
+package com.example.kandydatpl.adapters;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -15,6 +15,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
+
+import com.example.kandydatpl.activities.AddEditListItemActivity;
+import com.example.kandydatpl.models.ChecklistItem;
+import com.example.kandydatpl.R;
+import com.example.kandydatpl.activities.TaskListActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

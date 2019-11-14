@@ -29,26 +29,32 @@
             android:label="Add a new question"
             android:theme="@style/Theme.AppCompat.DayNight.Dialog.MinWidth" />
 
-        <activity android:name=".activities.QuestionDetailsActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".activities.MainActivity"/>
+        <activity
+            android:name=".activities.QuestionDetailsActivity"
+            android:parentActivityName=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
 
-        <activity android:name=".activities.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
 
-        <activity android:name=".activities.QuestionsActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".activities.MainActivity"/>
+        <activity
+            android:name=".activities.QuestionsActivity"
+            android:parentActivityName=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <service android:name="org.eclipse.paho.android.service.MqttService" />
 
-        <activity android:name=".AddEditListItemActivity"></activity>
         <activity
-            android:name=".TaskListActivity"
-            android:parentActivityName=".MainActivity">
+            android:name=".activities.AddEditListItemActivity"
+            android:theme="@style/Theme.AppCompat.DayNight.Dialog.MinWidth" />
+        <activity
+            android:name=".activities.TaskListActivity"
+            android:parentActivityName=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".activities.MainActivity" />
         </activity>
 
         <activity

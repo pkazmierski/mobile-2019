@@ -1,4 +1,4 @@
-package com.example.kandydatpl;
+package com.example.kandydatpl.utils;
 
 import android.content.Context;
 

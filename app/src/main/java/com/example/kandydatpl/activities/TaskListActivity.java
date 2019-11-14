@@ -1,5 +1,7 @@
-package com.example.kandydatpl;
+package com.example.kandydatpl.activities;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,15 +12,20 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Toast;
 
-import java.io.File;
+import com.example.kandydatpl.adapters.QuestionsRecyclerViewAdapter;
+import com.example.kandydatpl.models.ChecklistItem;
+import com.example.kandydatpl.utils.FileHelper;
+import com.example.kandydatpl.R;
+import com.example.kandydatpl.adapters.RecyclerViewAdapter;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -26,7 +33,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class TaskListActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
+public class TaskListActivity extends NavigationDrawerActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
 
     private EditText itemET;
     private Button btn;
@@ -53,7 +60,12 @@ public class TaskListActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_task_list);
+//        setContentView(R.layout.activity_task_list);
+
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        @SuppressLint("InflateParams")
+        View contentView = inflater.inflate(R.layout.activity_task_list, null, false);
+        drawer.addView(contentView, 0);
 
         Intent dateFilterIntent = getIntent();
         Date filterDate = (Date) dateFilterIntent.getSerializableExtra("filterDate");
@@ -133,13 +145,10 @@ public class TaskListActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-
-
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         items.remove(position);
         adapter.notifyDataSetChanged();
-        //FileHelper.writeData(items, this);
         Toast.makeText(this, "Delete", Toast.LENGTH_SHORT).show();
 
     }

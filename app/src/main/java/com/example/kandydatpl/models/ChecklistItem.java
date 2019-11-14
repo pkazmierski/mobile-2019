@@ -1,7 +1,6 @@
-package com.example.kandydatpl;
+package com.example.kandydatpl.models;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 public class ChecklistItem implements Serializable {

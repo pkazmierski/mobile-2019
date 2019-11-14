@@ -1,19 +1,18 @@
-package com.example.kandydatpl;
+package com.example.kandydatpl.activities;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.icu.util.Calendar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
-import java.text.ParseException;
+import com.example.kandydatpl.R;
+import com.example.kandydatpl.models.ChecklistItem;
+
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class AddEditListItemActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener{
 
