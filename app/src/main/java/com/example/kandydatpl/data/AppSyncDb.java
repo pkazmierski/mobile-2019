@@ -5,19 +5,25 @@ import android.util.Log;
 
 import com.amazonaws.amplify.generated.graphql.CreateCommentMutation;
 import com.amazonaws.amplify.generated.graphql.CreateQuestionMutation;
+import com.amazonaws.amplify.generated.graphql.CreateUserEventMutation;
 import com.amazonaws.amplify.generated.graphql.DeleteCommentMutation;
 import com.amazonaws.amplify.generated.graphql.GetUserQuery;
 import com.amazonaws.amplify.generated.graphql.ListCommentsQuery;
+import com.amazonaws.amplify.generated.graphql.ListPublicEventsQuery;
 import com.amazonaws.amplify.generated.graphql.ListQuestionsQuery;
+import com.amazonaws.amplify.generated.graphql.ListUserEventsQuery;
 import com.amazonaws.amplify.generated.graphql.UpdateCommentMutation;
 import com.amazonaws.amplify.generated.graphql.UpdateQuestionMutation;
+import com.amazonaws.amplify.generated.graphql.UpdateUserEventMutation;
 import com.amazonaws.amplify.generated.graphql.UpdateUserMutation;
 import com.amazonaws.mobileconnectors.appsync.fetcher.AppSyncResponseFetchers;
 import com.apollographql.apollo.GraphQLCall;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
 import com.example.kandydatpl.models.Comment;
+import com.example.kandydatpl.models.Event;
 import com.example.kandydatpl.models.Question;
+import com.example.kandydatpl.models.UserData;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -25,6 +31,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.TimeZone;
@@ -33,11 +40,13 @@ import javax.annotation.Nonnull;
 
 import type.CreateCommentInput;
 import type.CreateQuestionInput;
+import type.CreateUserEventInput;
 import type.DeleteCommentInput;
 import type.ModelCommentFilterInput;
 import type.ModelStringFilterInput;
 import type.UpdateCommentInput;
 import type.UpdateQuestionInput;
+import type.UpdateUserEventInput;
 import type.UpdateUserInput;
 
 import static com.example.kandydatpl.logic.Logic.appSyncClient;
@@ -48,6 +57,7 @@ public class AppSyncDb implements DataProvider {
     //TODO zamienić if getId().equals("") na wyrzucanie wyjątków
     //TODO dodać sprawdzanie, czy nie chcemy edytować/usuwać pytań, które nie zostały wysłane
     //TODO zamienić tworzenie zawsze nowego callbacka na wewnętrzną klasę, która ma callback i runnable (jeżeli się da)
+    //TODO dodać sprawdzanie w onResult, tam też mogą być błędy np. uprawnień
 
     private static AppSyncDb instance = null;
     private static final String TAG = "AppSyncDb";
@@ -68,6 +78,36 @@ public class AppSyncDb implements DataProvider {
     }
 
     private String questionsNextToken;
+
+    private ArrayList<Event> userEventsToArrayList(List<ListUserEventsQuery.Item> dbEvents) {
+        ArrayList<Event> events = new ArrayList<>();
+
+        for(ListUserEventsQuery.Item item : dbEvents) {
+            try {
+                Event event = new Event(item.id(), item.title(), item.description(), true, item.done(), awsDateFormat.parse(item.deadline()));
+                events.add(event);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return events;
+    }
+
+    private ArrayList<Event> publicEventsToArrayList(List<ListPublicEventsQuery.Item> dbEvents) {
+        ArrayList<Event> events = new ArrayList<>();
+
+        for(ListPublicEventsQuery.Item item : dbEvents) {
+            try {
+                Event event = new Event(item.id(), item.title(), item.description(), true, item.done(), awsDateFormat.parse(item.deadline()));
+                events.add(event);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return events;
+    }
 
     private ArrayList<Question> questionsToArrayList(List<ListQuestionsQuery.Item> dbQuestions) {
         ArrayList<Question> questions = new ArrayList<>();
@@ -277,7 +317,7 @@ public class AppSyncDb implements DataProvider {
             public void onResponse(@Nonnull Response<UpdateUserMutation.Data> response) {
                 Log.i("Results", "Added bookmark: " + response.data().toString());
 
-                if(add)
+                if (add)
                     DataStore.getUserData().addQuestionBookmark(question);
                 else
                     DataStore.getUserData().removeQuestionBookmark(question);
@@ -297,7 +337,7 @@ public class AppSyncDb implements DataProvider {
         };
 
         ArrayList<String> newBookmarks = new ArrayList<>(DataStore.getUserData().getQuestionBookmarks());
-        if(add)
+        if (add)
             newBookmarks.add(question.getId());
         else
             newBookmarks.remove(question.getId());
@@ -501,11 +541,10 @@ public class AppSyncDb implements DataProvider {
             public void onResponse(@Nonnull Response<GetUserQuery.Data> response) {
                 assert response.data() != null;
                 assert response.data().getUser() != null;
-                if(response.data().getUser().bookmarks() != null) {
+                if (response.data().getUser().bookmarks() != null) {
                     Log.i("Results", Objects.requireNonNull(response.data().getUser().bookmarks()).toString());
                     DataStore.getUserData().setQuestionBookmarks(new ArrayList<String>(response.data().getUser().bookmarks()));
-                }
-                else {
+                } else {
                     Log.i("Results", "No bookmarks for the user " + DataStore.getUserData().getLogin());
                     DataStore.getUserData().setQuestionBookmarks(null);
                 }
@@ -529,5 +568,171 @@ public class AppSyncDb implements DataProvider {
                 .build())
                 .responseFetcher(AppSyncResponseFetchers.CACHE_AND_NETWORK)
                 .enqueue(getUserDataCallback);
+    }
+
+    @Override
+    public void getUserEvents(Runnable onSuccess, Runnable onFailure) {
+        GraphQLCall.Callback<ListUserEventsQuery.Data> listUserEventsCallback = new GraphQLCall.Callback<ListUserEventsQuery.Data>() {
+            @Override
+            public void onResponse(@Nonnull Response<ListUserEventsQuery.Data> response) {
+
+                DataStore.addEvents(AppSyncDb.this.userEventsToArrayList(response.data().listUserEvents().items()));
+
+                if (onSuccess != null) {
+                    onSuccess.run();
+                }
+            }
+
+            @Override
+            public void onFailure(@Nonnull ApolloException e) {
+                Log.e("ERROR", e.toString());
+                if (onFailure != null) {
+                    onFailure.run();
+                }
+            }
+        };
+
+        appSyncClient.query(ListUserEventsQuery.builder()
+                .build())
+                .responseFetcher(AppSyncResponseFetchers.CACHE_AND_NETWORK)
+                .enqueue(listUserEventsCallback);
+
+    }
+
+    @Override
+    public void getPublicEvents(Runnable onSuccess, Runnable onFailure) {
+        GraphQLCall.Callback<ListPublicEventsQuery.Data> listPublicEventsCallback = new GraphQLCall.Callback<ListPublicEventsQuery.Data>() {
+            @Override
+            public void onResponse(@Nonnull Response<ListPublicEventsQuery.Data> response) {
+
+                DataStore.addEvents(publicEventsToArrayList(response.data().listPublicEvents().items()));
+
+                if (onSuccess != null) {
+                    onSuccess.run();
+                }
+            }
+
+            @Override
+            public void onFailure(@Nonnull ApolloException e) {
+                Log.e("ERROR", e.toString());
+                if (onFailure != null) {
+                    onFailure.run();
+                }
+            }
+        };
+
+        appSyncClient.query(ListPublicEventsQuery.builder()
+                .build())
+                .responseFetcher(AppSyncResponseFetchers.CACHE_AND_NETWORK)
+                .enqueue(listPublicEventsCallback);
+    }
+
+    @Override
+    public void getAllEvents(Runnable onSuccess, Runnable onUserEventsFailure, Runnable onPublicEventsFailure) {
+        Runnable getUserEventsSuccess = new Runnable() {
+            @Override
+            public void run() {
+                getPublicEvents(onSuccess, onPublicEventsFailure);
+            }
+        };
+        DataStore.clearEvents();
+        getUserEvents(getUserEventsSuccess, onUserEventsFailure);
+    }
+
+    @Override
+    public void updateSingleUserEvent(Runnable onSuccess, Runnable onFailure, Event event) {
+        GraphQLCall.Callback<UpdateUserEventMutation.Data> updateUserEventMutationCallback = new GraphQLCall.Callback<UpdateUserEventMutation.Data>() {
+            @Override
+            public void onResponse(@Nonnull Response<UpdateUserEventMutation.Data> response) {
+                if (onSuccess != null) {
+                    onSuccess.run();
+                }
+            }
+
+            @Override
+            public void onFailure(@Nonnull ApolloException e) {
+                Log.e("Error", e.toString());
+                if (onFailure != null) {
+                    onFailure.run();
+                }
+            }
+        };
+
+        UpdateUserEventInput updateUserEventInput = UpdateUserEventInput.builder()
+                .id(event.getId())
+                .title(event.getTitle())
+                .description(event.getDescription())
+                .deadline(awsDateFormat.format(event.getDeadline()))
+                .done(event.isDone())
+                .build();
+
+        appSyncClient.mutate(UpdateUserEventMutation.builder().input(updateUserEventInput).build())
+                .enqueue(updateUserEventMutationCallback);
+    }
+
+    @Override
+    public void createSingleUserEvent(Runnable onSuccess, Runnable onFailure, Event event) {
+        if (event.getId().equals("")) { //new, uninitialized question
+            GraphQLCall.Callback<CreateUserEventMutation.Data> createUserEventMutationCallback = new GraphQLCall.Callback<CreateUserEventMutation.Data>() {
+                @Override
+                public void onResponse(@Nonnull Response<CreateUserEventMutation.Data> response) {
+                    if (onSuccess != null) {
+                        onSuccess.run();
+                    }
+                }
+
+                @Override
+                public void onFailure(@Nonnull ApolloException e) {
+                    Log.e("Error", e.toString());
+                    if (onFailure != null) {
+                        onFailure.run();
+                    }
+                }
+            };
+
+            CreateUserEventInput createUserEventInput = CreateUserEventInput.builder()
+                    .title(event.getTitle())
+                    .description(event.getDescription())
+                    .deadline(awsDateFormat.format(event.getDeadline()))
+                    .done(event.isDone())
+                    .build();
+
+            appSyncClient.mutate(CreateUserEventMutation.builder().input(createUserEventInput).build())
+                    .enqueue(createUserEventMutationCallback);
+        }
+    }
+
+    @Override
+    public void setEventsOrder(Runnable onSuccess, Runnable onFailure, HashMap<Event, Integer> eventsOrder) {
+        GraphQLCall.Callback<UpdateUserMutation.Data> createUserEventMutationCallback = new GraphQLCall.Callback<UpdateUserMutation.Data>() {
+            @Override
+            public void onResponse(@Nonnull Response<UpdateUserMutation.Data> response) {
+                if (onSuccess != null) {
+                    onSuccess.run();
+                }
+            }
+
+            @Override
+            public void onFailure(@Nonnull ApolloException e) {
+                Log.e("Error", e.toString());
+                if (onFailure != null) {
+                    onFailure.run();
+                }
+            }
+        };
+
+        ArrayList<String> newEventsOrder = new ArrayList<>();
+
+        for (Event event : eventsOrder.keySet()) {
+            newEventsOrder.add(event.getId() + "," + String.valueOf(eventsOrder.get(event)));
+        }
+
+        UpdateUserInput updateUserInput = UpdateUserInput.builder()
+                .id(DataStore.getUserData().getLogin())
+                .eventsOrder(newEventsOrder)
+                .build();
+
+        appSyncClient.mutate(UpdateUserMutation.builder().input(updateUserInput).build())
+                .enqueue(createUserEventMutationCallback);
     }
 }

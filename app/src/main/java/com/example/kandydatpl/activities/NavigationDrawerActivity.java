@@ -50,7 +50,7 @@ public class NavigationDrawerActivity extends AppCompatActivity implements Navig
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
         } else if (id == R.id.nav_checklist){
             //intent.putExtra("filterDate", Calendar.getInstance().getTime());
-            startAnimatedActivity(new Intent(getApplicationContext(), TaskListActivity.class)
+            startAnimatedActivity(new Intent(getApplicationContext(), EventChecklistActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
         }
 

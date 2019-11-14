@@ -10,7 +10,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 
 import com.example.kandydatpl.R;
-import com.example.kandydatpl.models.ChecklistItem;
+import com.example.kandydatpl.models.Event;
 
 import java.text.SimpleDateFormat;
 
@@ -38,7 +38,7 @@ public class AddEditListItemActivity extends AppCompatActivity implements DatePi
 
 
         Intent incomingIntent = getIntent();
-        ChecklistItem incomingItem = (ChecklistItem) incomingIntent.getSerializableExtra("item");
+        Event incomingItem = (Event) incomingIntent.getSerializableExtra("item");
         if( incomingItem.getDeadline() != null) {
             sampleDate.setTime(incomingItem.getDeadline());
         }
@@ -59,7 +59,7 @@ public class AddEditListItemActivity extends AppCompatActivity implements DatePi
 
         saveButton.setOnClickListener(click -> {
             Intent listIntent = getIntent();
-            ChecklistItem listItem = new ChecklistItem(editTitle.getText().toString(), editDescription.getText().toString(), incomingItem.isDone(), sampleDate.getTime());
+            Event listItem = new Event("", editTitle.getText().toString(), editDescription.getText().toString(), incomingItem.isDone(), sampleDate.getTime());
             listIntent.putExtra("newItem", listItem);
             listIntent.putExtra("index", index);
             setResult(RESULT_OK, listIntent);

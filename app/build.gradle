@@ -5,7 +5,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.example.kandydatpl"
-        minSdkVersion 23
+        minSdkVersion 24
         //noinspection OldTargetApi
         targetSdkVersion 28
         versionCode 1

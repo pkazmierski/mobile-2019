@@ -17,9 +17,9 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.example.kandydatpl.activities.AddEditListItemActivity;
-import com.example.kandydatpl.models.ChecklistItem;
+import com.example.kandydatpl.models.Event;
 import com.example.kandydatpl.R;
-import com.example.kandydatpl.activities.TaskListActivity;
+import com.example.kandydatpl.activities.EventChecklistActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,18 +28,18 @@ import java.util.List;
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>{
 
     private static final String TAG = "RecyclerViewAdapter";
-    private List<ChecklistItem> listItemTexts = new ArrayList<>();
+    private List<Event> listItemTexts = new ArrayList<>();
     private Activity context;
     private SimpleDateFormat formatter;
-    private ChecklistItem mRecentlyDeletedItem;
+    private Event mRecentlyDeletedItem;
     private int mRecentlyDeletedItemPosition;
 
-    public RecyclerViewAdapter(List<ChecklistItem> listItemTexts, Activity context) {
+    public RecyclerViewAdapter(List<Event> listItemTexts, Activity context) {
         this.listItemTexts = listItemTexts;
         this.context = context;
     }
 
-    public void add(ChecklistItem newItem){
+    public void add(Event newItem){
         listItemTexts.add(newItem);
         notifyDataSetChanged();
     }
@@ -50,12 +50,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         notifyDataSetChanged();
     }
 
-    public void edit(ChecklistItem item, int index){
+    public void edit(Event item, int index){
         listItemTexts.set(index, item);
         notifyDataSetChanged();
     }
 
-    public ChecklistItem getItemFromList(int index){
+    public Event getItemFromList(int index){
         return listItemTexts.get(index);
     }
 
@@ -72,7 +72,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i) {
         Log.d(TAG, "onBindViewHolder: called");
 
-        ChecklistItem item = listItemTexts.get(i);
+        Event item = listItemTexts.get(i);
         viewHolder.listItem.setText(item.getTitle());
 
         viewHolder.dateDisplay.setText(formatter.format(item.getDeadline().getTime()));
@@ -99,14 +99,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 //            Intent intent = new Intent(context, AddEditListItemActivity.class);
 //            intent.putExtra("index", viewHolder.getAdapterPosition());
 //            intent.putExtra("item", item);
-//            context.startActivityForResult(intent, TaskListActivity.editItemRequest);
+//            context.startActivityForResult(intent, EventChecklistActivity.editItemRequest);
 //        });
 
         viewHolder.view.setOnClickListener(v -> {
             Intent intent = new Intent(context, AddEditListItemActivity.class);
             intent.putExtra("index", viewHolder.getAdapterPosition());
             intent.putExtra("item", item);
-            context.startActivityForResult(intent, TaskListActivity.editItemRequest);
+            context.startActivityForResult(intent, EventChecklistActivity.editItemRequest);
         });
     }
 

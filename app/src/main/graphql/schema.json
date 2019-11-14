@@ -1895,6 +1895,22 @@
                         },
                         "isDeprecated": false,
                         "deprecationReason": null
+                    },
+                    {
+                        "name": "eventsOrder",
+                        "description": null,
+                        "args": [],
+                        "type": {
+                            "kind": "LIST",
+                            "name": null,
+                            "ofType": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            }
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
                     }
                 ],
                 "inputFields": null,
@@ -1920,6 +1936,16 @@
                     },
                     {
                         "name": "bookmarks",
+                        "description": null,
+                        "type": {
+                            "kind": "INPUT_OBJECT",
+                            "name": "ModelStringFilterInput",
+                            "ofType": null
+                        },
+                        "defaultValue": null
+                    },
+                    {
+                        "name": "eventsOrder",
                         "description": null,
                         "type": {
                             "kind": "INPUT_OBJECT",
@@ -3573,6 +3599,20 @@
                             }
                         },
                         "defaultValue": null
+                    },
+                    {
+                        "name": "eventsOrder",
+                        "description": null,
+                        "type": {
+                            "kind": "LIST",
+                            "name": null,
+                            "ofType": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            }
+                        },
+                        "defaultValue": null
                     }
                 ],
                 "interfaces": null,
@@ -3601,6 +3641,20 @@
                     },
                     {
                         "name": "bookmarks",
+                        "description": null,
+                        "type": {
+                            "kind": "LIST",
+                            "name": null,
+                            "ofType": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            }
+                        },
+                        "defaultValue": null
+                    },
+                    {
+                        "name": "eventsOrder",
                         "description": null,
                         "type": {
                             "kind": "LIST",
