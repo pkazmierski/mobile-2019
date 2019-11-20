@@ -6,35 +6,32 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
 import com.example.kandydatpl.R;
+import com.example.kandydatpl.adapters.ContactsRecyclerViewAdapter;
 import com.example.kandydatpl.adapters.FilesRecyclerViewAdapter;
-import com.example.kandydatpl.adapters.QuestionsRecyclerViewAdapter;
 import com.example.kandydatpl.data.DataStore;
-
-import java.util.ArrayList;
 
 import static com.example.kandydatpl.logic.Logic.dataProvider;
 
-public class FileBrowserActivity extends NavigationDrawerActivity {
+public class ContactBrowserActivity extends NavigationDrawerActivity {
 
     RecyclerView recyclerView;
-    FilesRecyclerViewAdapter adapter;
+    ContactsRecyclerViewAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_file_browser);
+//        setContentView(R.layout.activity_contact_browser);
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         @SuppressLint("InflateParams")
-        View contentView = inflater.inflate(R.layout.activity_file_browser, null, false);
+        View contentView = inflater.inflate(R.layout.activity_contact_browser, null, false);
         drawer.addView(contentView, 0);
 
-        dataProvider.getFiles(getFilesSuccess, getFilesFailure);
+        dataProvider.getContacts(getFilesSuccess, getFilesFailure);
 
         initRecyclerView();
     }
@@ -44,11 +41,11 @@ public class FileBrowserActivity extends NavigationDrawerActivity {
     });
 
     private Runnable getFilesFailure = () -> runOnUiThread(() ->
-            Toast.makeText(getApplicationContext(), "Get files failed", Toast.LENGTH_LONG).show());
+            Toast.makeText(getApplicationContext(), "Get contacts failed", Toast.LENGTH_LONG).show());
 
     private void initRecyclerView() {
-        recyclerView = findViewById(R.id.filesRecyclerView);
-        adapter = new FilesRecyclerViewAdapter(this, DataStore.getFiles());
+        recyclerView = findViewById(R.id.contactsRecyclerView);
+        adapter = new ContactsRecyclerViewAdapter(this, DataStore.getContacts());
 
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));

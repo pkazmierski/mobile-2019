@@ -14,15 +14,15 @@
             android:title="Questions" />
         <item
             android:id="@+id/nav_question_bookmarks"
-            android:icon="@drawable/ic_menu_bookmark_border_24dp"
+            android:icon="@drawable/ic_menu_question_bookmarks_border_24dp"
             android:title="Question bookmarks" />
         <item
             android:id="@+id/nav_files"
-            android:icon="@drawable/ic_menu_bookmark_border_24dp"
+            android:icon="@drawable/ic_menu_files_24dp"
             android:title="Files" />
         <item
-            android:id="@+id/nav_"
-            android:icon="@drawable/ic_menu_bookmark_border_24dp"
+            android:id="@+id/nav_contacts"
+            android:icon="@drawable/ic_menu_contacts_24dp"
             android:title="Contacts" />
     </group>
 

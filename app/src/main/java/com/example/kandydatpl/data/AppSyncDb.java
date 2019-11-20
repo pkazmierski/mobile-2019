@@ -52,6 +52,7 @@ public class AppSyncDb implements DataProvider {
     //TODO zamienić if getId().equals("") na wyrzucanie wyjątków
     //TODO dodać sprawdzanie, czy nie chcemy edytować/usuwać pytań, które nie zostały wysłane
     //TODO zamienić tworzenie zawsze nowego callbacka na wewnętrzną klasę, która ma callback i runnable (jeżeli się da)
+    //TODO czasem z bazy moze wrocic null
 
     private static AppSyncDb instance = null;
     private static final String TAG = "AppSyncDb";
@@ -77,7 +78,7 @@ public class AppSyncDb implements DataProvider {
         ArrayList<Contact> contacts = new ArrayList<>();
 
         for (ListContactsQuery.Item dbContact : dbContacts) {
-            Contact contact = new Contact(dbContact.id());
+            Contact contact = new Contact(dbContact.id(), dbContact.name());
             contact.setEmail(dbContact.email() == null ? "" : dbContact.email());
             contact.setPhone(dbContact.phone() == null ? -1 : Integer.valueOf(dbContact.phone()));
             contacts.add(contact);
@@ -90,7 +91,7 @@ public class AppSyncDb implements DataProvider {
         ArrayList<File> files = new ArrayList<>();
 
         for (ListFilesQuery.Item dbFile : dbFiles) {
-            File file = new File(dbFile.id(), dbFile.link());
+            File file = new File(dbFile.id(), dbFile.name(), dbFile.link());
             files.add(file);
         }
 
@@ -529,6 +530,8 @@ public class AppSyncDb implements DataProvider {
             public void onResponse(@Nonnull Response<GetUserQuery.Data> response) {
                 assert response.data() != null;
                 assert response.data().getUser() != null;
+                //TODO WAŻNE! WYSYPUJE SIE PRZY NOWYM USERZE
+                // java.lang.NullPointerException: Attempt to invoke virtual method 'java.util.List com.amazonaws.amplify.generated.graphql.GetUserQuery$GetUser.bookmarks()' on a null object reference
                 if(response.data().getUser().bookmarks() != null) {
                     Log.i("Results", Objects.requireNonNull(response.data().getUser().bookmarks()).toString());
                     DataStore.getUserData().setQuestionBookmarks(new ArrayList<String>(response.data().getUser().bookmarks()));
@@ -564,6 +567,9 @@ public class AppSyncDb implements DataProvider {
         GraphQLCall.Callback<ListContactsQuery.Data> listContactsQueryCallback = new GraphQLCall.Callback<ListContactsQuery.Data>() {
             @Override
             public void onResponse(@Nonnull Response<ListContactsQuery.Data> response) {
+
+                Log.d(TAG, "onResponse getContacts errors: " + response.errors());
+                Log.d(TAG, "onResponse getContacts: " + response.data().listContacts().items());
 
                 DataStore.setContacts(contactsToArrayList(response.data().listContacts().items()));
 

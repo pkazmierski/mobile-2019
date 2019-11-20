@@ -74,7 +74,8 @@ public class DataStore {
     }
 
     public static void setContacts(ArrayList<Contact> contacts) {
-        DataStore.contacts = contacts;
+        DataStore.contacts.clear();
+        DataStore.contacts.addAll(contacts);
     }
 
     public static ArrayList<File> getFiles() {
@@ -82,6 +83,7 @@ public class DataStore {
     }
 
     public static void setFiles(ArrayList<File> files) {
-        DataStore.files = files;
+        DataStore.files.clear();
+        DataStore.files.addAll(files);
     }
 }

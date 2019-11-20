@@ -2,23 +2,27 @@ package com.example.kandydatpl.models;
 
 import java.util.Objects;
 
-import javax.annotation.Nonnull;
-
 public class File {
     private String id;
-    private String filename;
+    private String name;
+    private String link;
 
-    public File(@Nonnull String id, @Nonnull String filename) {
+    public File(String id, String name, String link) {
         this.id = id;
-        this.filename = filename;
+        this.name = name;
+        this.link = link;
     }
 
     public String getId() {
         return id;
     }
 
-    public String getFilename() {
-        return filename;
+    public String getName() {
+        return name;
+    }
+
+    public String getLink() {
+        return link;
     }
 
     @Override
@@ -38,7 +42,8 @@ public class File {
     public String toString() {
         return "File{" +
                 "id='" + id + '\'' +
-                ", filename='" + filename + '\'' +
+                ", name='" + name + '\'' +
+                ", link='" + link + '\'' +
                 '}';
     }
 }

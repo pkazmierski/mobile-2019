@@ -51,6 +51,9 @@ public class NavigationDrawerActivity extends AppCompatActivity implements Navig
         } else if (id == R.id.nav_files) {
             startAnimatedActivity(new Intent(getApplicationContext(), FileBrowserActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+        } else if (id == R.id.nav_contacts) {
+            startAnimatedActivity(new Intent(getApplicationContext(), ContactBrowserActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
         }
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

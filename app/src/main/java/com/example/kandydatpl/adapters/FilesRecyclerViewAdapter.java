@@ -38,7 +38,7 @@ public class FilesRecyclerViewAdapter extends RecyclerView.Adapter<FilesRecycler
     @Override
     //change what layout look like
     public void onBindViewHolder(@NonNull FilesRecyclerViewAdapter.ViewHolder holder, final int position) {
-        holder.fileNameTxt.setText(files.get(position).getFilename());
+        holder.fileNameTxt.setText(files.get(position).getLink());
         holder.fileCard.setOnClickListener(view -> {
             //TODO implement
         });

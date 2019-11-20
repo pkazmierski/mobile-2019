@@ -4,24 +4,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="?actionBarSize"
     android:orientation="vertical"
-    tools:context=".activities.FileBrowserActivity">
+    android:paddingTop="?actionBarSize"
+    tools:context=".activities.ContactBrowserActivity">
 
     <EditText
-        android:id="@+id/filterFilesInputTxt"
+        android:id="@+id/filterContactsInputTxt"
         style="@style/Base.Widget.MaterialComponents.TextInputEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
         android:ems="10"
         android:hint="Search"
         android:inputType="textFilter"
         android:selectAllOnFocus="true"
-        android:singleLine="true"
-        android:layout_marginBottom="10dp"/>
+        android:singleLine="true" />
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/filesRecyclerView"
+        android:id="@+id/contactsRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </LinearLayout>

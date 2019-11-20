@@ -16,6 +16,7 @@ import com.apollographql.apollo.GraphQLCall;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
 import com.example.kandydatpl.R;
+import com.example.kandydatpl.data.DataStore;
 import com.example.kandydatpl.logic.Logic;
 import com.example.kandydatpl.models.Comment;
 
