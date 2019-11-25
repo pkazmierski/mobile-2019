@@ -10,6 +10,7 @@ public class DataStore {
     private static final String TAG = "DataStore";
     private static ArrayList<Question> questions = new ArrayList<>();
     private static UserData userData = UserData.getInstance();
+
     private static ArrayList<ChecklistEvent> checklistEvents = new ArrayList<>();
 
     public static ArrayList<Question> getQuestions() {
@@ -22,6 +23,10 @@ public class DataStore {
                 return q;
         }
         return null;
+    }
+
+    public static ArrayList<ChecklistEvent> getChecklistEvents() {
+        return checklistEvents;
     }
 
     public static void setQuestions(ArrayList<Question> questions) {

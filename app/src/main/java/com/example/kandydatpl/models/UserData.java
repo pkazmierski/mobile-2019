@@ -17,6 +17,7 @@ public class UserData {
         userId = AWSMobileClient.getInstance().getIdentityId();
         login = AWSMobileClient.getInstance().getUsername();
         fullName = login;
+        eventsOrder = new HashMap<>();
     }
 
     public static UserData getInstance() {
