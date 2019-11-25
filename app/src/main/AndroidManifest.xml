@@ -44,14 +44,14 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name=".activities.EventChecklistActivity"
+            android:name=".activities.ChecklistEventActivity"
             android:parentActivityName=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <service android:name="org.eclipse.paho.android.service.MqttService" />
 
         <activity
-            android:name=".activities.AddEditListItemActivity"
+            android:name=".activities.AddOrEditChecklistEventActivity"
             android:excludeFromRecents="true"
             android:label="Add a new checklistEvent"
             android:theme="@style/Theme.AppCompat.Light.Dialog.MinWidth" />

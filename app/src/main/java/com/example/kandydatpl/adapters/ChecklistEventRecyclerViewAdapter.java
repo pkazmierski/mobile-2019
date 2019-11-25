@@ -16,25 +16,26 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import com.example.kandydatpl.activities.AddEditListItemActivity;
-import com.example.kandydatpl.models.ChecklistEvent;
 import com.example.kandydatpl.R;
-import com.example.kandydatpl.activities.EventChecklistActivity;
+import com.example.kandydatpl.activities.AddOrEditChecklistEventActivity;
+import com.example.kandydatpl.activities.ChecklistEventActivity;
+import com.example.kandydatpl.models.ChecklistEvent;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>{
+public class ChecklistEventRecyclerViewAdapter extends RecyclerView.Adapter<ChecklistEventRecyclerViewAdapter.ViewHolder> {
 
-    private static final String TAG = "RecyclerViewAdapter";
+    private static final String TAG = "ChecklistEventRVAdapter";
     private List<ChecklistEvent> listItemTexts = new ArrayList<>();
     private Activity context;
     private SimpleDateFormat formatter;
-    private ChecklistEvent mRecentlyDeletedItem;
-    private int mRecentlyDeletedItemPosition;
+    private ChecklistEvent recentlyDeletedItem;
+    private int recentlyDeletedItemPosition;
 
-    public RecyclerViewAdapter(List<ChecklistEvent> listItemTexts, Activity context) {
+    public ChecklistEventRecyclerViewAdapter(List<ChecklistEvent> listItemTexts, Activity context) {
         this.listItemTexts = listItemTexts;
         this.context = context;
     }
@@ -45,7 +46,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     public void remove(int position){
-
         listItemTexts.remove(position);
         notifyDataSetChanged();
     }
@@ -96,31 +96,31 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         });
 
 //        viewHolder.editItem.setOnClickListener(v -> {
-//            Intent intent = new Intent(context, AddEditListItemActivity.class);
+//            Intent intent = new Intent(context, AddOrEditChecklistEventActivity.class);
 //            intent.putExtra("index", viewHolder.getAdapterPosition());
 //            intent.putExtra("item", item);
-//            context.startActivityForResult(intent, EventChecklistActivity.editItemRequest);
+//            context.startActivityForResult(intent, ChecklistEventActivity.editItemRequest);
 //        });
 
         viewHolder.view.setOnClickListener(v -> {
-            Intent intent = new Intent(context, AddEditListItemActivity.class);
+            Intent intent = new Intent(context, AddOrEditChecklistEventActivity.class);
             intent.putExtra("index", viewHolder.getAdapterPosition());
             intent.putExtra("item", item);
-            context.startActivityForResult(intent, EventChecklistActivity.editItemRequest);
+            context.startActivityForResult(intent, ChecklistEventActivity.editItemRequest);
         });
     }
 
     public void deleteItem(int position) {
-        mRecentlyDeletedItem = listItemTexts.get(position);
-        mRecentlyDeletedItemPosition = position;
+        recentlyDeletedItem = listItemTexts.get(position);
+        recentlyDeletedItemPosition = position;
         listItemTexts.remove(position);
         notifyItemRemoved(position);
     }
 
     public void undoDelete() {
-        listItemTexts.add(mRecentlyDeletedItemPosition,
-                mRecentlyDeletedItem);
-        notifyItemInserted(mRecentlyDeletedItemPosition);
+        listItemTexts.add(recentlyDeletedItemPosition,
+                recentlyDeletedItem);
+        notifyItemInserted(recentlyDeletedItemPosition);
     }
 
     @Override
@@ -147,5 +147,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             defaultColor = cardViewItem.getCardBackgroundColor();
             this.view = itemView;
         }
+    }
+
+    public HashMap<String, Integer> getEventsOrder() {
+        //TODO implement @Piotr Kocik
+        //TODO trzeba też dodać synchronizację po każdej zmianie kolejności:
+        // dataProvider.setEvents(null, <odpowiednie runnable>, adapter.getEventsOrder())
+        // Runnable z toastem, że się nie udało zsynchronizować jest w ChecklistEventActivity, to skopiuj sobie
+        return null;
     }
 }

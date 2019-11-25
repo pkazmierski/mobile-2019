@@ -3,8 +3,8 @@ package com.example.kandydatpl.activities;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.icu.util.Calendar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -14,7 +14,7 @@ import com.example.kandydatpl.models.ChecklistEvent;
 
 import java.text.SimpleDateFormat;
 
-public class AddEditListItemActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener{
+public class AddOrEditChecklistEventActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
     private EditText editTitle;
     private EditText editDescription;
@@ -27,7 +27,7 @@ public class AddEditListItemActivity extends AppCompatActivity implements DatePi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_edit_list_item);
+        setContentView(R.layout.activity_add_or_edit_checklist_event);
         editTitle = findViewById(R.id.titleEditText);
         editDescription = findViewById(R.id.descriptionEditText);
         saveButton = findViewById(R.id.saveButton);

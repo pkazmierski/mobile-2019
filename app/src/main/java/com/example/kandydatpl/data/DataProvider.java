@@ -31,5 +31,5 @@ public interface DataProvider {
     void updateSingleUserEvent(Runnable onSuccess, Runnable onFailure, ChecklistEvent checklistEvent);
     void createSingleUserEvent(Runnable onSuccess, Runnable onFailure, ChecklistEvent checklistEvent);
 //    void updateUserEvents(Runnable onSuccess, Runnable onUpdateSingleEventFailure, Runnable onCreateSingleEventFailure);
-    void setEventsOrder(Runnable onSuccess, Runnable onFailure, HashMap<ChecklistEvent, Integer> eventOrder);
+void setEventsOrder(Runnable onSuccess, Runnable onFailure, HashMap<String, Integer> eventOrder);
 }

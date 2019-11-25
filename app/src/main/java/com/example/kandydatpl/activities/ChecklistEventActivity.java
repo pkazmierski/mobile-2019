@@ -4,46 +4,42 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.CheckBox;
 import android.widget.Toast;
 
+import com.example.kandydatpl.R;
+import com.example.kandydatpl.adapters.ChecklistEventRecyclerViewAdapter;
 import com.example.kandydatpl.data.DataStore;
 import com.example.kandydatpl.models.ChecklistEvent;
 import com.example.kandydatpl.models.UserData;
 import com.example.kandydatpl.utils.FileHelper;
-import com.example.kandydatpl.R;
-import com.example.kandydatpl.adapters.RecyclerViewAdapter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.example.kandydatpl.logic.Logic.dataProvider;
 
 @RequiresApi(api = Build.VERSION_CODES.N)
-public class EventChecklistActivity extends NavigationDrawerActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
+public class ChecklistEventActivity extends NavigationDrawerActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
 
     private List<String> items;
-    private RecyclerViewAdapter adapter;
+    private ChecklistEventRecyclerViewAdapter adapter;
 
     private List<ChecklistEvent> checklistEvents = new ArrayList<>();
     public static int newItemRequest = 1;
@@ -51,18 +47,18 @@ public class EventChecklistActivity extends NavigationDrawerActivity implements 
     private RecyclerView recyclerView;
     private FloatingActionButton floatingActionButton;
 
-    public EventChecklistActivity() {
+    public ChecklistEventActivity() {
 
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_task_list);
+//        setContentView(R.layout.activity_checklist);
 
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         @SuppressLint("InflateParams")
-        View contentView = inflater.inflate(R.layout.activity_task_list, null, false);
+        View contentView = inflater.inflate(R.layout.activity_checklist, null, false);
         drawer.addView(contentView, 0);
 
         Intent dateFilterIntent = getIntent();
@@ -74,7 +70,7 @@ public class EventChecklistActivity extends NavigationDrawerActivity implements 
         recyclerView = findViewById(R.id.taskListView);
         floatingActionButton = findViewById(R.id.addTaskButton);
         floatingActionButton.setOnClickListener(v -> {
-            Intent intent = new Intent(this, AddEditListItemActivity.class);
+            Intent intent = new Intent(this, AddOrEditChecklistEventActivity.class);
             intent.putExtra("item", new ChecklistEvent());
             intent.putExtra("requestCode", newItemRequest);
             startActivityForResult(intent, newItemRequest);
@@ -82,7 +78,7 @@ public class EventChecklistActivity extends NavigationDrawerActivity implements 
 
         items = FileHelper.readData(this);
 
-        adapter = new RecyclerViewAdapter(checklistEvents, this);
+        adapter = new ChecklistEventRecyclerViewAdapter(checklistEvents, this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -112,28 +108,46 @@ public class EventChecklistActivity extends NavigationDrawerActivity implements 
         dataProvider.getAllEvents(afterAllEventsSuccess, afterAllPublicEventsFailure, afterAllUserEventsFailure);
     }
 
+    private Runnable afterSetEventsOrderFailure = () -> runOnUiThread(() ->
+            Toast.makeText(this, "Cannot save the new order of the checklist", Toast.LENGTH_SHORT).show());
+
     private Runnable afterAllEventsSuccess = () -> runOnUiThread(() -> {
         List<ChecklistEvent> checklistEvents = DataStore.getChecklistEvents();
-        HashMap<ChecklistEvent, Integer> checkListEventsOrder = UserData.getInstance().getEventsOrder();
-        for (ChecklistEvent event : checkListEventsOrder.keySet()) {
-            if (!checklistEvents.contains(event))
-                continue;
-            else {
+        HashMap<String, Integer> checkListEventsOrder = UserData.getInstance().getEventsOrder();
+
+        Collections.sort(checklistEvents, new Comparator<ChecklistEvent>() {
+            @Override
+            public int compare(ChecklistEvent lhs, ChecklistEvent rhs) {
+                return lhs.getDeadline().compareTo(rhs.getDeadline()) > 0 ? -1 : 1;
+            }
+        }); //first, sort by date
+
+        for (String eventId : checkListEventsOrder.keySet()) {
+            ChecklistEvent event = null;
+            for (ChecklistEvent tempEvent : checklistEvents) { //find the event by ID
+                if (tempEvent.getId().equals(eventId))
+                    event = tempEvent;
+            }
+
+
+            if (event != null) {
+                //propely place those events that exist in order list and event list
                 int targetIndex = checkListEventsOrder.get(event);
                 int sourceIndex = checklistEvents.indexOf(event);
                 Collections.swap(checklistEvents, targetIndex, sourceIndex);
+            } else {
+                //if the event does not exist in the event array, it's desynchronized, so force sync
+                dataProvider.setEventsOrder(null, afterSetEventsOrderFailure, adapter.getEventsOrder());
             }
         }
         adapter.notifyDataSetChanged();
     });
 
-    private Runnable afterAllPublicEventsFailure = () -> runOnUiThread(() -> {
-        Toast.makeText(this, "Public events fetch failed", Toast.LENGTH_SHORT).show();
-    });
+    private Runnable afterAllPublicEventsFailure = () -> runOnUiThread(() ->
+            Toast.makeText(this, "Public events fetch failed", Toast.LENGTH_SHORT).show());
 
-    private Runnable afterAllUserEventsFailure = () -> runOnUiThread(() -> {
-        Toast.makeText(this, "User events fetch failed", Toast.LENGTH_SHORT).show();
-    });
+    private Runnable afterAllUserEventsFailure = () -> runOnUiThread(() ->
+            Toast.makeText(this, "User events fetch failed", Toast.LENGTH_SHORT).show());
 
 
     private void showUndoSnackbar() {

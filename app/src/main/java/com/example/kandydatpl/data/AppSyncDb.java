@@ -166,6 +166,21 @@ public class AppSyncDb implements DataProvider {
         return comments;
     }
 
+    private HashMap<String, Integer> eventsOrderToHashMap(List<String> dbEventsOrder) {
+        HashMap<String, Integer> eventsOrder = new HashMap<>();
+
+
+        for (String eventOrder : dbEventsOrder) {
+            String[] tokens = eventOrder.split(",");
+            String id = tokens[0];
+            String index = tokens[1];
+
+            eventsOrder.put(id, Integer.parseInt(index));
+        }
+
+        return eventsOrder;
+    }
+
     @Override
     public void getQuestions(Runnable onSuccess, Runnable onFailure) {
         GraphQLCall.Callback<ListQuestionsQuery.Data> listQuestionsCallback = new GraphQLCall.Callback<ListQuestionsQuery.Data>() {
@@ -543,6 +558,7 @@ public class AppSyncDb implements DataProvider {
                 if (response.data().getUser().bookmarks() != null) {
                     Log.i("Results", Objects.requireNonNull(response.data().getUser().bookmarks()).toString());
                     DataStore.getUserData().setQuestionBookmarks(new ArrayList<String>(response.data().getUser().bookmarks()));
+                    DataStore.getUserData().setEventsOrder(eventsOrderToHashMap(response.data().getUser().eventsOrder()));
                 } else {
                     Log.i("Results", "No bookmarks for the user " + DataStore.getUserData().getLogin());
                     DataStore.getUserData().setQuestionBookmarks(null);
@@ -702,7 +718,7 @@ public class AppSyncDb implements DataProvider {
     }
 
     @Override
-    public void setEventsOrder(Runnable onSuccess, Runnable onFailure, HashMap<ChecklistEvent, Integer> eventsOrder) {
+    public void setEventsOrder(Runnable onSuccess, Runnable onFailure, HashMap<String, Integer> eventsOrder) {
         GraphQLCall.Callback<UpdateUserMutation.Data> createUserEventMutationCallback = new GraphQLCall.Callback<UpdateUserMutation.Data>() {
             @Override
             public void onResponse(@Nonnull Response<UpdateUserMutation.Data> response) {
@@ -722,8 +738,8 @@ public class AppSyncDb implements DataProvider {
 
         ArrayList<String> newEventsOrder = new ArrayList<>();
 
-        for (ChecklistEvent checklistEvent : eventsOrder.keySet()) {
-            newEventsOrder.add(checklistEvent.getId() + "," + String.valueOf(eventsOrder.get(checklistEvent)));
+        for (String eventId : eventsOrder.keySet()) {
+            newEventsOrder.add(eventId + "," + String.valueOf(eventsOrder.get(eventId)));
         }
 
         UpdateUserInput updateUserInput = UpdateUserInput.builder()
