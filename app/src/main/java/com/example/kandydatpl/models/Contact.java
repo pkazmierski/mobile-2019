@@ -1,5 +1,11 @@
 package com.example.kandydatpl.models;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+
+import com.example.kandydatpl.adapters.ContactsRecyclerViewAdapter;
+
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
@@ -40,6 +46,20 @@ public class Contact {
 
     public int getPhone() {
         return phone;
+    }
+
+    public static void openDialer(Context context, String number){
+        Intent intent = new Intent(Intent.ACTION_DIAL);
+        intent.setData(Uri.parse("tel:" + number));
+        context.startActivity(intent);
+    }
+
+    public static void openEmailClient(Context context, String email){
+
+        Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+        emailIntent.setType("plain/text");
+        emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{email});
+        context.startActivity(Intent.createChooser(emailIntent, "Send mail..."));
     }
 
     public void setPhone(int phone) {
