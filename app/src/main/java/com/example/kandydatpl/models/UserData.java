@@ -10,7 +10,7 @@ public class UserData {
     private String login;
     private String fullName;
     private static UserData instance;
-    private HashMap<Event, Integer> eventsOrder;
+    private HashMap<ChecklistEvent, Integer> eventsOrder;
     private ArrayList<String> questionBookmarks;
 
     private UserData() {
@@ -68,11 +68,11 @@ public class UserData {
         return fullName;
     }
 
-    public HashMap<Event, Integer> getEventsOrder() {
+    public HashMap<ChecklistEvent, Integer> getEventsOrder() {
         return eventsOrder;
     }
 
-    public void setEventsOrder(HashMap<Event, Integer> eventsOrder) {
+    public void setEventsOrder(HashMap<ChecklistEvent, Integer> eventsOrder) {
         this.eventsOrder = eventsOrder;
     }
 

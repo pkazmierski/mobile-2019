@@ -1,6 +1,6 @@
 package com.example.kandydatpl.data;
 
-import com.example.kandydatpl.models.Event;
+import com.example.kandydatpl.models.ChecklistEvent;
 import com.example.kandydatpl.models.Question;
 import com.example.kandydatpl.models.UserData;
 
@@ -10,7 +10,7 @@ public class DataStore {
     private static final String TAG = "DataStore";
     private static ArrayList<Question> questions = new ArrayList<>();
     private static UserData userData = UserData.getInstance();
-    private static ArrayList<Event> events = new ArrayList<>();
+    private static ArrayList<ChecklistEvent> checklistEvents = new ArrayList<>();
 
     public static ArrayList<Question> getQuestions() {
         return questions;
@@ -41,11 +41,11 @@ public class DataStore {
         return userData;
     }
 
-    public static void addEvents(ArrayList<Event> eventsToArrayList) {
-        DataStore.events.addAll(eventsToArrayList);
+    public static void addEvents(ArrayList<ChecklistEvent> eventsToArrayList) {
+        DataStore.checklistEvents.addAll(eventsToArrayList);
     }
 
     public static void clearEvents() {
-        DataStore.events.clear();
+        DataStore.checklistEvents.clear();
     }
 }

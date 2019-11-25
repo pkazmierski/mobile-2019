@@ -20,10 +20,9 @@ import com.amazonaws.mobileconnectors.appsync.fetcher.AppSyncResponseFetchers;
 import com.apollographql.apollo.GraphQLCall;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
+import com.example.kandydatpl.models.ChecklistEvent;
 import com.example.kandydatpl.models.Comment;
-import com.example.kandydatpl.models.Event;
 import com.example.kandydatpl.models.Question;
-import com.example.kandydatpl.models.UserData;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -79,34 +78,34 @@ public class AppSyncDb implements DataProvider {
 
     private String questionsNextToken;
 
-    private ArrayList<Event> userEventsToArrayList(List<ListUserEventsQuery.Item> dbEvents) {
-        ArrayList<Event> events = new ArrayList<>();
+    private ArrayList<ChecklistEvent> userEventsToArrayList(List<ListUserEventsQuery.Item> dbEvents) {
+        ArrayList<ChecklistEvent> checklistEvents = new ArrayList<>();
 
         for(ListUserEventsQuery.Item item : dbEvents) {
             try {
-                Event event = new Event(item.id(), item.title(), item.description(), true, item.done(), awsDateFormat.parse(item.deadline()));
-                events.add(event);
+                ChecklistEvent checklistEvent = new ChecklistEvent(item.id(), item.title(), item.description(), true, item.done(), awsDateFormat.parse(item.deadline()));
+                checklistEvents.add(checklistEvent);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
         }
 
-        return events;
+        return checklistEvents;
     }
 
-    private ArrayList<Event> publicEventsToArrayList(List<ListPublicEventsQuery.Item> dbEvents) {
-        ArrayList<Event> events = new ArrayList<>();
+    private ArrayList<ChecklistEvent> publicEventsToArrayList(List<ListPublicEventsQuery.Item> dbEvents) {
+        ArrayList<ChecklistEvent> checklistEvents = new ArrayList<>();
 
         for(ListPublicEventsQuery.Item item : dbEvents) {
             try {
-                Event event = new Event(item.id(), item.title(), item.description(), true, item.done(), awsDateFormat.parse(item.deadline()));
-                events.add(event);
+                ChecklistEvent checklistEvent = new ChecklistEvent(item.id(), item.title(), item.description(), true, item.done(), awsDateFormat.parse(item.deadline()));
+                checklistEvents.add(checklistEvent);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
         }
 
-        return events;
+        return checklistEvents;
     }
 
     private ArrayList<Question> questionsToArrayList(List<ListQuestionsQuery.Item> dbQuestions) {
@@ -640,7 +639,7 @@ public class AppSyncDb implements DataProvider {
     }
 
     @Override
-    public void updateSingleUserEvent(Runnable onSuccess, Runnable onFailure, Event event) {
+    public void updateSingleUserEvent(Runnable onSuccess, Runnable onFailure, ChecklistEvent checklistEvent) {
         GraphQLCall.Callback<UpdateUserEventMutation.Data> updateUserEventMutationCallback = new GraphQLCall.Callback<UpdateUserEventMutation.Data>() {
             @Override
             public void onResponse(@Nonnull Response<UpdateUserEventMutation.Data> response) {
@@ -659,11 +658,11 @@ public class AppSyncDb implements DataProvider {
         };
 
         UpdateUserEventInput updateUserEventInput = UpdateUserEventInput.builder()
-                .id(event.getId())
-                .title(event.getTitle())
-                .description(event.getDescription())
-                .deadline(awsDateFormat.format(event.getDeadline()))
-                .done(event.isDone())
+                .id(checklistEvent.getId())
+                .title(checklistEvent.getTitle())
+                .description(checklistEvent.getDescription())
+                .deadline(awsDateFormat.format(checklistEvent.getDeadline()))
+                .done(checklistEvent.isDone())
                 .build();
 
         appSyncClient.mutate(UpdateUserEventMutation.builder().input(updateUserEventInput).build())
@@ -671,8 +670,8 @@ public class AppSyncDb implements DataProvider {
     }
 
     @Override
-    public void createSingleUserEvent(Runnable onSuccess, Runnable onFailure, Event event) {
-        if (event.getId().equals("")) { //new, uninitialized question
+    public void createSingleUserEvent(Runnable onSuccess, Runnable onFailure, ChecklistEvent checklistEvent) {
+        if (checklistEvent.getId().equals("")) { //new, uninitialized question
             GraphQLCall.Callback<CreateUserEventMutation.Data> createUserEventMutationCallback = new GraphQLCall.Callback<CreateUserEventMutation.Data>() {
                 @Override
                 public void onResponse(@Nonnull Response<CreateUserEventMutation.Data> response) {
@@ -691,10 +690,10 @@ public class AppSyncDb implements DataProvider {
             };
 
             CreateUserEventInput createUserEventInput = CreateUserEventInput.builder()
-                    .title(event.getTitle())
-                    .description(event.getDescription())
-                    .deadline(awsDateFormat.format(event.getDeadline()))
-                    .done(event.isDone())
+                    .title(checklistEvent.getTitle())
+                    .description(checklistEvent.getDescription())
+                    .deadline(awsDateFormat.format(checklistEvent.getDeadline()))
+                    .done(checklistEvent.isDone())
                     .build();
 
             appSyncClient.mutate(CreateUserEventMutation.builder().input(createUserEventInput).build())
@@ -703,7 +702,7 @@ public class AppSyncDb implements DataProvider {
     }
 
     @Override
-    public void setEventsOrder(Runnable onSuccess, Runnable onFailure, HashMap<Event, Integer> eventsOrder) {
+    public void setEventsOrder(Runnable onSuccess, Runnable onFailure, HashMap<ChecklistEvent, Integer> eventsOrder) {
         GraphQLCall.Callback<UpdateUserMutation.Data> createUserEventMutationCallback = new GraphQLCall.Callback<UpdateUserMutation.Data>() {
             @Override
             public void onResponse(@Nonnull Response<UpdateUserMutation.Data> response) {
@@ -723,8 +722,8 @@ public class AppSyncDb implements DataProvider {
 
         ArrayList<String> newEventsOrder = new ArrayList<>();
 
-        for (Event event : eventsOrder.keySet()) {
-            newEventsOrder.add(event.getId() + "," + String.valueOf(eventsOrder.get(event)));
+        for (ChecklistEvent checklistEvent : eventsOrder.keySet()) {
+            newEventsOrder.add(checklistEvent.getId() + "," + String.valueOf(eventsOrder.get(checklistEvent)));
         }
 
         UpdateUserInput updateUserInput = UpdateUserInput.builder()

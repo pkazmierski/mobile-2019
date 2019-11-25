@@ -3,7 +3,7 @@ package com.example.kandydatpl.models;
 import java.io.Serializable;
 import java.util.Date;
 
-public class Event implements Serializable {
+public class ChecklistEvent implements Serializable {
 
     private String id;
     private String title;
@@ -12,10 +12,10 @@ public class Event implements Serializable {
     private boolean done;
     private Date deadline;
 
-    public Event() {
+    public ChecklistEvent() {
     }
 
-    public Event(String id, String title, String description, boolean done, Date deadline) {
+    public ChecklistEvent(String id, String title, String description, boolean done, Date deadline) {
         this.title = title;
         this.description = description;
         this.done = done;
@@ -23,14 +23,14 @@ public class Event implements Serializable {
         this.userCreated = true;
     }
 
-    public Event(String title, boolean done) {
+    public ChecklistEvent(String title, boolean done) {
         this.id = "";
         this.title = title;
         this.done = done;
         this.deadline = new Date();
     }
 
-    public Event(String id, String title, String description, boolean userCreated, boolean done, Date deadline) {
+    public ChecklistEvent(String id, String title, String description, boolean userCreated, boolean done, Date deadline) {
         this.title = title;
         this.description = description;
         this.userCreated = userCreated;

@@ -17,7 +17,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.example.kandydatpl.activities.AddEditListItemActivity;
-import com.example.kandydatpl.models.Event;
+import com.example.kandydatpl.models.ChecklistEvent;
 import com.example.kandydatpl.R;
 import com.example.kandydatpl.activities.EventChecklistActivity;
 
@@ -28,18 +28,18 @@ import java.util.List;
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>{
 
     private static final String TAG = "RecyclerViewAdapter";
-    private List<Event> listItemTexts = new ArrayList<>();
+    private List<ChecklistEvent> listItemTexts = new ArrayList<>();
     private Activity context;
     private SimpleDateFormat formatter;
-    private Event mRecentlyDeletedItem;
+    private ChecklistEvent mRecentlyDeletedItem;
     private int mRecentlyDeletedItemPosition;
 
-    public RecyclerViewAdapter(List<Event> listItemTexts, Activity context) {
+    public RecyclerViewAdapter(List<ChecklistEvent> listItemTexts, Activity context) {
         this.listItemTexts = listItemTexts;
         this.context = context;
     }
 
-    public void add(Event newItem){
+    public void add(ChecklistEvent newItem){
         listItemTexts.add(newItem);
         notifyDataSetChanged();
     }
@@ -50,12 +50,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         notifyDataSetChanged();
     }
 
-    public void edit(Event item, int index){
+    public void edit(ChecklistEvent item, int index){
         listItemTexts.set(index, item);
         notifyDataSetChanged();
     }
 
-    public Event getItemFromList(int index){
+    public ChecklistEvent getItemFromList(int index){
         return listItemTexts.get(index);
     }
 
@@ -72,7 +72,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i) {
         Log.d(TAG, "onBindViewHolder: called");
 
-        Event item = listItemTexts.get(i);
+        ChecklistEvent item = listItemTexts.get(i);
         viewHolder.listItem.setText(item.getTitle());
 
         viewHolder.dateDisplay.setText(formatter.format(item.getDeadline().getTime()));

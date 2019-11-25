@@ -16,13 +16,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
-import com.example.kandydatpl.models.Event;
+import com.example.kandydatpl.models.ChecklistEvent;
 import com.example.kandydatpl.utils.FileHelper;
 import com.example.kandydatpl.R;
 import com.example.kandydatpl.adapters.RecyclerViewAdapter;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -33,7 +32,7 @@ public class EventChecklistActivity extends NavigationDrawerActivity implements 
     private List<String> items;
     private RecyclerViewAdapter adapter;
 
-    private List<Event> events = new ArrayList<>();
+    private List<ChecklistEvent> checklistEvents = new ArrayList<>();
     public static int newItemRequest = 1;
     public static int editItemRequest = 2;
     private RecyclerView recyclerView;
@@ -56,21 +55,21 @@ public class EventChecklistActivity extends NavigationDrawerActivity implements 
         Intent dateFilterIntent = getIntent();
         Date filterDate = (Date) dateFilterIntent.getSerializableExtra("filterDate");
         if(filterDate != null){
-            events = events.stream().filter(item -> item.getDeadline().after(filterDate)).collect(Collectors.toList());
+            checklistEvents = checklistEvents.stream().filter(item -> item.getDeadline().after(filterDate)).collect(Collectors.toList());
         }
 
         recyclerView = findViewById(R.id.taskListView);
         floatingActionButton = findViewById(R.id.addTaskButton);
         floatingActionButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, AddEditListItemActivity.class);
-            intent.putExtra("item", new Event());
+            intent.putExtra("item", new ChecklistEvent());
             intent.putExtra("requestCode", newItemRequest);
             startActivityForResult(intent, newItemRequest);
         });
 
         items = FileHelper.readData(this);
 
-        adapter = new RecyclerViewAdapter(events, this);
+        adapter = new RecyclerViewAdapter(checklistEvents, this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -81,7 +80,7 @@ public class EventChecklistActivity extends NavigationDrawerActivity implements 
                 int position_dragged = dragged.getAdapterPosition();
                 int position_target = target.getAdapterPosition();
 
-                Collections.swap(events, position_dragged, position_target);
+                Collections.swap(checklistEvents, position_dragged, position_target);
                 adapter.notifyItemMoved(position_dragged, position_target);
                 return false;
             }
@@ -90,7 +89,7 @@ public class EventChecklistActivity extends NavigationDrawerActivity implements 
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
                 int index = viewHolder.getAdapterPosition();
                 adapter.deleteItem(index);
-                //events.remove(index);
+                //checklistEvents.remove(index);
                 adapter.notifyItemRemoved(index);
                 showUndoSnackbar();
 
@@ -114,7 +113,7 @@ public class EventChecklistActivity extends NavigationDrawerActivity implements 
         if (requestCode == newItemRequest) {
             if (resultCode == RESULT_OK) {
                 if (data != null) {
-                    Event item = (Event) data.getSerializableExtra("newItem");
+                    ChecklistEvent item = (ChecklistEvent) data.getSerializableExtra("newItem");
                     adapter.add(item);
                     adapter.notifyDataSetChanged();
                 }
@@ -122,7 +121,7 @@ public class EventChecklistActivity extends NavigationDrawerActivity implements 
         } else if (requestCode == editItemRequest) {
             if (resultCode == RESULT_OK) {
                 if (data != null) {
-                    Event item = (Event) data.getSerializableExtra("newItem");
+                    ChecklistEvent item = (ChecklistEvent) data.getSerializableExtra("newItem");
                     int index = data.getIntExtra("index", -1);
                     adapter.edit(item, index);
                     adapter.notifyDataSetChanged();

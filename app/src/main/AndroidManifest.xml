@@ -53,7 +53,7 @@
         <activity
             android:name=".activities.AddEditListItemActivity"
             android:excludeFromRecents="true"
-            android:label="Add a new event"
+            android:label="Add a new checklistEvent"
             android:theme="@style/Theme.AppCompat.Light.Dialog.MinWidth" />
 
 
