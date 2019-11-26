@@ -15,6 +15,7 @@ import com.example.kandydatpl.models.Contact;
 import com.example.kandydatpl.models.Event;
 import com.example.kandydatpl.models.File;
 import com.example.kandydatpl.models.Question;
+import com.example.kandydatpl.models.StudyOffer;
 import com.example.kandydatpl.models.UserData;
 
 import org.json.JSONException;
@@ -39,6 +40,7 @@ public class DataStore {
     private static UserData userData = UserData.getInstance();
     private static ArrayList<Contact> contacts = new ArrayList<>();
     private static ArrayList<File> files = new ArrayList<>();
+    private static ArrayList<StudyOffer> studyOffers = new ArrayList<>();
 
     public static ArrayList<Question> getQuestions() {
         return questions;
@@ -85,5 +87,14 @@ public class DataStore {
     public static void setFiles(ArrayList<File> files) {
         DataStore.files.clear();
         DataStore.files.addAll(files);
+    }
+
+    public static ArrayList<StudyOffer> getStudyOffers() {
+        return studyOffers;
+    }
+
+    public static void setStudyOffers(ArrayList<StudyOffer> studyOffers) {
+        DataStore.studyOffers.clear();
+        DataStore.studyOffers.addAll(studyOffers);
     }
 }

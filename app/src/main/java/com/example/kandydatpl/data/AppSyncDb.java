@@ -11,6 +11,7 @@ import com.amazonaws.amplify.generated.graphql.ListCommentsQuery;
 import com.amazonaws.amplify.generated.graphql.ListContactsQuery;
 import com.amazonaws.amplify.generated.graphql.ListFilesQuery;
 import com.amazonaws.amplify.generated.graphql.ListQuestionsQuery;
+import com.amazonaws.amplify.generated.graphql.ListStudyOffersQuery;
 import com.amazonaws.amplify.generated.graphql.UpdateCommentMutation;
 import com.amazonaws.amplify.generated.graphql.UpdateQuestionMutation;
 import com.amazonaws.amplify.generated.graphql.UpdateUserMutation;
@@ -22,6 +23,7 @@ import com.example.kandydatpl.models.Comment;
 import com.example.kandydatpl.models.Contact;
 import com.example.kandydatpl.models.File;
 import com.example.kandydatpl.models.Question;
+import com.example.kandydatpl.models.StudyOffer;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -73,6 +75,17 @@ public class AppSyncDb implements DataProvider {
     }
 
     private String questionsNextToken;
+
+    private ArrayList<StudyOffer> studyOffersToArrayList(List<ListStudyOffersQuery.Item> dbOffers) {
+        ArrayList<StudyOffer> newStudyOffers = new ArrayList<>();
+
+        for(ListStudyOffersQuery.Item offer : dbOffers) {
+            StudyOffer studyOffer = new StudyOffer(offer.id(), new ArrayList<>(offer.tags()), offer.content());
+            newStudyOffers.add(studyOffer);
+        }
+
+        return newStudyOffers;
+    }
 
     private ArrayList<Contact> contactsToArrayList(List<ListContactsQuery.Item> dbContacts) {
         ArrayList<Contact> contacts = new ArrayList<>();
@@ -619,5 +632,33 @@ public class AppSyncDb implements DataProvider {
                 .build())
                 .responseFetcher(AppSyncResponseFetchers.CACHE_AND_NETWORK)
                 .enqueue(listFilesQueryCallback);
+    }
+
+    @Override
+    public void getStudyOffers(Runnable onSuccess, Runnable onFailure) {
+        GraphQLCall.Callback<ListStudyOffersQuery.Data> listStudyOffersQueryCallback = new GraphQLCall.Callback<ListStudyOffersQuery.Data>() {
+            @Override
+            public void onResponse(@Nonnull Response<ListStudyOffersQuery.Data> response) {
+
+                DataStore.setStudyOffers(studyOffersToArrayList(response.data().listStudyOffers().items()));
+
+                if (onSuccess != null) {
+                    onSuccess.run();
+                }
+            }
+
+            @Override
+            public void onFailure(@Nonnull ApolloException e) {
+                Log.e("ERROR", e.toString());
+                if (onFailure != null) {
+                    onFailure.run();
+                }
+            }
+        };
+
+        appSyncClient.query(ListStudyOffersQuery.builder()
+                .build())
+                .responseFetcher(AppSyncResponseFetchers.CACHE_AND_NETWORK)
+                .enqueue(listStudyOffersQueryCallback);
     }
 }

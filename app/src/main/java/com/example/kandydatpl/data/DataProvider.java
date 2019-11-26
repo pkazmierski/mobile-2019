@@ -26,4 +26,7 @@ public interface DataProvider {
 
     //Files
     void getFiles(Runnable onSuccess, Runnable onFailure);
+
+    //Study offers
+    void getStudyOffers(Runnable onSuccess, Runnable onFailure);
 }
