@@ -8,11 +8,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.kandydatpl.R;
 import com.example.kandydatpl.models.ChecklistEvent;
 
 import java.text.SimpleDateFormat;
+
+import static com.example.kandydatpl.logic.Logic.dataProvider;
 
 public class AddOrEditChecklistEventActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
@@ -60,6 +63,14 @@ public class AddOrEditChecklistEventActivity extends AppCompatActivity implement
         saveButton.setOnClickListener(click -> {
             Intent listIntent = getIntent();
             ChecklistEvent listItem = new ChecklistEvent("", editTitle.getText().toString(), editDescription.getText().toString(), incomingItem.isDone(), sampleDate.getTime());
+            if((incomingIntent.getSerializableExtra("newOrEdit") == null)){
+                dataProvider.createSingleUserEvent(afterAddEventSuccess, afterAddEventFailure, listItem);
+            }
+            else if(incomingIntent.getSerializableExtra("newOrEdit").toString().equals("")){
+                dataProvider.createSingleUserEvent(afterAddEventSuccess, afterAddEventFailure, listItem);
+            } else if(!incomingIntent.getSerializableExtra("newOrEdit").toString().equals("")){
+                dataProvider.updateSingleUserEvent(afterEditEventSuccess, afterEditEventFailure, listItem);
+            }
             listIntent.putExtra("newItem", listItem);
             listIntent.putExtra("index", index);
             setResult(RESULT_OK, listIntent);
@@ -67,6 +78,17 @@ public class AddOrEditChecklistEventActivity extends AppCompatActivity implement
         });
     }
 
+    private Runnable afterAddEventSuccess = () -> runOnUiThread(() ->
+            Toast.makeText(this, "Item added!", Toast.LENGTH_SHORT).show());
+
+    private Runnable afterEditEventSuccess = () -> runOnUiThread(() ->
+            Toast.makeText(this, "Item changed!", Toast.LENGTH_SHORT).show());
+
+    private Runnable afterAddEventFailure = () -> runOnUiThread(() ->
+            Toast.makeText(this, "Failed to add the item", Toast.LENGTH_SHORT).show());
+
+    private Runnable afterEditEventFailure = () -> runOnUiThread(() ->
+            Toast.makeText(this, "Failed to edit the item", Toast.LENGTH_SHORT).show());
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {

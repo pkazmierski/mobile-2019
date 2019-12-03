@@ -81,7 +81,7 @@ public class AppSyncDb implements DataProvider {
     private ArrayList<ChecklistEvent> userEventsToArrayList(List<ListUserEventsQuery.Item> dbEvents) {
         ArrayList<ChecklistEvent> checklistEvents = new ArrayList<>();
 
-        for(ListUserEventsQuery.Item item : dbEvents) {
+        for (ListUserEventsQuery.Item item : dbEvents) {
             try {
                 ChecklistEvent checklistEvent = new ChecklistEvent(item.id(), item.title(), item.description(), true, item.done(), awsDateFormat.parse(item.deadline()));
                 checklistEvents.add(checklistEvent);
@@ -96,7 +96,7 @@ public class AppSyncDb implements DataProvider {
     private ArrayList<ChecklistEvent> publicEventsToArrayList(List<ListPublicEventsQuery.Item> dbEvents) {
         ArrayList<ChecklistEvent> checklistEvents = new ArrayList<>();
 
-        for(ListPublicEventsQuery.Item item : dbEvents) {
+        for (ListPublicEventsQuery.Item item : dbEvents) {
             try {
                 ChecklistEvent checklistEvent = new ChecklistEvent(item.id(), item.title(), item.description(), true, item.done(), awsDateFormat.parse(item.deadline()));
                 checklistEvents.add(checklistEvent);
@@ -168,7 +168,9 @@ public class AppSyncDb implements DataProvider {
 
     private HashMap<String, Integer> eventsOrderToHashMap(List<String> dbEventsOrder) {
         HashMap<String, Integer> eventsOrder = new HashMap<>();
-
+        if (dbEventsOrder == null) {
+            return eventsOrder;
+        }
 
         for (String eventOrder : dbEventsOrder) {
             String[] tokens = eventOrder.split(",");

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
@@ -71,8 +72,10 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
         floatingActionButton = findViewById(R.id.addTaskButton);
         floatingActionButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, AddOrEditChecklistEventActivity.class);
-            intent.putExtra("item", new ChecklistEvent());
+            ChecklistEvent newChecklistEvent = new ChecklistEvent();
+            intent.putExtra("item", newChecklistEvent);
             intent.putExtra("requestCode", newItemRequest);
+            intent.putExtra("newOrEdit", newChecklistEvent.getId());
             startActivityForResult(intent, newItemRequest);
         });
 
@@ -90,6 +93,7 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
                 int position_target = target.getAdapterPosition();
 
                 Collections.swap(checklistEvents, position_dragged, position_target);
+                dataProvider.setEventsOrder(null, afterSetEventsOrderFailure, adapter.getEventsOrder());
                 adapter.notifyItemMoved(position_dragged, position_target);
                 return false;
             }
@@ -104,7 +108,9 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
 
             }
         });
-        helper.attachToRecyclerView(recyclerView);
+        if(filterDate != null) {
+            helper.attachToRecyclerView(recyclerView);
+        }
         dataProvider.getAllEvents(afterAllEventsSuccess, afterAllPublicEventsFailure, afterAllUserEventsFailure);
     }
 
@@ -131,7 +137,7 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
 
 
             if (event != null) {
-                //propely place those events that exist in order list and event list
+                //properly place those events that exist in order list and event list
                 int targetIndex = checkListEventsOrder.get(event);
                 int sourceIndex = checklistEvents.indexOf(event);
                 Collections.swap(checklistEvents, targetIndex, sourceIndex);
@@ -156,6 +162,13 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
                 Snackbar.LENGTH_LONG);
         snackbar.setAction(R.string.snack_bar_undo, v -> adapter.undoDelete());
         snackbar.show();
+        snackbar.addCallback(new Snackbar.Callback(){
+            @Override
+            public void onDismissed(Snackbar snackbar, int event) {
+                //delete event from the database using dataprovider
+            }
+
+        });
     }
 
 
