@@ -35,6 +35,10 @@ public class ChecklistEventRecyclerViewAdapter extends RecyclerView.Adapter<Chec
     private ChecklistEvent recentlyDeletedItem;
     private int recentlyDeletedItemPosition;
 
+    public void setListItemTexts(List<ChecklistEvent> listItemTexts) {
+        this.listItemTexts = listItemTexts;
+    }
+
     public ChecklistEventRecyclerViewAdapter(List<ChecklistEvent> listItemTexts, Activity context) {
         this.listItemTexts = listItemTexts;
         this.context = context;
@@ -149,11 +153,21 @@ public class ChecklistEventRecyclerViewAdapter extends RecyclerView.Adapter<Chec
         }
     }
 
+
+    public void setChecklistEvents(){
+
+    }
+
     public HashMap<String, Integer> getEventsOrder() {
         //TODO implement @Piotr Kocik
         //TODO trzeba też dodać synchronizację po każdej zmianie kolejności:
-        // dataProvider.setEvents(null, <odpowiednie runnable>, adapter.getEventsOrder())
+        // dataProvider.setEvents(null, <odpowiednie runnable>, adapter.getEventsOrder()) <- wywołane w kodzie gdzie przeniesiony jest element
         // Runnable z toastem, że się nie udało zsynchronizować jest w ChecklistEventActivity, to skopiuj sobie
+        // jak dodajemy nowy event do checklisty, to trzeba dodać go do bazy danych dataprovider.createsingleuserevent
+        // skoro jest możliwość przywracania, to request do bazy musi nastąpić po zniknięciu snackbara, funkcja na usuwanie bedzie
+        // zablokowanie edycji eventów z bazy
+        // string to id, integer to pozycja
+        // jeśli chcemy rozpoznawać, czy przyszliśmy z kalendarze (po filtracji) to checemy uniemożliwić zmianę kolejności
         return null;
     }
 }

@@ -41,7 +41,6 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
     private List<String> items;
     private ChecklistEventRecyclerViewAdapter adapter;
 
-    private List<ChecklistEvent> checklistEvents = new ArrayList<>();
     public static int newItemRequest = 1;
     public static int editItemRequest = 2;
     private RecyclerView recyclerView;
@@ -63,8 +62,8 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
 
         Intent dateFilterIntent = getIntent();
         Date filterDate = (Date) dateFilterIntent.getSerializableExtra("filterDate");
-        if (filterDate != null) {
-            checklistEvents = checklistEvents.stream().filter(item -> item.getDeadline().after(filterDate)).collect(Collectors.toList());
+        if (filterDate != null) { //do runnable success
+            //ArrayList<ChecklistEvent> checklistEvents = DataStore.getChecklistEvents().stream().filter(item -> item.getDeadline().after(filterDate)).collect(Collectors.toList());
         }
 
         recyclerView = findViewById(R.id.taskListView);
@@ -78,7 +77,7 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
 
         items = FileHelper.readData(this);
 
-        adapter = new ChecklistEventRecyclerViewAdapter(checklistEvents, this);
+        adapter = new ChecklistEventRecyclerViewAdapter(DataStore.getChecklistEvents(), this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -89,7 +88,7 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
                 int position_dragged = dragged.getAdapterPosition();
                 int position_target = target.getAdapterPosition();
 
-                Collections.swap(checklistEvents, position_dragged, position_target);
+                Collections.swap(DataStore.getChecklistEvents(), position_dragged, position_target);
                 adapter.notifyItemMoved(position_dragged, position_target);
                 return false;
             }
