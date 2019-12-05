@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.kandydatpl.R;
 import com.example.kandydatpl.activities.AddOrEditChecklistEventActivity;
@@ -26,10 +25,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import static com.amazonaws.mobile.auth.core.internal.util.ThreadUtils.runOnUiThread;
-import static com.example.kandydatpl.logic.Logic.dataProvider;
 
 public class ChecklistEventRecyclerViewAdapter extends RecyclerView.Adapter<ChecklistEventRecyclerViewAdapter.ViewHolder> {
 
@@ -45,22 +40,22 @@ public class ChecklistEventRecyclerViewAdapter extends RecyclerView.Adapter<Chec
         this.context = context;
     }
 
-    public void add(ChecklistEvent newItem) {
+    public void add(ChecklistEvent newItem){
         listItemTexts.add(newItem);
         notifyDataSetChanged();
     }
 
-    public void remove(int position) {
+    public void remove(int position){
         listItemTexts.remove(position);
         notifyDataSetChanged();
     }
 
-    public void edit(ChecklistEvent item, int index) {
+    public void edit(ChecklistEvent item, int index){
         listItemTexts.set(index, item);
         notifyDataSetChanged();
     }
 
-    public ChecklistEvent getItemFromList(int index) {
+    public ChecklistEvent getItemFromList(int index){
         return listItemTexts.get(index);
     }
 
@@ -82,18 +77,17 @@ public class ChecklistEventRecyclerViewAdapter extends RecyclerView.Adapter<Chec
 
         viewHolder.dateDisplay.setText(formatter.format(item.getDeadline().getTime()));
 
-        if(!item.isUserCreated()){
-            viewHolder.cardViewItem.setCardBackgroundColor(Color.parseColor("green"));
-        }
+
         viewHolder.listItemCheckbox.setChecked(item.isDone());
         viewHolder.listItemCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
             item.setDone(isChecked);
             //notifyDataSetChanged();
-            if (isChecked) {
+            if(isChecked){
                 viewHolder.listItem.setPaintFlags(viewHolder.listItem.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                 viewHolder.cardViewItem.setCardBackgroundColor(Color.parseColor("gray"));
                 viewHolder.dateDisplay.setPaintFlags(viewHolder.listItem.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            } else {
+            }
+            else{
                 viewHolder.listItem.setPaintFlags(viewHolder.listItem.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
                 viewHolder.cardViewItem.setCardBackgroundColor(viewHolder.defaultColor);
                 viewHolder.dateDisplay.setPaintFlags(viewHolder.listItem.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
@@ -108,17 +102,12 @@ public class ChecklistEventRecyclerViewAdapter extends RecyclerView.Adapter<Chec
 //            context.startActivityForResult(intent, ChecklistEventActivity.editItemRequest);
 //        });
 
-        if (item.isUserCreated()) {
-            viewHolder.view.setOnClickListener(v -> {
-                Intent intent = new Intent(context, AddOrEditChecklistEventActivity.class);
-                intent.putExtra("index", viewHolder.getAdapterPosition());
-                intent.putExtra("item", item);
-                intent.putExtra("newOrEdit", item.getId());
-                context.startActivityForResult(intent, ChecklistEventActivity.editItemRequest);
-            });
-        } else {
-            Toast.makeText(context, "You cannot modify TUL events!", Toast.LENGTH_SHORT).show();
-        }
+        viewHolder.view.setOnClickListener(v -> {
+            Intent intent = new Intent(context, AddOrEditChecklistEventActivity.class);
+            intent.putExtra("index", viewHolder.getAdapterPosition());
+            intent.putExtra("item", item);
+            context.startActivityForResult(intent, ChecklistEventActivity.editItemRequest);
+        });
     }
 
     public void deleteItem(int position) {
@@ -139,7 +128,7 @@ public class ChecklistEventRecyclerViewAdapter extends RecyclerView.Adapter<Chec
         return listItemTexts.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder{
 
         CardView cardViewItem;
         TextView listItem;
@@ -148,7 +137,6 @@ public class ChecklistEventRecyclerViewAdapter extends RecyclerView.Adapter<Chec
         View view;
         TextView dateDisplay;
         ColorStateList defaultColor;
-
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             listItem = itemView.findViewById(R.id.itemText);
@@ -161,23 +149,11 @@ public class ChecklistEventRecyclerViewAdapter extends RecyclerView.Adapter<Chec
         }
     }
 
-
     public HashMap<String, Integer> getEventsOrder() {
         //TODO implement @Piotr Kocik
         //TODO trzeba też dodać synchronizację po każdej zmianie kolejności:
-        // dataProvider.setEvents(null, <odpowiednie runnable>, adapter.getEventsOrder()) <- wywołane w kodzie gdzie przeniesiony jest element
+        // dataProvider.setEvents(null, <odpowiednie runnable>, adapter.getEventsOrder())
         // Runnable z toastem, że się nie udało zsynchronizować jest w ChecklistEventActivity, to skopiuj sobie
-        // jak dodajemy nowy event do checklisty, to trzeba dodać go do bazy danych dataprovider.createsingleuserevent
-        // skoro jest możliwość przywracania, to request do bazy musi nastąpić po zniknięciu snackbara, funkcja na usuwanie bedzie
-        // zablokowanie edycji eventów z bazy
-        // string to id, integer to pozycja
-        // jeśli chcemy rozpoznawać, czy przyszliśmy z kalendarze (po filtracji) to checemy uniemożliwić zmianę kolejności
-        HashMap<String, Integer> changedOrderMap = new HashMap<>();
-
-        for (ChecklistEvent event : listItemTexts) {
-            changedOrderMap.put(event.getId(), listItemTexts.indexOf(event));
-        }
-
-        return changedOrderMap;
+        return null;
     }
 }

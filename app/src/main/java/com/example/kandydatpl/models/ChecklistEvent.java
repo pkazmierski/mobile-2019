@@ -16,7 +16,6 @@ public class ChecklistEvent implements Serializable {
     }
 
     public ChecklistEvent(String id, String title, String description, boolean done, Date deadline) {
-        this.id = "";
         this.title = title;
         this.description = description;
         this.done = done;
@@ -32,7 +31,6 @@ public class ChecklistEvent implements Serializable {
     }
 
     public ChecklistEvent(String id, String title, String description, boolean userCreated, boolean done, Date deadline) {
-        this.id = "";
         this.title = title;
         this.description = description;
         this.userCreated = userCreated;
