@@ -169,13 +169,14 @@ public class AppSyncDb implements DataProvider {
     private HashMap<String, Integer> eventsOrderToHashMap(List<String> dbEventsOrder) {
         HashMap<String, Integer> eventsOrder = new HashMap<>();
 
+        if(dbEventsOrder != null){
+            for (String eventOrder : dbEventsOrder) {
+                String[] tokens = eventOrder.split(",");
+                String id = tokens[0];
+                String index = tokens[1];
 
-        for (String eventOrder : dbEventsOrder) {
-            String[] tokens = eventOrder.split(",");
-            String id = tokens[0];
-            String index = tokens[1];
-
-            eventsOrder.put(id, Integer.parseInt(index));
+                eventsOrder.put(id, Integer.parseInt(index));
+            }
         }
 
         return eventsOrder;
