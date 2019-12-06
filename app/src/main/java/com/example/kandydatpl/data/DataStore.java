@@ -47,10 +47,15 @@ public class DataStore {
     }
 
     public static void addEvents(ArrayList<ChecklistEvent> eventsToArrayList) {
+        DataStore.checklistEvents.removeAll(eventsToArrayList);
         DataStore.checklistEvents.addAll(eventsToArrayList);
     }
 
     public static void clearEvents() {
         DataStore.checklistEvents.clear();
+    }
+
+    public static void addEvent(ChecklistEvent checklistEvent) {
+        DataStore.checklistEvents.add(checklistEvent);
     }
 }

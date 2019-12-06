@@ -89,6 +89,7 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
                 int position_target = target.getAdapterPosition();
 
                 Collections.swap(DataStore.getChecklistEvents(), position_dragged, position_target);
+                dataProvider.setEventsOrder(null, afterSetEventsOrderFailure, adapter.getEventsOrder());
                 adapter.notifyItemMoved(position_dragged, position_target);
                 return false;
             }
@@ -108,7 +109,7 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
     }
 
     private Runnable afterSetEventsOrderFailure = () -> runOnUiThread(() ->
-            Toast.makeText(this, "Cannot save the new order of the checklist", Toast.LENGTH_SHORT).show());
+            Toast.makeText(this, "Cannot save the new events order", Toast.LENGTH_SHORT).show());
 
     private Runnable afterAllEventsSuccess = () -> runOnUiThread(() -> {
         List<ChecklistEvent> checklistEvents = DataStore.getChecklistEvents();
@@ -127,11 +128,9 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
                 if (tempEvent.getId().equals(eventId))
                     event = tempEvent;
             }
-
-
             if (event != null) {
                 //propely place those events that exist in order list and event list
-                int targetIndex = checkListEventsOrder.get(event);
+                int targetIndex = checkListEventsOrder.get(event.getId());
                 int sourceIndex = checklistEvents.indexOf(event);
                 Collections.swap(checklistEvents, targetIndex, sourceIndex);
             } else {
@@ -148,6 +147,21 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
     private Runnable afterAllUserEventsFailure = () -> runOnUiThread(() ->
             Toast.makeText(this, "User events fetch failed", Toast.LENGTH_SHORT).show());
 
+    private Runnable afterAddEventSuccess = () -> runOnUiThread(() -> {
+        Toast.makeText(this, "Item added!", Toast.LENGTH_SHORT).show();
+        adapter.notifyDataSetChanged();
+    });
+
+    private Runnable afterEditEventSuccess = () -> runOnUiThread(() -> {
+        Toast.makeText(this, "Item changed!", Toast.LENGTH_SHORT).show();
+        adapter.notifyDataSetChanged();
+    });
+
+    private Runnable afterAddEventFailure = () -> runOnUiThread(() ->
+            Toast.makeText(this, "Failed to add the item", Toast.LENGTH_SHORT).show());
+
+    private Runnable afterEditEventFailure = () -> runOnUiThread(() ->
+            Toast.makeText(this, "Failed to edit the item", Toast.LENGTH_SHORT).show());
 
     private void showUndoSnackbar() {
         View view = recyclerView.findViewById(R.id.parent_layout);
@@ -165,8 +179,7 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
             if (resultCode == RESULT_OK) {
                 if (data != null) {
                     ChecklistEvent item = (ChecklistEvent) data.getSerializableExtra("newItem");
-                    adapter.add(item);
-                    adapter.notifyDataSetChanged();
+                    dataProvider.createSingleUserEvent(afterAddEventSuccess, afterAddEventFailure, item);
                 }
             }
         } else if (requestCode == editItemRequest) {
@@ -174,8 +187,7 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
                 if (data != null) {
                     ChecklistEvent item = (ChecklistEvent) data.getSerializableExtra("newItem");
                     int index = data.getIntExtra("index", -1);
-                    adapter.edit(item, index);
-                    adapter.notifyDataSetChanged();
+                    dataProvider.updateSingleUserEvent(afterEditEventSuccess, afterEditEventFailure, item);
                 }
             }
         }

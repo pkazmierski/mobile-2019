@@ -692,8 +692,17 @@ public class AppSyncDb implements DataProvider {
             GraphQLCall.Callback<CreateUserEventMutation.Data> createUserEventMutationCallback = new GraphQLCall.Callback<CreateUserEventMutation.Data>() {
                 @Override
                 public void onResponse(@Nonnull Response<CreateUserEventMutation.Data> response) {
-                    if (onSuccess != null) {
-                        onSuccess.run();
+                    if(!response.hasErrors()) {
+                        checklistEvent.setId(response.data().createUserEvent().id());
+                        DataStore.addEvent(checklistEvent);
+
+                        if (onSuccess != null) {
+                            onSuccess.run();
+                        }
+                    } else {
+                        if (onFailure != null) {
+                            onFailure.run();
+                        }
                     }
                 }
 

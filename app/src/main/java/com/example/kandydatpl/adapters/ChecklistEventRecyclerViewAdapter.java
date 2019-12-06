@@ -44,22 +44,22 @@ public class ChecklistEventRecyclerViewAdapter extends RecyclerView.Adapter<Chec
         this.context = context;
     }
 
-    public void add(ChecklistEvent newItem){
+    public void add(ChecklistEvent newItem) {
         listItemTexts.add(newItem);
         notifyDataSetChanged();
     }
 
-    public void remove(int position){
+    public void remove(int position) {
         listItemTexts.remove(position);
         notifyDataSetChanged();
     }
 
-    public void edit(ChecklistEvent item, int index){
+    public void edit(ChecklistEvent item, int index) {
         listItemTexts.set(index, item);
         notifyDataSetChanged();
     }
 
-    public ChecklistEvent getItemFromList(int index){
+    public ChecklistEvent getItemFromList(int index) {
         return listItemTexts.get(index);
     }
 
@@ -86,12 +86,11 @@ public class ChecklistEventRecyclerViewAdapter extends RecyclerView.Adapter<Chec
         viewHolder.listItemCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
             item.setDone(isChecked);
             //notifyDataSetChanged();
-            if(isChecked){
+            if (isChecked) {
                 viewHolder.listItem.setPaintFlags(viewHolder.listItem.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                 viewHolder.cardViewItem.setCardBackgroundColor(Color.parseColor("gray"));
                 viewHolder.dateDisplay.setPaintFlags(viewHolder.listItem.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            }
-            else{
+            } else {
                 viewHolder.listItem.setPaintFlags(viewHolder.listItem.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
                 viewHolder.cardViewItem.setCardBackgroundColor(viewHolder.defaultColor);
                 viewHolder.dateDisplay.setPaintFlags(viewHolder.listItem.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
@@ -132,7 +131,7 @@ public class ChecklistEventRecyclerViewAdapter extends RecyclerView.Adapter<Chec
         return listItemTexts.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder {
 
         CardView cardViewItem;
         TextView listItem;
@@ -141,6 +140,7 @@ public class ChecklistEventRecyclerViewAdapter extends RecyclerView.Adapter<Chec
         View view;
         TextView dateDisplay;
         ColorStateList defaultColor;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             listItem = itemView.findViewById(R.id.itemText);
@@ -154,7 +154,7 @@ public class ChecklistEventRecyclerViewAdapter extends RecyclerView.Adapter<Chec
     }
 
 
-    public void setChecklistEvents(){
+    public void setChecklistEvents() {
 
     }
 
@@ -167,7 +167,13 @@ public class ChecklistEventRecyclerViewAdapter extends RecyclerView.Adapter<Chec
         // skoro jest możliwość przywracania, to request do bazy musi nastąpić po zniknięciu snackbara, funkcja na usuwanie bedzie
         // zablokowanie edycji eventów z bazy
         // string to id, integer to pozycja
-        // jeśli chcemy rozpoznawać, czy przyszliśmy z kalendarze (po filtracji) to checemy uniemożliwić zmianę kolejności
-        return null;
+        // jeśli chcemy rozpoznawać, czy przyszliśmy z kalendarza (po filtracji) to checemy uniemożliwić zmianę kolejności
+
+        HashMap<String, Integer> changedOrderMap = new HashMap<>();
+
+        for (ChecklistEvent event : listItemTexts) {
+            changedOrderMap.put(event.getId(), listItemTexts.indexOf(event));
+        }
+        return changedOrderMap;
     }
 }
