@@ -30,6 +30,11 @@ public interface DataProvider {
     void getAllEvents(Runnable onSuccess, Runnable onUserEventsFailure, Runnable onPublicEventsFailure);
     void updateSingleUserEvent(Runnable onSuccess, Runnable onFailure, ChecklistEvent checklistEvent);
     void createSingleUserEvent(Runnable onSuccess, Runnable onFailure, ChecklistEvent checklistEvent);
-//    void updateUserEvents(Runnable onSuccess, Runnable onUpdateSingleEventFailure, Runnable onCreateSingleEventFailure);
-void setEventsOrder(Runnable onSuccess, Runnable onFailure, HashMap<String, Integer> eventOrder);
+    void removeSingleUserEvent(Runnable onSuccess, Runnable onFailure, ChecklistEvent checklistEvent);
+    //    void updateUserEvents(Runnable onSuccess, Runnable onUpdateSingleEventFailure, Runnable onCreateSingleEventFailure);
+    void setEventsOrder(Runnable onSuccess, Runnable onFailure, HashMap<String, Integer> eventOrder);
+
+
+    //Admin functions
+    void addPublicEvent(Runnable onSuccess, Runnable onFailure, ChecklistEvent checkListEvent);
 }

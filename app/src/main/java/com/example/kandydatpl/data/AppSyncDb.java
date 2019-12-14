@@ -4,9 +4,11 @@ import android.annotation.SuppressLint;
 import android.util.Log;
 
 import com.amazonaws.amplify.generated.graphql.CreateCommentMutation;
+import com.amazonaws.amplify.generated.graphql.CreatePublicEventMutation;
 import com.amazonaws.amplify.generated.graphql.CreateQuestionMutation;
 import com.amazonaws.amplify.generated.graphql.CreateUserEventMutation;
 import com.amazonaws.amplify.generated.graphql.DeleteCommentMutation;
+import com.amazonaws.amplify.generated.graphql.DeleteUserEventMutation;
 import com.amazonaws.amplify.generated.graphql.GetUserQuery;
 import com.amazonaws.amplify.generated.graphql.ListCommentsQuery;
 import com.amazonaws.amplify.generated.graphql.ListPublicEventsQuery;
@@ -38,9 +40,11 @@ import java.util.TimeZone;
 import javax.annotation.Nonnull;
 
 import type.CreateCommentInput;
+import type.CreatePublicEventInput;
 import type.CreateQuestionInput;
 import type.CreateUserEventInput;
 import type.DeleteCommentInput;
+import type.DeleteUserEventInput;
 import type.ModelCommentFilterInput;
 import type.ModelStringFilterInput;
 import type.UpdateCommentInput;
@@ -81,7 +85,7 @@ public class AppSyncDb implements DataProvider {
     private ArrayList<ChecklistEvent> userEventsToArrayList(List<ListUserEventsQuery.Item> dbEvents) {
         ArrayList<ChecklistEvent> checklistEvents = new ArrayList<>();
 
-        for(ListUserEventsQuery.Item item : dbEvents) {
+        for (ListUserEventsQuery.Item item : dbEvents) {
             try {
                 ChecklistEvent checklistEvent = new ChecklistEvent(item.id(), item.title(), item.description(), true, item.done(), awsDateFormat.parse(item.deadline()));
                 checklistEvents.add(checklistEvent);
@@ -96,7 +100,7 @@ public class AppSyncDb implements DataProvider {
     private ArrayList<ChecklistEvent> publicEventsToArrayList(List<ListPublicEventsQuery.Item> dbEvents) {
         ArrayList<ChecklistEvent> checklistEvents = new ArrayList<>();
 
-        for(ListPublicEventsQuery.Item item : dbEvents) {
+        for (ListPublicEventsQuery.Item item : dbEvents) {
             try {
                 ChecklistEvent checklistEvent = new ChecklistEvent(item.id(), item.title(), item.description(), true, item.done(), awsDateFormat.parse(item.deadline()));
                 checklistEvents.add(checklistEvent);
@@ -169,7 +173,7 @@ public class AppSyncDb implements DataProvider {
     private HashMap<String, Integer> eventsOrderToHashMap(List<String> dbEventsOrder) {
         HashMap<String, Integer> eventsOrder = new HashMap<>();
 
-        if(dbEventsOrder != null){
+        if (dbEventsOrder != null) {
             for (String eventOrder : dbEventsOrder) {
                 String[] tokens = eventOrder.split(",");
                 String id = tokens[0];
@@ -187,20 +191,27 @@ public class AppSyncDb implements DataProvider {
         GraphQLCall.Callback<ListQuestionsQuery.Data> listQuestionsCallback = new GraphQLCall.Callback<ListQuestionsQuery.Data>() {
             @Override
             public void onResponse(@Nonnull Response<ListQuestionsQuery.Data> response) {
-                if (response.data().listQuestions() != null) {
-                    Log.i("Results", "Questions (first): " + Objects.requireNonNull(response.data().listQuestions()).toString());
+                if (!response.hasErrors()) {
+                    if (response.data().listQuestions() != null) {
+                        Log.i("Results", "Questions (first): " + Objects.requireNonNull(response.data().listQuestions()).toString());
 
-                    DataStore.setQuestions(questionsToArrayList(response.data().listQuestions().items()));
+                        DataStore.setQuestions(questionsToArrayList(response.data().listQuestions().items()));
 
-                    if (response.data().listQuestions().nextToken() != null) {
-                        questionsNextToken = response.data().listQuestions().nextToken();
+                        if (response.data().listQuestions().nextToken() != null) {
+                            questionsNextToken = response.data().listQuestions().nextToken();
+                        }
+                    } else {
+                        Log.i("Results", "listQuestions() is null");
+                    }
+
+                    if (onSuccess != null) {
+                        onSuccess.run();
                     }
                 } else {
-                    Log.i("Results", "listQuestions() is null");
-                }
-
-                if (onSuccess != null) {
-                    onSuccess.run();
+                    Log.e(TAG, "getQuestions: " + response.errors().toString());
+                    if (onFailure != null) {
+                        onFailure.run();
+                    }
                 }
             }
 
@@ -230,18 +241,25 @@ public class AppSyncDb implements DataProvider {
             GraphQLCall.Callback<ListQuestionsQuery.Data> listQuestionsCallback = new GraphQLCall.Callback<ListQuestionsQuery.Data>() {
                 @Override
                 public void onResponse(@Nonnull Response<ListQuestionsQuery.Data> response) {
-                    if (response.data().listQuestions() != null) {
-                        Log.i("Results", "Questions (next): " + Objects.requireNonNull(response.data().listQuestions()).toString());
-                        DataStore.setQuestions(questionsToArrayList(response.data().listQuestions().items()));
-                        if (response.data().listQuestions().nextToken() != null) {
-                            questionsNextToken = response.data().listQuestions().nextToken();
+                    if (!response.hasErrors()) {
+                        if (response.data().listQuestions() != null) {
+                            Log.i("Results", "Questions (next): " + Objects.requireNonNull(response.data().listQuestions()).toString());
+                            DataStore.setQuestions(questionsToArrayList(response.data().listQuestions().items()));
+                            if (response.data().listQuestions().nextToken() != null) {
+                                questionsNextToken = response.data().listQuestions().nextToken();
+                            }
+                        } else {
+                            Log.i("Results", "listQuestions() is null");
+                        }
+
+                        if (onSuccess != null) {
+                            onSuccess.run();
                         }
                     } else {
-                        Log.i("Results", "listQuestions() is null");
-                    }
-
-                    if (onSuccess != null) {
-                        onSuccess.run();
+                        Log.e(TAG, "getQuestions: " + response.errors().toString());
+                        if (onFailure != null) {
+                            onFailure.run();
+                        }
                     }
                 }
 
@@ -268,13 +286,20 @@ public class AppSyncDb implements DataProvider {
             GraphQLCall.Callback<CreateQuestionMutation.Data> addQuestionCallback = new GraphQLCall.Callback<CreateQuestionMutation.Data>() {
                 @Override
                 public void onResponse(@Nonnull Response<CreateQuestionMutation.Data> response) {
-                    Log.i("Results", "Added question: " + response.data().toString());
+                    if (!response.hasErrors()) {
+                        Log.i("Results", "Added question: " + response.data().toString());
 
-                    question.setId(response.data().createQuestion().id());
-                    DataStore.addQuestion(question);
+                        question.setId(response.data().createQuestion().id());
+                        DataStore.addQuestion(question);
 
-                    if (onSuccess != null) {
-                        onSuccess.run();
+                        if (onSuccess != null) {
+                            onSuccess.run();
+                        }
+                    } else {
+                        Log.e(TAG, "addQuestion: " + response.errors().toString());
+                        if (onFailure != null) {
+                            onFailure.run();
+                        }
                     }
                 }
 
@@ -371,12 +396,19 @@ public class AppSyncDb implements DataProvider {
         GraphQLCall.Callback<ListCommentsQuery.Data> listCommentsCallback = new GraphQLCall.Callback<ListCommentsQuery.Data>() {
             @Override
             public void onResponse(@Nonnull Response<ListCommentsQuery.Data> response) {
-                Log.i("Results", response.data().listComments().toString());
+                if (!response.hasErrors()) {
+                    Log.i("Results", response.data().listComments().toString());
 
-                question.setComments(commentsToArrayList(response.data().listComments().items()));
+                    question.setComments(commentsToArrayList(response.data().listComments().items()));
 
-                if (onSuccess != null) {
-                    onSuccess.run();
+                    if (onSuccess != null) {
+                        onSuccess.run();
+                    }
+                } else {
+                    Log.e(TAG, "getComments: " + response.errors().toString());
+                    if (onFailure != null) {
+                        onFailure.run();
+                    }
                 }
             }
 
@@ -405,19 +437,26 @@ public class AppSyncDb implements DataProvider {
             GraphQLCall.Callback<CreateCommentMutation.Data> createCommentCallback = new GraphQLCall.Callback<CreateCommentMutation.Data>() {
                 @Override
                 public void onResponse(@Nonnull Response<CreateCommentMutation.Data> response) {
-                    Log.i("Results", "Added comment: " + response.data().toString());
+                    if (!response.hasErrors()) {
+                        Log.i("Results", "Added comment: " + response.data().toString());
 
-                    comment.setId(response.data().createComment().id());
+                        comment.setId(response.data().createComment().id());
 
-                    Question question = DataStore.getQuestion(comment.getQuestionId());
-                    assert question != null;
-                    changeCommentCount(question, 1);
+                        Question question = DataStore.getQuestion(comment.getQuestionId());
+                        assert question != null;
+                        changeCommentCount(question, 1);
 
 
-                    DataStore.getQuestion(comment.getQuestionId()).addComment(comment);
+                        DataStore.getQuestion(comment.getQuestionId()).addComment(comment);
 
-                    if (onSuccess != null) {
-                        onSuccess.run();
+                        if (onSuccess != null) {
+                            onSuccess.run();
+                        }
+                    } else {
+                        Log.e(TAG, "addComment: " + response.errors().toString());
+                        if (onFailure != null) {
+                            onFailure.run();
+                        }
                     }
                 }
 
@@ -448,14 +487,21 @@ public class AppSyncDb implements DataProvider {
         GraphQLCall.Callback<DeleteCommentMutation.Data> removeCommentCallback = new GraphQLCall.Callback<DeleteCommentMutation.Data>() {
             @Override
             public void onResponse(@Nonnull Response<DeleteCommentMutation.Data> response) {
-                Log.i("Results", "Removed comment: " + response.data().toString());
+                if (!response.hasErrors()) {
+                    Log.i("Results", "Removed comment: " + response.data().toString());
 
-                Question question = DataStore.getQuestion(comment.getQuestionId());
-                assert question != null;
-                changeCommentCount(question, -1);
+                    Question question = DataStore.getQuestion(comment.getQuestionId());
+                    assert question != null;
+                    changeCommentCount(question, -1);
 
-                if (onSuccess != null) {
-                    onSuccess.run();
+                    if (onSuccess != null) {
+                        onSuccess.run();
+                    }
+                } else {
+                    Log.e(TAG, "removeComment: " + response.errors().toString());
+                    if (onFailure != null) {
+                        onFailure.run();
+                    }
                 }
             }
 
@@ -554,19 +600,26 @@ public class AppSyncDb implements DataProvider {
         GraphQLCall.Callback<GetUserQuery.Data> getUserDataCallback = new GraphQLCall.Callback<GetUserQuery.Data>() {
             @Override
             public void onResponse(@Nonnull Response<GetUserQuery.Data> response) {
-                assert response.data() != null;
-                assert response.data().getUser() != null;
-                if (response.data().getUser().bookmarks() != null) {
-                    Log.i("Results", Objects.requireNonNull(response.data().getUser().bookmarks()).toString());
-                    DataStore.getUserData().setQuestionBookmarks(new ArrayList<String>(response.data().getUser().bookmarks()));
-                    DataStore.getUserData().setEventsOrder(eventsOrderToHashMap(response.data().getUser().eventsOrder()));
-                } else {
-                    Log.i("Results", "No bookmarks for the user " + DataStore.getUserData().getLogin());
-                    DataStore.getUserData().setQuestionBookmarks(null);
-                }
+                if (!response.hasErrors()) {
+                    assert response.data() != null;
+                    assert response.data().getUser() != null;
+                    if (response.data().getUser().bookmarks() != null) {
+                        Log.i("Results", Objects.requireNonNull(response.data().getUser().bookmarks()).toString());
+                        DataStore.getUserData().setQuestionBookmarks(new ArrayList<String>(response.data().getUser().bookmarks()));
+                        DataStore.getUserData().setEventsOrder(eventsOrderToHashMap(response.data().getUser().eventsOrder()));
+                    } else {
+                        Log.i("Results", "No bookmarks for the user " + DataStore.getUserData().getLogin());
+                        DataStore.getUserData().setQuestionBookmarks(null);
+                    }
 
-                if (onSuccess != null) {
-                    onSuccess.run();
+                    if (onSuccess != null) {
+                        onSuccess.run();
+                    }
+                } else {
+                    Log.e(TAG, "getUserData: " + response.errors().toString());
+                    if (onFailure != null) {
+                        onFailure.run();
+                    }
                 }
             }
 
@@ -591,11 +644,17 @@ public class AppSyncDb implements DataProvider {
         GraphQLCall.Callback<ListUserEventsQuery.Data> listUserEventsCallback = new GraphQLCall.Callback<ListUserEventsQuery.Data>() {
             @Override
             public void onResponse(@Nonnull Response<ListUserEventsQuery.Data> response) {
+                if (!response.hasErrors()) {
+                    DataStore.addEvents(AppSyncDb.this.userEventsToArrayList(response.data().listUserEvents().items()));
 
-                DataStore.addEvents(AppSyncDb.this.userEventsToArrayList(response.data().listUserEvents().items()));
-
-                if (onSuccess != null) {
-                    onSuccess.run();
+                    if (onSuccess != null) {
+                        onSuccess.run();
+                    }
+                } else {
+                    Log.e(TAG, "getUserEvents: " + response.errors().toString());
+                    if (onFailure != null) {
+                        onFailure.run();
+                    }
                 }
             }
 
@@ -620,11 +679,17 @@ public class AppSyncDb implements DataProvider {
         GraphQLCall.Callback<ListPublicEventsQuery.Data> listPublicEventsCallback = new GraphQLCall.Callback<ListPublicEventsQuery.Data>() {
             @Override
             public void onResponse(@Nonnull Response<ListPublicEventsQuery.Data> response) {
+                if (!response.hasErrors()) {
+                    DataStore.addEvents(publicEventsToArrayList(response.data().listPublicEvents().items()));
 
-                DataStore.addEvents(publicEventsToArrayList(response.data().listPublicEvents().items()));
-
-                if (onSuccess != null) {
-                    onSuccess.run();
+                    if (onSuccess != null) {
+                        onSuccess.run();
+                    }
+                } else {
+                    Log.e(TAG, "getPublicEvents: " + response.errors().toString());
+                    if (onFailure != null) {
+                        onFailure.run();
+                    }
                 }
             }
 
@@ -660,8 +725,16 @@ public class AppSyncDb implements DataProvider {
         GraphQLCall.Callback<UpdateUserEventMutation.Data> updateUserEventMutationCallback = new GraphQLCall.Callback<UpdateUserEventMutation.Data>() {
             @Override
             public void onResponse(@Nonnull Response<UpdateUserEventMutation.Data> response) {
-                if (onSuccess != null) {
-                    onSuccess.run();
+                //TODO: zmienić, żeby była praca na kopii i ta kopia była tutaj przepisywana lub dodawana po usunięciu oryginału
+                if (!response.hasErrors()) {
+                    if (onSuccess != null) {
+                        onSuccess.run();
+                    }
+                } else {
+                    Log.e(TAG, "updateSingleUserEvent: " + response.errors().toString());
+                    if (onFailure != null) {
+                        onFailure.run();
+                    }
                 }
             }
 
@@ -688,11 +761,11 @@ public class AppSyncDb implements DataProvider {
 
     @Override
     public void createSingleUserEvent(Runnable onSuccess, Runnable onFailure, ChecklistEvent checklistEvent) {
-        if (checklistEvent.getId().equals("")) { //new, uninitialized question
+        if (checklistEvent.getId().equals("")) { //new, uninitialized event
             GraphQLCall.Callback<CreateUserEventMutation.Data> createUserEventMutationCallback = new GraphQLCall.Callback<CreateUserEventMutation.Data>() {
                 @Override
                 public void onResponse(@Nonnull Response<CreateUserEventMutation.Data> response) {
-                    if(!response.hasErrors()) {
+                    if (!response.hasErrors()) {
                         checklistEvent.setId(response.data().createUserEvent().id());
                         DataStore.addEvent(checklistEvent);
 
@@ -700,6 +773,7 @@ public class AppSyncDb implements DataProvider {
                             onSuccess.run();
                         }
                     } else {
+                        Log.e(TAG, "createSingleUserEvent: " + response.errors().toString());
                         if (onFailure != null) {
                             onFailure.run();
                         }
@@ -727,13 +801,59 @@ public class AppSyncDb implements DataProvider {
         }
     }
 
+    public void removeSingleUserEvent(Runnable onSuccess, Runnable onFailure, ChecklistEvent checklistEvent) {
+        if (!checklistEvent.getId().equals("") || !checklistEvent.isUserCreated()) { //don't try to delete events with unknown id
+            GraphQLCall.Callback<DeleteUserEventMutation.Data> deleteUserEventMutationCallback = new GraphQLCall.Callback<DeleteUserEventMutation.Data>() {
+                @Override
+                public void onResponse(@Nonnull Response<DeleteUserEventMutation.Data> response) {
+                    if (!response.hasErrors()) {
+                        DataStore.getChecklistEvents().remove(checklistEvent);
+
+                        if (onSuccess != null) {
+                            onSuccess.run();
+                        }
+                    } else {
+                        Log.e(TAG, "removeSingleUserEvent: " + response.errors().toString());
+                        if (onFailure != null) {
+                            onFailure.run();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(@Nonnull ApolloException e) {
+                    Log.e("Error", e.toString());
+                    if (onFailure != null) {
+                        onFailure.run();
+                    }
+                }
+            };
+
+            DeleteUserEventInput createUserEventInput = DeleteUserEventInput.builder()
+                    .id(checklistEvent.getId())
+                    .build();
+
+            appSyncClient.mutate(DeleteUserEventMutation.builder().input(createUserEventInput).build())
+                    .enqueue(deleteUserEventMutationCallback);
+        } else {
+            Log.e(TAG, "removeSingleUserEvent: event doesn't have the ID assigned" + checklistEvent.toString());
+        }
+    }
+
     @Override
     public void setEventsOrder(Runnable onSuccess, Runnable onFailure, HashMap<String, Integer> eventsOrder) {
         GraphQLCall.Callback<UpdateUserMutation.Data> createUserEventMutationCallback = new GraphQLCall.Callback<UpdateUserMutation.Data>() {
             @Override
             public void onResponse(@Nonnull Response<UpdateUserMutation.Data> response) {
-                if (onSuccess != null) {
-                    onSuccess.run();
+                if (!response.hasErrors()) {
+                    if (onSuccess != null) {
+                        onSuccess.run();
+                    }
+                } else {
+                    Log.e(TAG, "setEventsOrder: " + response.errors().toString());
+                    if (onFailure != null) {
+                        onFailure.run();
+                    }
                 }
             }
 
@@ -759,5 +879,47 @@ public class AppSyncDb implements DataProvider {
 
         appSyncClient.mutate(UpdateUserMutation.builder().input(updateUserInput).build())
                 .enqueue(createUserEventMutationCallback);
+    }
+
+    @Override
+    public void addPublicEvent(Runnable onSuccess, Runnable onFailure, ChecklistEvent checklistEvent) {
+        if (checklistEvent.getId().equals("")) { //new, uninitialized event
+            GraphQLCall.Callback<CreatePublicEventMutation.Data> createPublicEventCallback = new GraphQLCall.Callback<CreatePublicEventMutation.Data>() {
+                @Override
+                public void onResponse(@Nonnull Response<CreatePublicEventMutation.Data> response) {
+                    if (!response.hasErrors()) {
+                        checklistEvent.setId(response.data().createPublicEvent().id());
+                        DataStore.addEvent(checklistEvent);
+
+                        if (onSuccess != null) {
+                            onSuccess.run();
+                        }
+                    } else {
+                        Log.e(TAG, "addPublicEvent: " + response.errors().toString());
+                        if (onFailure != null) {
+                            onFailure.run();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(@Nonnull ApolloException e) {
+                    Log.e("Error", e.toString());
+                    if (onFailure != null) {
+                        onFailure.run();
+                    }
+                }
+            };
+
+            CreatePublicEventInput createPublicEventInput = CreatePublicEventInput.builder()
+                    .title(checklistEvent.getTitle())
+                    .description(checklistEvent.getDescription())
+                    .deadline(awsDateFormat.format(checklistEvent.getDeadline()))
+                    .done(checklistEvent.isDone())
+                    .build();
+
+            appSyncClient.mutate(CreatePublicEventMutation.builder().input(createPublicEventInput).build())
+                    .enqueue(createPublicEventCallback);
+        }
     }
 }
