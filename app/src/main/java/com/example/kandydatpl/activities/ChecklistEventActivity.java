@@ -25,13 +25,11 @@ import com.example.kandydatpl.models.ChecklistEvent;
 import com.example.kandydatpl.models.UserData;
 import com.example.kandydatpl.utils.FileHelper;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.example.kandydatpl.logic.Logic.dataProvider;
 
@@ -63,7 +61,7 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
         Intent dateFilterIntent = getIntent();
         Date filterDate = (Date) dateFilterIntent.getSerializableExtra("filterDate");
         if (filterDate != null) { //do runnable success
-            //ArrayList<ChecklistEvent> checklistEvents = DataStore.getChecklistEvents().stream().filter(item -> item.getDeadline().after(filterDate)).collect(Collectors.toList());
+            //ArrayList<ChecklistEvent> checklistEvents = DataStore.getAllChecklistEvents().stream().filter(item -> item.getDeadline().after(filterDate)).collect(Collectors.toList());
         }
 
         recyclerView = findViewById(R.id.taskListView);
@@ -77,7 +75,7 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
 
         items = FileHelper.readData(this);
 
-        adapter = new ChecklistEventRecyclerViewAdapter(DataStore.getChecklistEvents(), this);
+        adapter = new ChecklistEventRecyclerViewAdapter(DataStore.getAllChecklistEvents(), this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -88,7 +86,7 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
                 int position_dragged = dragged.getAdapterPosition();
                 int position_target = target.getAdapterPosition();
 
-                Collections.swap(DataStore.getChecklistEvents(), position_dragged, position_target);
+                Collections.swap(DataStore.getAllChecklistEvents(), position_dragged, position_target);
                 dataProvider.setEventsOrder(null, afterSetEventsOrderFailure, adapter.getEventsOrder());
                 adapter.notifyItemMoved(position_dragged, position_target);
                 return false;
@@ -112,7 +110,7 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
             Toast.makeText(this, "Cannot save the new events order", Toast.LENGTH_SHORT).show());
 
     private Runnable afterAllEventsSuccess = () -> runOnUiThread(() -> {
-        List<ChecklistEvent> checklistEvents = DataStore.getChecklistEvents();
+        List<ChecklistEvent> checklistEvents = DataStore.getAllChecklistEvents();
         HashMap<String, Integer> checkListEventsOrder = UserData.getInstance().getEventsOrder();
 
         Collections.sort(checklistEvents, new Comparator<ChecklistEvent>() {
