@@ -74,8 +74,6 @@ public class ChecklistEventRecyclerViewAdapter extends RecyclerView.Adapter<Chec
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i) {
-        Log.d(TAG, "onBindViewHolder: called");
-
         ChecklistEvent item = listItemTexts.get(i);
         viewHolder.listItem.setText(item.getTitle());
 

@@ -5,13 +5,16 @@ import com.example.kandydatpl.models.Question;
 import com.example.kandydatpl.models.UserData;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class DataStore {
     private static final String TAG = "DataStore";
     private static ArrayList<Question> questions = new ArrayList<>();
-    private static UserData userData = UserData.getInstance();
+    private static UserData userData;
 
-    private static ArrayList<ChecklistEvent> checklistEvents = new ArrayList<>();
+    private static ArrayList<ChecklistEvent> allChecklistEvents = new ArrayList<>();
+    private static ArrayList<ChecklistEvent> userChecklistEvents = new ArrayList<>();
+    private static ArrayList<ChecklistEvent> publicChecklistEvents = new ArrayList<>();
 
     public static ArrayList<Question> getQuestions() {
         return questions;
@@ -25,8 +28,8 @@ public class DataStore {
         return null;
     }
 
-    public static ArrayList<ChecklistEvent> getChecklistEvents() {
-        return checklistEvents;
+    public static ArrayList<ChecklistEvent> getAllChecklistEvents() {
+        return allChecklistEvents;
     }
 
     public static void setQuestions(ArrayList<Question> questions) {
@@ -47,15 +50,53 @@ public class DataStore {
     }
 
     public static void addEvents(ArrayList<ChecklistEvent> eventsToArrayList) {
-        DataStore.checklistEvents.removeAll(eventsToArrayList);
-        DataStore.checklistEvents.addAll(eventsToArrayList);
+        DataStore.allChecklistEvents.removeAll(eventsToArrayList);
+        DataStore.allChecklistEvents.addAll(eventsToArrayList);
     }
 
     public static void clearEvents() {
-        DataStore.checklistEvents.clear();
+        DataStore.allChecklistEvents.clear();
     }
 
     public static void addEvent(ChecklistEvent checklistEvent) {
-        DataStore.checklistEvents.add(checklistEvent);
+        DataStore.allChecklistEvents.add(checklistEvent);
+    }
+
+    public static void setUserData(UserData userData) {
+        DataStore.userData = userData;
+    }
+
+
+    public static ArrayList<ChecklistEvent> getUserChecklistEvents() {
+        return userChecklistEvents;
+    }
+
+    public static void setUserChecklistEvents(ArrayList<ChecklistEvent> userChecklistEvents) {
+        DataStore.userChecklistEvents = userChecklistEvents;
+        Iterator<ChecklistEvent> iter = allChecklistEvents.iterator();
+        while (iter.hasNext()) {
+            ChecklistEvent e = iter.next();
+
+            if (e.isUserCreated()) {
+                iter.remove();
+            }
+        }
+        allChecklistEvents.addAll(userChecklistEvents);
+    }
+
+    public static ArrayList<ChecklistEvent> getPublicChecklistEvents() {
+        return publicChecklistEvents;
+    }
+
+    public static void setPublicChecklistEvents(ArrayList<ChecklistEvent> publicChecklistEvents) {
+        DataStore.publicChecklistEvents = publicChecklistEvents;
+        Iterator<ChecklistEvent> iter = allChecklistEvents.iterator();
+        while (iter.hasNext()) {
+            ChecklistEvent e = iter.next();
+            if (!e.isUserCreated()) {
+                iter.remove();
+            }
+        }
+        allChecklistEvents.addAll(publicChecklistEvents);
     }
 }

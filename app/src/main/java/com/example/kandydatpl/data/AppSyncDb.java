@@ -7,6 +7,7 @@ import com.amazonaws.amplify.generated.graphql.CreateCommentMutation;
 import com.amazonaws.amplify.generated.graphql.CreatePublicEventMutation;
 import com.amazonaws.amplify.generated.graphql.CreateQuestionMutation;
 import com.amazonaws.amplify.generated.graphql.CreateUserEventMutation;
+import com.amazonaws.amplify.generated.graphql.CreateUserMutation;
 import com.amazonaws.amplify.generated.graphql.DeleteCommentMutation;
 import com.amazonaws.amplify.generated.graphql.DeleteUserEventMutation;
 import com.amazonaws.amplify.generated.graphql.GetUserQuery;
@@ -18,6 +19,7 @@ import com.amazonaws.amplify.generated.graphql.UpdateCommentMutation;
 import com.amazonaws.amplify.generated.graphql.UpdateQuestionMutation;
 import com.amazonaws.amplify.generated.graphql.UpdateUserEventMutation;
 import com.amazonaws.amplify.generated.graphql.UpdateUserMutation;
+import com.amazonaws.mobile.client.AWSMobileClient;
 import com.amazonaws.mobileconnectors.appsync.fetcher.AppSyncResponseFetchers;
 import com.apollographql.apollo.GraphQLCall;
 import com.apollographql.apollo.api.Response;
@@ -25,6 +27,7 @@ import com.apollographql.apollo.exception.ApolloException;
 import com.example.kandydatpl.models.ChecklistEvent;
 import com.example.kandydatpl.models.Comment;
 import com.example.kandydatpl.models.Question;
+import com.example.kandydatpl.models.UserData;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -43,6 +46,7 @@ import type.CreateCommentInput;
 import type.CreatePublicEventInput;
 import type.CreateQuestionInput;
 import type.CreateUserEventInput;
+import type.CreateUserInput;
 import type.DeleteCommentInput;
 import type.DeleteUserEventInput;
 import type.ModelCommentFilterInput;
@@ -102,7 +106,7 @@ public class AppSyncDb implements DataProvider {
 
         for (ListPublicEventsQuery.Item item : dbEvents) {
             try {
-                ChecklistEvent checklistEvent = new ChecklistEvent(item.id(), item.title(), item.description(), true, item.done(), awsDateFormat.parse(item.deadline()));
+                ChecklistEvent checklistEvent = new ChecklistEvent(item.id(), item.title(), item.description(), false, item.done(), awsDateFormat.parse(item.deadline()));
                 checklistEvents.add(checklistEvent);
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -192,7 +196,7 @@ public class AppSyncDb implements DataProvider {
             @Override
             public void onResponse(@Nonnull Response<ListQuestionsQuery.Data> response) {
                 if (!response.hasErrors()) {
-                    if (response.data().listQuestions() != null) {
+                    if (response.data().listQuestions().items() != null) {
                         Log.i("Results", "Questions (first): " + Objects.requireNonNull(response.data().listQuestions()).toString());
 
                         DataStore.setQuestions(questionsToArrayList(response.data().listQuestions().items()));
@@ -603,6 +607,13 @@ public class AppSyncDb implements DataProvider {
                 if (!response.hasErrors()) {
                     assert response.data() != null;
                     assert response.data().getUser() != null;
+                    if(response.data().getUser() == null) {
+                        Log.e(TAG, "getUserData: " + "no data exists for the user" + AWSMobileClient.getInstance().getUsername());
+                        if (onFailure != null) {
+                            onFailure.run();
+                        }
+                        return;
+                    }
                     if (response.data().getUser().bookmarks() != null) {
                         Log.i("Results", Objects.requireNonNull(response.data().getUser().bookmarks()).toString());
                         DataStore.getUserData().setQuestionBookmarks(new ArrayList<String>(response.data().getUser().bookmarks()));
@@ -640,12 +651,103 @@ public class AppSyncDb implements DataProvider {
     }
 
     @Override
+    public void getUserDataOnLogin(Runnable onSuccess, Runnable onFailure) {
+        GraphQLCall.Callback<GetUserQuery.Data> getUserDataCallback = new GraphQLCall.Callback<GetUserQuery.Data>() {
+            @Override
+            public void onResponse(@Nonnull Response<GetUserQuery.Data> response) {
+                if (!response.hasErrors()) {
+                    if(response.data().getUser() == null) {
+                        Log.d(TAG, "getUserData: " + "no data exists for the user" + AWSMobileClient.getInstance().getUsername());
+                        DataStore.setUserData(null);
+                    } else {
+                        DataStore.setUserData(UserData.getInstance());
+                        if (response.data().getUser().bookmarks() != null) {
+                            Log.i("Results", Objects.requireNonNull(response.data().getUser().bookmarks()).toString());
+                            DataStore.getUserData().setQuestionBookmarks(new ArrayList<String>(response.data().getUser().bookmarks()));
+                            DataStore.getUserData().setEventsOrder(eventsOrderToHashMap(response.data().getUser().eventsOrder()));
+                        } else {
+                            Log.i("Results", "No bookmarks for the user " + DataStore.getUserData().getLogin());
+                            DataStore.getUserData().setQuestionBookmarks(null);
+                        }
+                    }
+
+                    if (onSuccess != null) {
+                        onSuccess.run();
+                    }
+                } else {
+                    Log.e(TAG, "getUserData: " + response.errors().toString());
+                    if (onFailure != null) {
+                        onFailure.run();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@Nonnull ApolloException e) {
+                Log.e("ERROR", e.toString());
+                if (onFailure != null) {
+                    onFailure.run();
+                }
+            }
+        };
+
+        appSyncClient.query(GetUserQuery.builder()
+                .id(AWSMobileClient.getInstance().getUsername())
+                .build())
+                .responseFetcher(AppSyncResponseFetchers.NETWORK_ONLY)
+                .enqueue(getUserDataCallback);
+    }
+
+    @Override
+    public void createNewUserData(Runnable onSuccess, Runnable onFailure) {
+        GraphQLCall.Callback<CreateUserMutation.Data> createCommentCallback = new GraphQLCall.Callback<CreateUserMutation.Data>() {
+            @Override
+            public void onResponse(@Nonnull Response<CreateUserMutation.Data> response) {
+                if (!response.hasErrors()) {
+                    if (onSuccess != null) {
+                        onSuccess.run();
+                    }
+                } else {
+                    Log.e(TAG, "createNewUserData: " + response.errors().toString());
+                    if (onFailure != null) {
+                        onFailure.run();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@Nonnull ApolloException e) {
+                Log.e("Error", e.toString());
+                if (onFailure != null) {
+                    onFailure.run();
+                }
+            }
+        };
+
+
+        CreateUserInput createCommentInput = CreateUserInput.builder()
+                .build();
+
+        appSyncClient.mutate(CreateUserMutation.builder().input(createCommentInput).build())
+                .enqueue(createCommentCallback);
+    }
+
+    @Override
     public void getUserEvents(Runnable onSuccess, Runnable onFailure) {
         GraphQLCall.Callback<ListUserEventsQuery.Data> listUserEventsCallback = new GraphQLCall.Callback<ListUserEventsQuery.Data>() {
             @Override
             public void onResponse(@Nonnull Response<ListUserEventsQuery.Data> response) {
+                if(response.data().listUserEvents() != null && response.data().listUserEvents().items() != null) {
+                    boolean tokenExists = false;
+                    if(response.data().listUserEvents().nextToken() != null && !response.data().listUserEvents().nextToken().isEmpty()) {
+                        tokenExists = true;
+                    }
+                    Log.d(TAG, "getUserEvents list: " + response.data().listUserEvents().items().toString() + "; nextToken: " + tokenExists);
+                } else {
+                    Log.d(TAG, "getUserEvents contains nulls");
+                }
                 if (!response.hasErrors()) {
-                    DataStore.addEvents(AppSyncDb.this.userEventsToArrayList(response.data().listUserEvents().items()));
+                    DataStore.setUserChecklistEvents(AppSyncDb.this.userEventsToArrayList(response.data().listUserEvents().items()));
 
                     if (onSuccess != null) {
                         onSuccess.run();
@@ -679,14 +781,23 @@ public class AppSyncDb implements DataProvider {
         GraphQLCall.Callback<ListPublicEventsQuery.Data> listPublicEventsCallback = new GraphQLCall.Callback<ListPublicEventsQuery.Data>() {
             @Override
             public void onResponse(@Nonnull Response<ListPublicEventsQuery.Data> response) {
+                if(response.data().listPublicEvents() != null && response.data().listPublicEvents().items() != null) {
+                    boolean tokenExists = false;
+                    if(response.data().listPublicEvents().nextToken() != null && !response.data().listPublicEvents().nextToken().isEmpty()) {
+                        tokenExists = true;
+                    }
+                    Log.d(TAG, "getUserEvents list: " + response.data().listPublicEvents().items().toString() + "; nextToken: " + tokenExists);
+                } else {
+                    Log.d(TAG, "getUserEvents contains nulls");
+                }
                 if (!response.hasErrors()) {
-                    DataStore.addEvents(publicEventsToArrayList(response.data().listPublicEvents().items()));
+                    DataStore.setPublicChecklistEvents(publicEventsToArrayList(response.data().listPublicEvents().items()));
 
                     if (onSuccess != null) {
                         onSuccess.run();
                     }
                 } else {
-                    Log.e(TAG, "getPublicEvents: " + response.errors().toString());
+                    Log.e(TAG, "getPublicEvents failed: " + response.errors().toString());
                     if (onFailure != null) {
                         onFailure.run();
                     }
@@ -710,13 +821,13 @@ public class AppSyncDb implements DataProvider {
 
     @Override
     public void getAllEvents(Runnable onSuccess, Runnable onUserEventsFailure, Runnable onPublicEventsFailure) {
+        DataStore.clearEvents();
         Runnable getUserEventsSuccess = new Runnable() {
             @Override
             public void run() {
                 getPublicEvents(onSuccess, onPublicEventsFailure);
             }
         };
-        DataStore.clearEvents();
         getUserEvents(getUserEventsSuccess, onUserEventsFailure);
     }
 
@@ -807,7 +918,7 @@ public class AppSyncDb implements DataProvider {
                 @Override
                 public void onResponse(@Nonnull Response<DeleteUserEventMutation.Data> response) {
                     if (!response.hasErrors()) {
-                        DataStore.getChecklistEvents().remove(checklistEvent);
+                        DataStore.getAllChecklistEvents().remove(checklistEvent);
 
                         if (onSuccess != null) {
                             onSuccess.run();

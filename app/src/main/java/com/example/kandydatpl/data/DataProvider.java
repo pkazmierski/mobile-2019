@@ -23,6 +23,8 @@ public interface DataProvider {
 
     //User
     void getUserData(Runnable onSuccess, Runnable onFailure);
+    void getUserDataOnLogin(Runnable onSuccess, Runnable onFailure);
+    void createNewUserData(Runnable onSuccess, Runnable onFailure);
 
     //Events
     void getUserEvents(Runnable onSuccess, Runnable onFailure);

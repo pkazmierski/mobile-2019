@@ -11,7 +11,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import com.amazonaws.mobile.client.AWSMobileClient;
 import com.example.kandydatpl.R;
+import com.example.kandydatpl.data.DataStore;
 
 public class NavigationDrawerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -52,6 +54,12 @@ public class NavigationDrawerActivity extends AppCompatActivity implements Navig
             //intent.putExtra("filterDate", Calendar.getInstance().getTime());
             startAnimatedActivity(new Intent(getApplicationContext(), ChecklistEventActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+        } else if(id == R.id.nav_logout) {
+            AWSMobileClient.getInstance().signOut();
+            DataStore.setUserData(null);
+            Intent loginIntent = new Intent(getApplicationContext(), AuthenticationActivity.class);
+            loginIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(loginIntent);
         }
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

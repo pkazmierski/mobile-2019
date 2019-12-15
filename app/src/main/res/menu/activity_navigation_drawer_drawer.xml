@@ -20,6 +20,10 @@
             android:id="@+id/nav_checklist"
             android:icon="@drawable/ic_menu_list_24dp"
             android:title="Checklist" />
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_vpn_key_gray_24dp"
+            android:title="Logout" />
     </group>
 
 </menu>
