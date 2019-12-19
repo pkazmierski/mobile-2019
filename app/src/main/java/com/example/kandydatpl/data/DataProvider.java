@@ -2,6 +2,7 @@ package com.example.kandydatpl.data;
 
 import com.example.kandydatpl.models.Comment;
 import com.example.kandydatpl.models.Question;
+import com.example.kandydatpl.models.StudyOffer;
 
 public interface DataProvider {
     //Questions
@@ -29,4 +30,9 @@ public interface DataProvider {
 
     //Study offers
     void getStudyOffers(Runnable onSuccess, Runnable onFailure);
+
+    //Admin functions
+    void addStudyOffer(Runnable onSuccess, Runnable onFailure, StudyOffer studyOffer);
+    void modifyStudyOffer(Runnable onSuccess, Runnable onFailure, StudyOffer studyOffer);
+    void removeStudyOffer(Runnable onSuccess, Runnable onFailure, StudyOffer studyOffer);
 }
