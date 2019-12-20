@@ -1,8 +1,12 @@
 package com.example.kandydatpl.activities;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.icu.util.Calendar;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -66,15 +70,32 @@ public class AddOrEditChecklistEventActivity extends AppCompatActivity implement
         editDescription.setText(incomingItem.getDescription());
 
         saveButton.setOnClickListener(click -> {
-            Intent listIntent = getIntent();
-            ChecklistEvent listItem = new ChecklistEvent(requestCode == newItemRequest ? "" : incomingItem.getId(), editTitle.getText().toString(), editDescription.getText().toString(), incomingItem.isDone(), sampleDate.getTime());
-            listIntent.putExtra("newItem", listItem);
-            listIntent.putExtra("index", index);
-            setResult(RESULT_OK, listIntent);
-            finish();
+            if(!hasNetworkConnection()){
+                Toast.makeText(this, "Cannot save when no connection", Toast.LENGTH_SHORT).show();
+            } else {
+                Intent listIntent = getIntent();
+                ChecklistEvent listItem = new ChecklistEvent(requestCode == newItemRequest ? "" : incomingItem.getId(), editTitle.getText().toString(), editDescription.getText().toString(), incomingItem.isDone(), sampleDate.getTime());
+                listIntent.putExtra("newItem", listItem);
+                listIntent.putExtra("index", index);
+                setResult(RESULT_OK, listIntent);
+                finish();
+            }
         });
     }
 
+    private boolean hasNetworkConnection() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        Network[] networks = cm.getAllNetworks();
+        if (cm != null) {
+            for (Network netinfo : networks) {
+                NetworkInfo ni = cm.getNetworkInfo(netinfo);
+                if (ni.isConnected() && ni.isAvailable()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
