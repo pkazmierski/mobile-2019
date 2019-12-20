@@ -51,6 +51,7 @@ public class ChecklistEventRecyclerViewAdapter extends RecyclerView.Adapter<Chec
 
     public void remove(int position) {
         listItemTexts.remove(position);
+        //notifyItemRemoved(position);
         notifyDataSetChanged();
     }
 
@@ -106,6 +107,7 @@ public class ChecklistEventRecyclerViewAdapter extends RecyclerView.Adapter<Chec
         viewHolder.view.setOnClickListener(v -> {
             Intent intent = new Intent(context, AddOrEditChecklistEventActivity.class);
             intent.putExtra("index", viewHolder.getAdapterPosition());
+            intent.putExtra("item", item);
             intent.putExtra("item", item);
             context.startActivityForResult(intent, ChecklistEventActivity.editItemRequest);
         });

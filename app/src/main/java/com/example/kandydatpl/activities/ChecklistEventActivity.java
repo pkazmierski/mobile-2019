@@ -23,7 +23,6 @@ import com.example.kandydatpl.adapters.ChecklistEventRecyclerViewAdapter;
 import com.example.kandydatpl.data.DataStore;
 import com.example.kandydatpl.models.ChecklistEvent;
 import com.example.kandydatpl.models.UserData;
-import com.example.kandydatpl.utils.FileHelper;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -73,7 +72,6 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
             startActivityForResult(intent, newItemRequest);
         });
 
-        items = FileHelper.readData(this);
 
         adapter = new ChecklistEventRecyclerViewAdapter(DataStore.getAllChecklistEvents(), this);
         recyclerView.setAdapter(adapter);
@@ -99,7 +97,6 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
                 //checklistEvents.remove(index);
                 adapter.notifyItemRemoved(index);
                 showUndoSnackbar();
-
             }
         });
         helper.attachToRecyclerView(recyclerView);
@@ -130,7 +127,7 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
                 //propely place those events that exist in order list and event list
                 int targetIndex = checkListEventsOrder.get(event.getId());
                 int sourceIndex = checklistEvents.indexOf(event);
-                Collections.swap(checklistEvents, targetIndex, sourceIndex);
+                //Collections.swap(checklistEvents, targetIndex, sourceIndex);
             } else {
                 //if the event does not exist in the event array, it's desynchronized, so force sync
                 dataProvider.setEventsOrder(null, afterSetEventsOrderFailure, adapter.getEventsOrder());
@@ -155,6 +152,16 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
         adapter.notifyDataSetChanged();
     });
 
+    private Runnable afterRemoveEventSuccess = () -> runOnUiThread(() -> {
+        Toast.makeText(this, "Item removed!", Toast.LENGTH_SHORT).show();
+        adapter.notifyDataSetChanged();
+    });
+
+    private Runnable afterRemoveEventFailure = () -> runOnUiThread(() -> {
+        Toast.makeText(this, "Item remove failed", Toast.LENGTH_SHORT).show();
+        adapter.notifyDataSetChanged();
+    });
+
     private Runnable afterAddEventFailure = () -> runOnUiThread(() ->
             Toast.makeText(this, "Failed to add the item", Toast.LENGTH_SHORT).show());
 
@@ -166,6 +173,14 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
         Snackbar snackbar = Snackbar.make(view, R.string.snack_bar_text,
                 Snackbar.LENGTH_LONG);
         snackbar.setAction(R.string.snack_bar_undo, v -> adapter.undoDelete());
+        snackbar.addCallback(new Snackbar.Callback(){
+            @Override
+            public void onDismissed(Snackbar snackbar, int event) {
+                List<ChecklistEvent> checklistEvents = DataStore.getAllChecklistEvents();
+                dataProvider.removeSingleUserEvent(afterRemoveEventSuccess, afterRemoveEventFailure, adapter.getItemFromList(event));
+            }
+
+        });
         snackbar.show();
     }
 
@@ -184,7 +199,7 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
             if (resultCode == RESULT_OK) {
                 if (data != null) {
                     ChecklistEvent item = (ChecklistEvent) data.getSerializableExtra("newItem");
-                    int index = data.getIntExtra("index", -1);
+                    //int index = data.getIntExtra("index", -1);
                     dataProvider.updateSingleUserEvent(afterEditEventSuccess, afterEditEventFailure, item);
                 }
             }

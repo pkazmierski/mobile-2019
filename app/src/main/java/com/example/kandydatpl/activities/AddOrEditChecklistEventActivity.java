@@ -6,6 +6,7 @@ import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -29,7 +30,7 @@ public class AddOrEditChecklistEventActivity extends AppCompatActivity implement
     private EditText dateDisplay;
     private Calendar sampleDate;
     private SimpleDateFormat formatter;
-
+    private static final String TAG = "AddOrEditChecklistEventActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +46,8 @@ public class AddOrEditChecklistEventActivity extends AppCompatActivity implement
 
         Intent incomingIntent = getIntent();
         ChecklistEvent incomingItem = (ChecklistEvent) incomingIntent.getSerializableExtra("item");
+        Log.e(TAG, "incomingItem: " + incomingItem.toString());
+
         if (incomingItem.getDeadline() != null) {
             sampleDate.setTime(incomingItem.getDeadline());
         }

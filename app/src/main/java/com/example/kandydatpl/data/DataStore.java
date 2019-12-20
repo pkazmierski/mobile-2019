@@ -1,5 +1,6 @@
 package com.example.kandydatpl.data;
 
+import com.amazonaws.amplify.generated.graphql.CreateUserEventMutation;
 import com.example.kandydatpl.models.ChecklistEvent;
 import com.example.kandydatpl.models.Question;
 import com.example.kandydatpl.models.UserData;
@@ -99,4 +100,8 @@ public class DataStore {
         }
         allChecklistEvents.addAll(publicChecklistEvents);
     }
+
+//    public static void updateEvent(ChecklistEvent checklistEvent) {
+//        DataStore.checklistEvents.set(DataStore.checklistEvents.indexOf(checklistEvent), checklistEvent);
+//    }
 }

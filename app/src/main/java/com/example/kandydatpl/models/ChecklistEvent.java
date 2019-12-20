@@ -101,4 +101,16 @@ public class ChecklistEvent implements Serializable {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+    @Override
+    public String toString() {
+        return "ChecklistEvent{" +
+                "id='" + id + '\'' +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", userCreated=" + userCreated +
+                ", done=" + done +
+                ", deadline=" + deadline +
+                '}';
+    }
 }
