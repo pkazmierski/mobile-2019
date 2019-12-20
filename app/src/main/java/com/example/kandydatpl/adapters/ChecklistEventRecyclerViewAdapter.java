@@ -32,6 +32,9 @@ public class ChecklistEventRecyclerViewAdapter extends RecyclerView.Adapter<Chec
     private List<ChecklistEvent> listItemTexts = new ArrayList<>();
     private Activity context;
     private SimpleDateFormat formatter;
+
+
+
     private ChecklistEvent recentlyDeletedItem;
     private int recentlyDeletedItemPosition;
 
@@ -42,6 +45,11 @@ public class ChecklistEventRecyclerViewAdapter extends RecyclerView.Adapter<Chec
     public ChecklistEventRecyclerViewAdapter(List<ChecklistEvent> listItemTexts, Activity context) {
         this.listItemTexts = listItemTexts;
         this.context = context;
+    }
+
+    public void refresh(List<ChecklistEvent> listItemTexts){
+        this.listItemTexts = listItemTexts;
+        notifyDataSetChanged();
     }
 
     public void add(ChecklistEvent newItem) {
@@ -108,7 +116,7 @@ public class ChecklistEventRecyclerViewAdapter extends RecyclerView.Adapter<Chec
             Intent intent = new Intent(context, AddOrEditChecklistEventActivity.class);
             intent.putExtra("index", viewHolder.getAdapterPosition());
             intent.putExtra("item", item);
-            intent.putExtra("item", item);
+            intent.putExtra("requestCode", ChecklistEventActivity.editItemRequest);
             context.startActivityForResult(intent, ChecklistEventActivity.editItemRequest);
         });
     }
@@ -175,5 +183,9 @@ public class ChecklistEventRecyclerViewAdapter extends RecyclerView.Adapter<Chec
             changedOrderMap.put(event.getId(), listItemTexts.indexOf(event));
         }
         return changedOrderMap;
+    }
+
+    public ChecklistEvent getRecentlyDeletedItem() {
+        return recentlyDeletedItem;
     }
 }

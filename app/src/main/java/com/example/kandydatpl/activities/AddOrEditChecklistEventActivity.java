@@ -60,14 +60,14 @@ public class AddOrEditChecklistEventActivity extends AppCompatActivity implement
             }
         });
 
-
+        int requestCode = (int) incomingIntent.getIntExtra("requestCode", -1);
         int index = (int) incomingIntent.getIntExtra("index", -1);
         editTitle.setText(incomingItem.getTitle());
         editDescription.setText(incomingItem.getDescription());
 
         saveButton.setOnClickListener(click -> {
             Intent listIntent = getIntent();
-            ChecklistEvent listItem = new ChecklistEvent("", editTitle.getText().toString(), editDescription.getText().toString(), incomingItem.isDone(), sampleDate.getTime());
+            ChecklistEvent listItem = new ChecklistEvent(requestCode == newItemRequest ? "" : incomingItem.getId(), editTitle.getText().toString(), editDescription.getText().toString(), incomingItem.isDone(), sampleDate.getTime());
             listIntent.putExtra("newItem", listItem);
             listIntent.putExtra("index", index);
             setResult(RESULT_OK, listIntent);

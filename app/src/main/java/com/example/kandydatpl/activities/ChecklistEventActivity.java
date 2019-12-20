@@ -93,6 +93,11 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
                 int index = viewHolder.getAdapterPosition();
+                if(!adapter.getItemFromList(index).isUserCreated()) {
+                    Toast.makeText(recyclerView.getContext(),"You can't delete system events", Toast.LENGTH_SHORT).show();
+                    adapter.notifyDataSetChanged();
+                    return;
+                }
                 adapter.deleteItem(index);
                 //checklistEvents.remove(index);
                 adapter.notifyItemRemoved(index);
@@ -127,7 +132,7 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
                 //propely place those events that exist in order list and event list
                 int targetIndex = checkListEventsOrder.get(event.getId());
                 int sourceIndex = checklistEvents.indexOf(event);
-                //Collections.swap(checklistEvents, targetIndex, sourceIndex);
+                Collections.swap(checklistEvents, targetIndex, sourceIndex);
             } else {
                 //if the event does not exist in the event array, it's desynchronized, so force sync
                 dataProvider.setEventsOrder(null, afterSetEventsOrderFailure, adapter.getEventsOrder());
@@ -149,7 +154,7 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
 
     private Runnable afterEditEventSuccess = () -> runOnUiThread(() -> {
         Toast.makeText(this, "Item changed!", Toast.LENGTH_SHORT).show();
-        adapter.notifyDataSetChanged();
+        dataProvider.getAllEvents(afterAllEventsSuccess, afterAllPublicEventsFailure, afterAllUserEventsFailure);
     });
 
     private Runnable afterRemoveEventSuccess = () -> runOnUiThread(() -> {
@@ -176,8 +181,10 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
         snackbar.addCallback(new Snackbar.Callback(){
             @Override
             public void onDismissed(Snackbar snackbar, int event) {
-                List<ChecklistEvent> checklistEvents = DataStore.getAllChecklistEvents();
-                dataProvider.removeSingleUserEvent(afterRemoveEventSuccess, afterRemoveEventFailure, adapter.getItemFromList(event));
+                if(event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
+                    dataProvider.removeSingleUserEvent(afterRemoveEventSuccess, afterRemoveEventFailure, adapter.getRecentlyDeletedItem());
+                    dataProvider.setEventsOrder(null, afterSetEventsOrderFailure, adapter.getEventsOrder());
+                }
             }
 
         });
