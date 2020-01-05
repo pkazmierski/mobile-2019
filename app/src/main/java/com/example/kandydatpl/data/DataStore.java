@@ -14,28 +14,22 @@ import com.example.kandydatpl.logic.Logic;
 import com.example.kandydatpl.models.Contact;
 import com.example.kandydatpl.models.Event;
 import com.example.kandydatpl.models.File;
+import com.amazonaws.amplify.generated.graphql.CreateUserEventMutation;
+import com.example.kandydatpl.models.ChecklistEvent;
 import com.example.kandydatpl.models.Question;
 import com.example.kandydatpl.models.UserData;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
-import javax.annotation.Nonnull;
-
-import type.ModelCommentFilterInput;
-import type.ModelStringFilterInput;
-
-import static com.amazonaws.mobile.auth.core.internal.util.ThreadUtils.runOnUiThread;
-import static com.example.kandydatpl.logic.Logic.appSyncClient;
+import java.util.Iterator;
 
 public class DataStore {
     private static final String TAG = "DataStore";
     private static ArrayList<Question> questions = new ArrayList<>();
+    private static UserData userData;
+
+    private static ArrayList<ChecklistEvent> allChecklistEvents = new ArrayList<>();
+    private static ArrayList<ChecklistEvent> userChecklistEvents = new ArrayList<>();
+    private static ArrayList<ChecklistEvent> publicChecklistEvents = new ArrayList<>();
     private static UserData userData = UserData.getInstance();
     private static ArrayList<Contact> contacts = new ArrayList<>();
     private static ArrayList<File> files = new ArrayList<>();
@@ -50,6 +44,10 @@ public class DataStore {
                 return q;
         }
         return null;
+    }
+
+    public static ArrayList<ChecklistEvent> getAllChecklistEvents() {
+        return allChecklistEvents;
     }
 
     public static void setQuestions(ArrayList<Question> questions) {
@@ -86,4 +84,59 @@ public class DataStore {
         DataStore.files.clear();
         DataStore.files.addAll(files);
     }
+
+    public static void addEvents(ArrayList<ChecklistEvent> eventsToArrayList) {
+        DataStore.allChecklistEvents.removeAll(eventsToArrayList);
+        DataStore.allChecklistEvents.addAll(eventsToArrayList);
+    }
+
+    public static void clearEvents() {
+        DataStore.allChecklistEvents.clear();
+    }
+
+    public static void addEvent(ChecklistEvent checklistEvent) {
+        DataStore.allChecklistEvents.add(checklistEvent);
+    }
+
+    public static void setUserData(UserData userData) {
+        DataStore.userData = userData;
+    }
+
+
+    public static ArrayList<ChecklistEvent> getUserChecklistEvents() {
+        return userChecklistEvents;
+    }
+
+    public static void setUserChecklistEvents(ArrayList<ChecklistEvent> userChecklistEvents) {
+        DataStore.userChecklistEvents = userChecklistEvents;
+        Iterator<ChecklistEvent> iter = allChecklistEvents.iterator();
+        while (iter.hasNext()) {
+            ChecklistEvent e = iter.next();
+
+            if (e.isUserCreated()) {
+                iter.remove();
+            }
+        }
+        allChecklistEvents.addAll(userChecklistEvents);
+    }
+
+    public static ArrayList<ChecklistEvent> getPublicChecklistEvents() {
+        return publicChecklistEvents;
+    }
+
+    public static void setPublicChecklistEvents(ArrayList<ChecklistEvent> publicChecklistEvents) {
+        DataStore.publicChecklistEvents = publicChecklistEvents;
+        Iterator<ChecklistEvent> iter = allChecklistEvents.iterator();
+        while (iter.hasNext()) {
+            ChecklistEvent e = iter.next();
+            if (!e.isUserCreated()) {
+                iter.remove();
+            }
+        }
+        allChecklistEvents.addAll(publicChecklistEvents);
+    }
+
+//    public static void updateEvent(ChecklistEvent checklistEvent) {
+//        DataStore.checklistEvents.set(DataStore.checklistEvents.indexOf(checklistEvent), checklistEvent);
+//    }
 }

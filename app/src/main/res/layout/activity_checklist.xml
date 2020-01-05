@@ -5,35 +5,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingTop="?attr/actionBarSize"
-    tools:context=".activities.QuestionsActivity">
+    tools:context=".activities.ChecklistEventActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/searchQuestionsTxt"
-            style="@style/Base.Widget.MaterialComponents.TextInputEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Search"
-            android:inputType="textFilter"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
-            android:layout_marginBottom="10dp"/>
-
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/questionsListRecyclerView"
+            android:id="@+id/taskListView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-        </android.support.v7.widget.RecyclerView>
+            android:layout_height="match_parent"
+            />
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/addNewQuestionBtn"
+        android:id="@+id/addTaskButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
@@ -41,7 +28,6 @@
         android:background="@color/colorPrimaryDark"
         android:clickable="true"
         android:focusable="true"
-        android:onClick="addNewQuestion"
         android:src="@drawable/ic_add_white_24dp"
         app:srcCompat="@drawable/ic_add_white_24dp" />
 

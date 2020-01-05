@@ -1,23 +1,44 @@
 package com.example.kandydatpl.models;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
-public class Event {
+public class ChecklistEvent implements Serializable {
+
     private String id;
     private String title;
     private String description;
-    private Date date;
     private boolean userCreated;
-    private boolean completed;
+    private boolean done;
+    private Date deadline;
 
-    public Event(String id, String title, String description, Date date, boolean userCreated, boolean completed) {
+    public ChecklistEvent() {
+    }
+
+    public ChecklistEvent(String id, String title, String description, boolean done, Date deadline) {
         this.id = id;
         this.title = title;
         this.description = description;
-        this.date = date;
+        this.done = done;
+        this.deadline = deadline;
+        this.userCreated = true;
+    }
+
+    public ChecklistEvent(String title, boolean done) {
+        this.id = "";
+        this.title = title;
+        this.done = done;
+        this.deadline = new Date();
+    }
+
+    public ChecklistEvent(String id, String title, String description, boolean userCreated, boolean done, Date deadline) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
         this.userCreated = userCreated;
-        this.completed = completed;
+        this.done = done;
+        this.deadline = deadline;
     }
 
     public String getId() {
@@ -44,14 +65,6 @@ public class Event {
         this.description = description;
     }
 
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
     public boolean isUserCreated() {
         return userCreated;
     }
@@ -60,20 +73,28 @@ public class Event {
         this.userCreated = userCreated;
     }
 
-    public boolean isCompleted() {
-        return completed;
+    public boolean isDone() {
+        return done;
     }
 
-    public void setCompleted(boolean completed) {
-        this.completed = completed;
+    public void setDone(boolean done) {
+        this.done = done;
+    }
+
+    public Date getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(Date deadline) {
+        this.deadline = deadline;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Event event = (Event) o;
-        return id.equals(event.id);
+        ChecklistEvent that = (ChecklistEvent) o;
+        return Objects.equals(id, that.id);
     }
 
     @Override
@@ -83,13 +104,13 @@ public class Event {
 
     @Override
     public String toString() {
-        return "Event{" +
+        return "ChecklistEvent{" +
                 "id='" + id + '\'' +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
-                ", date=" + date +
                 ", userCreated=" + userCreated +
-                ", completed=" + completed +
+                ", done=" + done +
+                ", deadline=" + deadline +
                 '}';
     }
 }

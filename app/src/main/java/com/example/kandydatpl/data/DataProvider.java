@@ -1,7 +1,10 @@
 package com.example.kandydatpl.data;
 
+import com.example.kandydatpl.models.ChecklistEvent;
 import com.example.kandydatpl.models.Comment;
 import com.example.kandydatpl.models.Question;
+
+import java.util.HashMap;
 
 public interface DataProvider {
     //Questions
@@ -26,4 +29,20 @@ public interface DataProvider {
 
     //Files
     void getFiles(Runnable onSuccess, Runnable onFailure);
+    void getUserDataOnLogin(Runnable onSuccess, Runnable onFailure);
+    void createNewUserData(Runnable onSuccess, Runnable onFailure);
+
+    //Events
+    void getUserEvents(Runnable onSuccess, Runnable onFailure);
+    void getPublicEvents(Runnable onSuccess, Runnable onFailure);
+    void getAllEvents(Runnable onSuccess, Runnable onUserEventsFailure, Runnable onPublicEventsFailure);
+    void updateSingleUserEvent(Runnable onSuccess, Runnable onFailure, ChecklistEvent checklistEvent);
+    void createSingleUserEvent(Runnable onSuccess, Runnable onFailure, ChecklistEvent checklistEvent);
+    void removeSingleUserEvent(Runnable onSuccess, Runnable onFailure, ChecklistEvent checklistEvent);
+    //    void updateUserEvents(Runnable onSuccess, Runnable onUpdateSingleEventFailure, Runnable onCreateSingleEventFailure);
+    void setEventsOrder(Runnable onSuccess, Runnable onFailure, HashMap<String, Integer> eventOrder);
+
+
+    //Admin functions
+    void addPublicEvent(Runnable onSuccess, Runnable onFailure, ChecklistEvent checkListEvent);
 }

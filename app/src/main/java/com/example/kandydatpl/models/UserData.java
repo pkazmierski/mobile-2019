@@ -3,18 +3,21 @@ package com.example.kandydatpl.models;
 import com.amazonaws.mobile.client.AWSMobileClient;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class UserData {
     private String userId;
     private String login;
     private String fullName;
     private static UserData instance;
+    private HashMap<String, Integer> eventsOrder;
     private ArrayList<String> questionBookmarks;
 
     private UserData() {
         userId = AWSMobileClient.getInstance().getIdentityId();
         login = AWSMobileClient.getInstance().getUsername();
         fullName = login;
+        eventsOrder = new HashMap<>();
     }
 
     public static UserData getInstance() {
@@ -64,5 +67,24 @@ public class UserData {
 
     public String getFullName() {
         return fullName;
+    }
+
+    public HashMap<String, Integer> getEventsOrder() {
+        return eventsOrder;
+    }
+
+    public void setEventsOrder(HashMap<String, Integer> eventsOrder) {
+        this.eventsOrder = eventsOrder;
+    }
+
+    @Override
+    public String toString() {
+        return "UserData{" +
+                "userId='" + userId + '\'' +
+                ", login='" + login + '\'' +
+                ", fullName='" + fullName + '\'' +
+                ", eventsOrder=" + eventsOrder +
+                ", questionBookmarks=" + questionBookmarks +
+                '}';
     }
 }
