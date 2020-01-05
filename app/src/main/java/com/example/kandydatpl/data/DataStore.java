@@ -1,21 +1,8 @@
 package com.example.kandydatpl.data;
 
-import android.util.Log;
-
-import com.amazonaws.amplify.generated.graphql.ListCommentsQuery;
-import com.amazonaws.amplify.generated.graphql.ListQuestionsQuery;
-import com.amazonaws.amplify.generated.graphql.ListUserEventsQuery;
-import com.amazonaws.mobileconnectors.appsync.fetcher.AppSyncResponseFetchers;
-import com.apollographql.apollo.GraphQLCall;
-import com.apollographql.apollo.api.Response;
-import com.apollographql.apollo.exception.ApolloException;
-import com.example.kandydatpl.adapters.QuestionsRecyclerViewAdapter;
-import com.example.kandydatpl.logic.Logic;
-import com.example.kandydatpl.models.Contact;
-import com.example.kandydatpl.models.Event;
-import com.example.kandydatpl.models.File;
-import com.amazonaws.amplify.generated.graphql.CreateUserEventMutation;
 import com.example.kandydatpl.models.ChecklistEvent;
+import com.example.kandydatpl.models.Contact;
+import com.example.kandydatpl.models.File;
 import com.example.kandydatpl.models.Question;
 import com.example.kandydatpl.models.UserData;
 
@@ -25,7 +12,6 @@ import java.util.Iterator;
 public class DataStore {
     private static final String TAG = "DataStore";
     private static ArrayList<Question> questions = new ArrayList<>();
-    private static UserData userData;
 
     private static ArrayList<ChecklistEvent> allChecklistEvents = new ArrayList<>();
     private static ArrayList<ChecklistEvent> userChecklistEvents = new ArrayList<>();

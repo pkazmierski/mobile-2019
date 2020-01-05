@@ -12,6 +12,9 @@ import com.amazonaws.amplify.generated.graphql.DeleteCommentMutation;
 import com.amazonaws.amplify.generated.graphql.DeleteUserEventMutation;
 import com.amazonaws.amplify.generated.graphql.GetUserQuery;
 import com.amazonaws.amplify.generated.graphql.ListCommentsQuery;
+import com.amazonaws.amplify.generated.graphql.ListContactsQuery;
+import com.amazonaws.amplify.generated.graphql.ListFilesQuery;
+import com.amazonaws.amplify.generated.graphql.ListPublicEventsQuery;
 import com.amazonaws.amplify.generated.graphql.ListQuestionsQuery;
 import com.amazonaws.amplify.generated.graphql.ListUserEventsQuery;
 import com.amazonaws.amplify.generated.graphql.UpdateCommentMutation;
@@ -768,9 +771,9 @@ public class AppSyncDb implements DataProvider {
                     if(response.data().listUserEvents().nextToken() != null && !response.data().listUserEvents().nextToken().isEmpty()) {
                         tokenExists = true;
                     }
-                    Log.d(TAG, "getUserEvents list: " + response.data().listUserEvents().items().toString() + "; nextToken: " + tokenExists);
+//                    Log.d(TAG, "getUserEvents list: " + response.data().listUserEvents().items().toString() + "; nextToken: " + tokenExists);
                 } else {
-                    Log.d(TAG, "getUserEvents contains nulls");
+                    Log.e(TAG, "getUserEvents contains nulls");
                 }
                 if (!response.hasErrors()) {
                     DataStore.setUserChecklistEvents(AppSyncDb.this.userEventsToArrayList(response.data().listUserEvents().items()));
@@ -812,9 +815,9 @@ public class AppSyncDb implements DataProvider {
                     if(response.data().listPublicEvents().nextToken() != null && !response.data().listPublicEvents().nextToken().isEmpty()) {
                         tokenExists = true;
                     }
-                    Log.d(TAG, "getUserEvents list: " + response.data().listPublicEvents().items().toString() + "; nextToken: " + tokenExists);
+//                    Log.d(TAG, "getPublicEvents list: " + response.data().listPublicEvents().items().toString() + "; nextToken: " + tokenExists);
                 } else {
-                    Log.d(TAG, "getUserEvents contains nulls");
+                    Log.e(TAG, "getPublicEvents contains nulls");
                 }
                 if (!response.hasErrors()) {
                     DataStore.setPublicChecklistEvents(publicEventsToArrayList(response.data().listPublicEvents().items()));
