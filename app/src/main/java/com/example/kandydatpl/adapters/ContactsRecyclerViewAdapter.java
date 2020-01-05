@@ -1,6 +1,8 @@
 package com.example.kandydatpl.adapters;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -39,7 +41,17 @@ public class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRe
     //change what layout look like
     public void onBindViewHolder(@NonNull ContactsRecyclerViewAdapter.ViewHolder holder, final int position) {
         holder.contactNameTxt.setText(contacts.get(position).getName());
-        //TODO add phone and/or email
+        //TODO Recycling text phone/email fields on contact card when one is absent
+        if (contacts.get(position).getPhone() != 0) {
+            holder.contactPhoneTxt.setText(Integer.toString(contacts.get(position).getPhone()));
+            holder.contactPhoneTxt.setOnClickListener(v -> Contact.openDialer(v.getContext(),
+                    Integer.toString(contacts.get(position).getPhone())));
+        }
+        if (contacts.get(position).getEmail() != null) {
+            holder.contactEmailTxt.setText(contacts.get(position).getEmail());
+            holder.contactEmailTxt.setOnClickListener(v -> Contact.openEmailClient(v.getContext(),
+                    contacts.get(position).getEmail()));
+        }
     }
 
     @Override
@@ -50,11 +62,15 @@ public class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRe
     public class ViewHolder extends RecyclerView.ViewHolder {
         //holds individual entries in memory
         TextView contactNameTxt;
+        TextView contactPhoneTxt;
+        TextView contactEmailTxt;
         CardView contactCard;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             contactNameTxt = itemView.findViewById(R.id.contactNameTxt);
+            contactPhoneTxt = itemView.findViewById(R.id.contactPhoneTxt);
+            contactEmailTxt = itemView.findViewById(R.id.contactEmailTxt);
             contactCard = itemView.findViewById(R.id.contactCard);
         }
     }
