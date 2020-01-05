@@ -8,17 +8,21 @@ import com.amazonaws.amplify.generated.graphql.CreatePublicEventMutation;
 import com.amazonaws.amplify.generated.graphql.CreateQuestionMutation;
 import com.amazonaws.amplify.generated.graphql.CreateUserEventMutation;
 import com.amazonaws.amplify.generated.graphql.CreateUserMutation;
+import com.amazonaws.amplify.generated.graphql.CreateStudyOfferMutation;
 import com.amazonaws.amplify.generated.graphql.DeleteCommentMutation;
 import com.amazonaws.amplify.generated.graphql.DeleteUserEventMutation;
+import com.amazonaws.amplify.generated.graphql.DeleteStudyOfferMutation;
 import com.amazonaws.amplify.generated.graphql.GetUserQuery;
 import com.amazonaws.amplify.generated.graphql.ListCommentsQuery;
 import com.amazonaws.amplify.generated.graphql.ListContactsQuery;
 import com.amazonaws.amplify.generated.graphql.ListFilesQuery;
 import com.amazonaws.amplify.generated.graphql.ListPublicEventsQuery;
 import com.amazonaws.amplify.generated.graphql.ListQuestionsQuery;
+import com.amazonaws.amplify.generated.graphql.ListStudyOffersQuery;
 import com.amazonaws.amplify.generated.graphql.ListUserEventsQuery;
 import com.amazonaws.amplify.generated.graphql.UpdateCommentMutation;
 import com.amazonaws.amplify.generated.graphql.UpdateQuestionMutation;
+import com.amazonaws.amplify.generated.graphql.UpdateStudyOfferMutation;
 import com.amazonaws.amplify.generated.graphql.UpdateUserEventMutation;
 import com.amazonaws.amplify.generated.graphql.UpdateUserMutation;
 import com.amazonaws.mobile.client.AWSMobileClient;
@@ -31,6 +35,7 @@ import com.example.kandydatpl.models.Comment;
 import com.example.kandydatpl.models.Contact;
 import com.example.kandydatpl.models.File;
 import com.example.kandydatpl.models.Question;
+import com.example.kandydatpl.models.StudyOffer;
 import com.example.kandydatpl.models.UserData;
 
 import java.text.DateFormat;
@@ -49,14 +54,17 @@ import javax.annotation.Nonnull;
 import type.CreateCommentInput;
 import type.CreatePublicEventInput;
 import type.CreateQuestionInput;
+import type.CreateStudyOfferInput;
 import type.CreateUserEventInput;
 import type.CreateUserInput;
 import type.DeleteCommentInput;
+import type.DeleteStudyOfferInput;
 import type.DeleteUserEventInput;
 import type.ModelCommentFilterInput;
 import type.ModelStringFilterInput;
 import type.UpdateCommentInput;
 import type.UpdateQuestionInput;
+import type.UpdateStudyOfferInput;
 import type.UpdateUserEventInput;
 import type.UpdateUserInput;
 
@@ -90,6 +98,17 @@ public class AppSyncDb implements DataProvider {
     }
 
     private String questionsNextToken;
+
+    private ArrayList<StudyOffer> studyOffersToArrayList(List<ListStudyOffersQuery.Item> dbOffers) {
+        ArrayList<StudyOffer> newStudyOffers = new ArrayList<>();
+
+        for (ListStudyOffersQuery.Item offer : dbOffers) {
+            StudyOffer studyOffer = new StudyOffer(offer.id(), new ArrayList<>(offer.tags()), offer.content());
+            newStudyOffers.add(studyOffer);
+        }
+
+        return newStudyOffers;
+    }
 
     private ArrayList<ChecklistEvent> userEventsToArrayList(List<ListUserEventsQuery.Item> dbEvents) {
         ArrayList<ChecklistEvent> checklistEvents = new ArrayList<>();
@@ -1120,5 +1139,130 @@ public class AppSyncDb implements DataProvider {
                 .build())
                 .responseFetcher(AppSyncResponseFetchers.CACHE_AND_NETWORK)
                 .enqueue(listFilesQueryCallback);
+    }
+
+    @Override
+    public void getStudyOffers(Runnable onSuccess, Runnable onFailure) {
+        GraphQLCall.Callback<ListStudyOffersQuery.Data> listStudyOffersQueryCallback = new GraphQLCall.Callback<ListStudyOffersQuery.Data>() {
+            @Override
+            public void onResponse(@Nonnull Response<ListStudyOffersQuery.Data> response) {
+
+                DataStore.setStudyOffers(studyOffersToArrayList(response.data().listStudyOffers().items()));
+
+                if (onSuccess != null) {
+                    onSuccess.run();
+                }
+            }
+
+            @Override
+            public void onFailure(@Nonnull ApolloException e) {
+                Log.e("ERROR", e.toString());
+                if (onFailure != null) {
+                    onFailure.run();
+                }
+            }
+        };
+
+        appSyncClient.query(ListStudyOffersQuery.builder()
+                .build())
+                .responseFetcher(AppSyncResponseFetchers.CACHE_AND_NETWORK)
+                .enqueue(listStudyOffersQueryCallback);
+    }
+
+    @Override
+    public void addStudyOffer(Runnable onSuccess, Runnable onFailure, StudyOffer studyOffer) {
+        if (studyOffer.getId().equals("")) {
+            GraphQLCall.Callback<CreateStudyOfferMutation.Data> addStudyOfferCallback = new GraphQLCall.Callback<CreateStudyOfferMutation.Data>() {
+                @Override
+                public void onResponse(@Nonnull Response<CreateStudyOfferMutation.Data> response) {
+                    Log.i("StudyOffer", "Added study offer: " + response.data().toString());
+
+                    if (onSuccess != null) {
+                        onSuccess.run();
+                    }
+                }
+
+                @Override
+                public void onFailure(@Nonnull ApolloException e) {
+                    Log.e("Error", e.toString());
+                    if (onFailure != null) {
+                        onFailure.run();
+                    }
+                }
+            };
+
+
+            CreateStudyOfferInput createStudyOfferInput = CreateStudyOfferInput.builder()
+                    .tags(studyOffer.getTags())
+                    .content(studyOffer.getContent())
+                    .build();
+
+            appSyncClient.mutate(CreateStudyOfferMutation.builder().input(createStudyOfferInput).build())
+                    .enqueue(addStudyOfferCallback);
+        } else {
+            throw new IllegalArgumentException("Trying to add a question with an ID already assigned.");
+        }
+    }
+
+    @Override
+    public void modifyStudyOffer(Runnable onSuccess, Runnable onFailure, StudyOffer studyOffer) {
+        GraphQLCall.Callback<UpdateStudyOfferMutation.Data> modifyStudyOfferCallback = new GraphQLCall.Callback<UpdateStudyOfferMutation.Data>() {
+            @Override
+            public void onResponse(@Nonnull Response<UpdateStudyOfferMutation.Data> response) {
+                Log.i("StudyOffer", "Modified study offer: " + response.data().toString());
+
+                if (onSuccess != null) {
+                    onSuccess.run();
+                }
+            }
+
+            @Override
+            public void onFailure(@Nonnull ApolloException e) {
+                Log.e("Error", e.toString());
+                if (onFailure != null) {
+                    onFailure.run();
+                }
+            }
+        };
+
+
+        UpdateStudyOfferInput updateStudyOfferInput = UpdateStudyOfferInput.builder()
+                .id(studyOffer.getId())
+                .tags(studyOffer.getTags())
+                .content(studyOffer.getContent())
+                .build();
+
+        appSyncClient.mutate(UpdateStudyOfferMutation.builder().input(updateStudyOfferInput).build())
+                .enqueue(modifyStudyOfferCallback);
+    }
+
+    @Override
+    public void removeStudyOffer(Runnable onSuccess, Runnable onFailure, StudyOffer studyOffer) {
+        GraphQLCall.Callback<DeleteStudyOfferMutation.Data> deleteStudyOfferCallback = new GraphQLCall.Callback<DeleteStudyOfferMutation.Data>() {
+            @Override
+            public void onResponse(@Nonnull Response<DeleteStudyOfferMutation.Data> response) {
+                Log.i("StudyOffer", "Removed study offer: " + response.data().toString());
+
+                if (onSuccess != null) {
+                    onSuccess.run();
+                }
+            }
+
+            @Override
+            public void onFailure(@Nonnull ApolloException e) {
+                Log.e("Error", e.toString());
+                if (onFailure != null) {
+                    onFailure.run();
+                }
+            }
+        };
+
+
+        DeleteStudyOfferInput deleteStudyOfferInput = DeleteStudyOfferInput.builder()
+                .id(studyOffer.getId())
+                .build();
+
+        appSyncClient.mutate(DeleteStudyOfferMutation.builder().input(deleteStudyOfferInput).build())
+                .enqueue(deleteStudyOfferCallback);
     }
 }
