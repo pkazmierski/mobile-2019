@@ -449,7 +449,7 @@ public class AppSyncDb implements DataProvider {
             @Override
             public void onResponse(@Nonnull Response<ListCommentsQuery.Data> response) {
                 if (!response.hasErrors()) {
-                    Log.i("Results", response.data().listComments().toString());
+                    Log.i("Results", "Comments: " + response.data().listComments().toString());
 
                     question.setComments(commentsToArrayList(response.data().listComments().items()));
 
@@ -663,7 +663,7 @@ public class AppSyncDb implements DataProvider {
                         return;
                     }
                     if (response.data().getUser().bookmarks() != null) {
-                        Log.i("Results", Objects.requireNonNull(response.data().getUser().bookmarks()).toString());
+                        Log.i("Results", "User bookmarks: " + Objects.requireNonNull(response.data().getUser().bookmarks()).toString());
                         DataStore.getUserData().setQuestionBookmarks(new ArrayList<String>(response.data().getUser().bookmarks()));
                         DataStore.getUserData().setEventsOrder(eventsOrderToHashMap(response.data().getUser().eventsOrder()));
                     } else {
@@ -710,7 +710,7 @@ public class AppSyncDb implements DataProvider {
                     } else {
                         DataStore.setUserData(UserData.getInstance());
                         if (response.data().getUser().bookmarks() != null) {
-                            Log.i("Results", Objects.requireNonNull(response.data().getUser().bookmarks()).toString());
+                            Log.i("Results", "Bookmarks: " + Objects.requireNonNull(response.data().getUser().bookmarks()).toString());
                             DataStore.getUserData().setQuestionBookmarks(new ArrayList<String>(response.data().getUser().bookmarks()));
                             DataStore.getUserData().setEventsOrder(eventsOrderToHashMap(response.data().getUser().eventsOrder()));
                         } else {
@@ -1147,6 +1147,26 @@ public class AppSyncDb implements DataProvider {
             @Override
             public void onResponse(@Nonnull Response<ListStudyOffersQuery.Data> response) {
 
+                if(response.hasErrors()) {
+                    Log.e(TAG, "getStudyOffers: " + response.errors());
+                    return;
+                }
+
+                if(response.data().listStudyOffers() == null) {
+                    Log.e(TAG, "getStudyOffers: " + "listStudyOffers() == null");
+                    return;
+                }
+
+                if(response.data().listStudyOffers().items() == null) {
+                    Log.e(TAG, "getStudyOffers: " + "listStudyOffers().items() == null");
+                    return;
+                }
+
+                if(response.data().listStudyOffers().items().isEmpty()) {
+                    Log.e(TAG, "getStudyOffers: " + "listStudyOffers().items() is empty");
+                    return;
+                }
+
                 DataStore.setStudyOffers(studyOffersToArrayList(response.data().listStudyOffers().items()));
 
                 if (onSuccess != null) {
@@ -1170,7 +1190,7 @@ public class AppSyncDb implements DataProvider {
     }
 
     @Override
-    public void addStudyOffer(Runnable onSuccess, Runnable onFailure, StudyOffer studyOffer) {
+    public void addStudyOffer(Runnable onSuccess, Runnable onFailure, @Nonnull StudyOffer studyOffer) {
         if (studyOffer.getId().equals("")) {
             GraphQLCall.Callback<CreateStudyOfferMutation.Data> addStudyOfferCallback = new GraphQLCall.Callback<CreateStudyOfferMutation.Data>() {
                 @Override

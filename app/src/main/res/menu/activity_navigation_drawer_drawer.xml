@@ -9,6 +9,11 @@
             android:icon="@drawable/ic_menu_home_24dp"
             android:title="Home" />
         <item
+            android:id="@+id/nav_study_offers"
+            android:icon="@drawable/ic_school_black_24dp"
+            android:title="Study offers" />
+
+        <item
             android:id="@+id/nav_questions"
             android:icon="@drawable/ic_menu_questions_24dp"
             android:title="Questions" />

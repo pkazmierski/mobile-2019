@@ -11,7 +11,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -23,7 +23,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name=".activities.ContactBrowserActivity"
+        <activity
+            android:name=".activities.StudyOffersActivity"
+            android:label="Study Offers"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activities.ContactBrowserActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.FileBrowserActivity"
@@ -37,18 +42,17 @@
             android:excludeFromRecents="true"
             android:label="Add a new question"
             android:theme="@style/Theme.AppCompat.DayNight.Dialog.MinWidth" />
-
-        <activity android:name=".activities.QuestionDetailsActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".activities.MainActivity"/>
-
-        <activity android:name=".activities.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
-
-        <activity android:name=".activities.QuestionsActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".activities.MainActivity"/>
-
+        <activity
+            android:name=".activities.QuestionDetailsActivity"
+            android:parentActivityName=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activities.QuestionsActivity"
+            android:parentActivityName=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.ChecklistEventActivity"
             android:parentActivityName=".activities.MainActivity"
@@ -61,8 +65,6 @@
             android:excludeFromRecents="true"
             android:label="Add a new checklistEvent"
             android:theme="@style/Theme.AppCompat.Light.Dialog.MinWidth" />
-
-
         <activity
             android:name=".activities.AuthenticationActivity"
             android:label="@string/app_name"
