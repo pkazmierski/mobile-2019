@@ -158,7 +158,6 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
     });
 
     private Runnable afterRemoveEventSuccess = () -> runOnUiThread(() -> {
-        Toast.makeText(this, "Item removed!", Toast.LENGTH_SHORT).show();
         adapter.notifyDataSetChanged();
     });
 

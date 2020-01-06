@@ -95,13 +95,18 @@ public class ChecklistEventRecyclerViewAdapter extends RecyclerView.Adapter<Chec
             //notifyDataSetChanged();
             if (isChecked) {
                 viewHolder.listItem.setPaintFlags(viewHolder.listItem.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                viewHolder.cardViewItem.setCardBackgroundColor(Color.parseColor("gray"));
+                viewHolder.cardViewItem.setCardBackgroundColor(Color.parseColor("#FAFAFA"));
+                viewHolder.listItem.setTextColor(Color.parseColor("gray"));
+                viewHolder.dateDisplay.setTextColor(Color.parseColor("gray"));
                 viewHolder.dateDisplay.setPaintFlags(viewHolder.listItem.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                viewHolder.cardViewItem.setCardElevation(3);
             } else {
                 viewHolder.listItem.setPaintFlags(viewHolder.listItem.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
                 viewHolder.cardViewItem.setCardBackgroundColor(viewHolder.defaultColor);
                 viewHolder.dateDisplay.setPaintFlags(viewHolder.listItem.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
-                //viewHolder.listItem.setTextColor(Color.parseColor("black"));
+                viewHolder.listItem.setTextColor(Color.parseColor("black"));
+                viewHolder.dateDisplay.setTextColor(Color.parseColor("black"));
+                viewHolder.cardViewItem.setCardElevation(8);
             }
         });
 
