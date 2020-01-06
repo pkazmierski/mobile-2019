@@ -24,6 +24,14 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <activity
+            android:name=".activities.StudyOfferDetailsActivity"
+            android:excludeFromRecents="true"
+            android:theme="@style/AppTheme.Dialog" />
+        <activity
+            android:name=".activities.StudyOffersResultsActivity"
+            android:label="Search results"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".activities.StudyOffersActivity"
             android:label="Study Offers"
             android:theme="@style/AppTheme.NoActionBar" />

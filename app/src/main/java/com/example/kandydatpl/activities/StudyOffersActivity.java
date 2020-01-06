@@ -2,6 +2,7 @@ package com.example.kandydatpl.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,12 +29,12 @@ public class StudyOffersActivity extends NavigationDrawerActivity {
     ArrayList<Object> searchData = new ArrayList<>();
 
     private Runnable getStudyOffersSuccess = () -> {
-        Log.d(TAG, "DataStore.getStudyOffers(): " + DataStore.getStudyOffers());
+//        Log.d(TAG, "DataStore.getStudyOffers(): " + DataStore.getStudyOffers());
         for (StudyOffer so : DataStore.getStudyOffers()) {
             tags.addAll(so.getTags());
         }
         searchData = new ArrayList<>(tags);
-        Log.d(TAG, "searchData: " + searchData);
+//        Log.d(TAG, "searchData: " + searchData);
         runOnUiThread(() -> {
             adapter = new SimpleChipAdapter(searchData);
             cvTag.setAdapter(adapter);
@@ -63,6 +64,9 @@ public class StudyOffersActivity extends NavigationDrawerActivity {
             if (adapter.isSelected(i))
                 selectedTags.add((String) searchData.get(i));
         }
-        Log.d(TAG, "searchStudyOffersBtn: " + selectedTags.toString());
+//        Log.d(TAG, "searchStudyOffersBtn: " + selectedTags.toString());
+        Intent intent = new Intent(this, StudyOffersResultsActivity.class);
+        intent.putStringArrayListExtra("tagsToFind", (ArrayList<String>) selectedTags);
+        startAnimatedActivity(intent);
     }
 }

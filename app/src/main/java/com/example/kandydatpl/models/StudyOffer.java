@@ -8,11 +8,13 @@ public class StudyOffer {
     private String id;
     private List<String> tags;
     private String content;
+    private String title;
 
-    public StudyOffer(String id, List<String> tags, String content) {
+    public StudyOffer(String id, List<String> tags, String content, String title) {
         this.id = id;
         this.tags = tags;
         this.content = content;
+        this.title = title;
     }
 
     public String getId() {
@@ -25,6 +27,10 @@ public class StudyOffer {
 
     public String getContent() {
         return content;
+    }
+
+    public String getTitle() {
+        return title;
     }
 
     @Override
@@ -46,6 +52,7 @@ public class StudyOffer {
                 "id='" + id + '\'' +
                 ", tags=" + tags +
                 ", content='" + content + '\'' +
+                ", title='" + title + '\'' +
                 '}';
     }
 

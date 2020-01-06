@@ -103,7 +103,7 @@ public class AppSyncDb implements DataProvider {
         ArrayList<StudyOffer> newStudyOffers = new ArrayList<>();
 
         for (ListStudyOffersQuery.Item offer : dbOffers) {
-            StudyOffer studyOffer = new StudyOffer(offer.id(), new ArrayList<>(offer.tags()), offer.content());
+            StudyOffer studyOffer = new StudyOffer(offer.id(), new ArrayList<>(offer.tags()), offer.content(), offer.title());
             newStudyOffers.add(studyOffer);
         }
 

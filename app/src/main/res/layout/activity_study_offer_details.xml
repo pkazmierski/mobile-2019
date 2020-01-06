@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_margin="10dp"
+    tools:context=".activities.StudyOfferDetailsActivity">
+
+    <TextView
+        android:id="@+id/studyOfferTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Title"
+        android:textColor="@android:color/black"
+        android:layout_marginBottom="5dp"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/studyOfferContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Study offer contents"
+        android:textColor="@android:color/black"
+        android:layout_marginBottom="10dp"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/addToActiveOffersBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:text="Add to active offers"
+        android:textColor="@android:color/white" />
+</LinearLayout>
