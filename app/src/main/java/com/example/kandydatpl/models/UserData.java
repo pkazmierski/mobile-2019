@@ -4,6 +4,7 @@ import com.amazonaws.mobile.client.AWSMobileClient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class UserData {
     private String userId;
@@ -12,6 +13,8 @@ public class UserData {
     private static UserData instance;
     private HashMap<String, Integer> eventsOrder;
     private ArrayList<String> questionBookmarks;
+    private ArrayList<String> activeOffersIds = new ArrayList<>();
+    private ArrayList<String> donePublicEvents = new ArrayList<>();
 
     private UserData() {
         userId = AWSMobileClient.getInstance().getIdentityId();
@@ -77,14 +80,32 @@ public class UserData {
         this.eventsOrder = eventsOrder;
     }
 
-    @Override
-    public String toString() {
-        return "UserData{" +
-                "userId='" + userId + '\'' +
-                ", login='" + login + '\'' +
-                ", fullName='" + fullName + '\'' +
-                ", eventsOrder=" + eventsOrder +
-                ", questionBookmarks=" + questionBookmarks +
-                '}';
+    public List<String> getActiveOffersIds() {
+        return activeOffersIds;
+    }
+
+    public ArrayList<String> getDonePublicEvents() {
+        return donePublicEvents;
+    }
+
+    public void setActiveOffersIds(ArrayList<String> activeOffersIds) {
+        this.activeOffersIds = activeOffersIds;
+    }
+
+    public void addActiveOfferId(String studyOfferId) {
+        if(!activeOffersIds.contains(studyOfferId))
+            activeOffersIds.add(studyOfferId);
+    }
+
+    public void removeActiveOfferId(String studyOfferId) {
+        activeOffersIds.remove(studyOfferId);
+    }
+
+    public void setDonePublicEvents(ArrayList<String> donePublicEvents) {
+        this.donePublicEvents = donePublicEvents;
+    }
+
+    public void removeDonePublicEvent(ArrayList donePublicEventId) {
+        donePublicEvents.remove(donePublicEventId);
     }
 }

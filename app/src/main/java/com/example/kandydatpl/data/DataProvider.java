@@ -35,6 +35,7 @@ public interface DataProvider {
 
     //Study offers
     void getStudyOffers(Runnable onSuccess, Runnable onFailure);
+    void switchOfferStatus(Runnable onSuccess, Runnable onFailure, StudyOffer studyOffer);
 
     //Admin functions
     void addStudyOffer(Runnable onSuccess, Runnable onFailure, @Nonnull StudyOffer studyOffer);
