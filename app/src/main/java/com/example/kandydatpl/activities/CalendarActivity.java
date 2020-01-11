@@ -1,6 +1,7 @@
 package com.example.kandydatpl.activities;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -62,7 +63,9 @@ public class CalendarActivity extends AppCompatActivity {
                 Context context = getApplicationContext();
                 for ( Event e : eventCal ) {
                     if (dateClicked.getTime() == e.getTimeInMillis()) {
-                        Toast.makeText(context,e.getData().toString(), Toast.LENGTH_SHORT).show();
+                        // add -> to go into checklistactivity and display only the events from that day
+                        Intent i = new Intent(getApplicationContext(),ChecklistEventActivity.class);
+                        startActivity(i);
                     }
                 }
             }
