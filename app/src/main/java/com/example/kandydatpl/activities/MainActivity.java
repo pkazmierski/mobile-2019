@@ -22,6 +22,7 @@ import com.apollographql.apollo.GraphQLCall;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
 import com.example.kandydatpl.R;
+import com.example.kandydatpl.data.AppSyncDb;
 import com.example.kandydatpl.data.DataStore;
 import com.example.kandydatpl.logic.Logic;
 import com.example.kandydatpl.models.Comment;
@@ -78,6 +79,30 @@ public class MainActivity extends NavigationDrawerActivity {
         @SuppressLint("InflateParams")
         View contentView = inflater.inflate(R.layout.activity_main, null, false);
         drawer.addView(contentView, 0);
+
+//        List<String> tags1 = new ArrayList<>();
+//        tags1.add("International Faculty of Engineering (IFE)");
+//        tags1.add("Information Technology (IT)");
+//        tags1.add("Technology");
+//        tags1.add("Bachelor");
+//        StudyOffer studyOffer1 = new StudyOffer("", tags1, "Information Technology at IFE (bachelor studies)");
+//
+//        List<String> tags2 = new ArrayList<>();
+//        tags2.add("International Faculty of Engineering (IFE)");
+//        tags2.add("Biotechnology");
+//        tags2.add("Technology");
+//        tags2.add("Bachelor");
+//        StudyOffer studyOffer2 = new StudyOffer("", tags2, "Biotechnology at IFE (bachelor studies)");
+//
+//        List<String> tags3 = new ArrayList<>();
+//        tags3.add("International Faculty of Engineering (IFE)");
+//        tags3.add("Architecture");
+//        tags3.add("Bachelor");
+//        StudyOffer studyOffer3 = new StudyOffer("", tags3, "Biotechnology at IFE (bachelor studies)");
+//
+//        AppSyncDb.getInstance().addStudyOffer(null, null, studyOffer1);
+//        AppSyncDb.getInstance().addStudyOffer(null, null, studyOffer2);
+//        AppSyncDb.getInstance().addStudyOffer(null, null, studyOffer3);
 
 //        String qid = "b13e9428-d1db-4f51-81a7-7aa24a2256ae";
 //        mutationAddComment(new Comment(null, "At XYZ.", qid));

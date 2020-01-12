@@ -8,7 +8,10 @@ import com.example.kandydatpl.models.StudyOffer;
 import com.example.kandydatpl.models.UserData;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 public class DataStore {
     private static final String TAG = "DataStore";
@@ -131,6 +134,15 @@ public class DataStore {
             }
         }
         allChecklistEvents.addAll(publicChecklistEvents);
+    }
+
+    public static  List<StudyOffer> getOffersWithTag(String tag) {
+        LinkedHashSet<StudyOffer> matchingStudyOffers = new LinkedHashSet<>();
+        for (StudyOffer studyOffer : studyOffers) {
+            if(studyOffer.getTags().contains(tag))
+                matchingStudyOffers.add(studyOffer);
+        }
+        return new ArrayList<>(matchingStudyOffers);
     }
 
 //    public static void updateEvent(ChecklistEvent checklistEvent) {

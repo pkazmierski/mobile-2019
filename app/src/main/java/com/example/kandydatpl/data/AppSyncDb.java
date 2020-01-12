@@ -103,7 +103,7 @@ public class AppSyncDb implements DataProvider {
         ArrayList<StudyOffer> newStudyOffers = new ArrayList<>();
 
         for (ListStudyOffersQuery.Item offer : dbOffers) {
-            StudyOffer studyOffer = new StudyOffer(offer.id(), new ArrayList<>(offer.tags()), offer.content());
+            StudyOffer studyOffer = new StudyOffer(offer.id(), new ArrayList<>(offer.tags()), offer.content(), offer.title());
             newStudyOffers.add(studyOffer);
         }
 
@@ -444,12 +444,54 @@ public class AppSyncDb implements DataProvider {
     }
 
     @Override
+    public void switchOfferStatus(Runnable onSuccess, Runnable onFailure, StudyOffer studyOffer) {
+        GraphQLCall.Callback<UpdateUserMutation.Data> updateUserDataCallback = new GraphQLCall.Callback<UpdateUserMutation.Data>() {
+            @Override
+            public void onResponse(@Nonnull Response<UpdateUserMutation.Data> response) {
+                if (!DataStore.getUserData().getActiveOffersIds().contains(studyOffer.getId())) {
+                    DataStore.getUserData().addActiveOfferId(studyOffer.getId());
+                    Log.i("Results", "Activated offer: " + studyOffer);
+                } else {
+                    DataStore.getUserData().removeActiveOfferId(studyOffer.getId());
+                    Log.i("Results", "Deactived offer: " + studyOffer);
+                }
+
+                if (onSuccess != null) {
+                    onSuccess.run();
+                }
+            }
+
+            @Override
+            public void onFailure(@Nonnull ApolloException e) {
+                Log.e("Error", e.toString());
+                if (onFailure != null) {
+                    onFailure.run();
+                }
+            }
+        };
+
+        ArrayList<String> newActiveStudyOffers = new ArrayList<>(DataStore.getUserData().getActiveOffersIds());
+        if (!DataStore.getUserData().getActiveOffersIds().contains(studyOffer.getId()))
+            newActiveStudyOffers.add(studyOffer.getId());
+        else
+            newActiveStudyOffers.remove(studyOffer.getId());
+
+        UpdateUserInput updateUserDataInput = UpdateUserInput.builder()
+                .id(DataStore.getUserData().getLogin())
+                .activeOffers(newActiveStudyOffers)
+                .build();
+
+        appSyncClient.mutate(UpdateUserMutation.builder().input(updateUserDataInput).build())
+                .enqueue(updateUserDataCallback);
+    }
+
+    @Override
     public void getComments(Runnable onSuccess, Runnable onFailure, Question question) {
         GraphQLCall.Callback<ListCommentsQuery.Data> listCommentsCallback = new GraphQLCall.Callback<ListCommentsQuery.Data>() {
             @Override
             public void onResponse(@Nonnull Response<ListCommentsQuery.Data> response) {
                 if (!response.hasErrors()) {
-                    Log.i("Results", response.data().listComments().toString());
+                    Log.i("Results", "Comments: " + response.data().listComments().toString());
 
                     question.setComments(commentsToArrayList(response.data().listComments().items()));
 
@@ -646,7 +688,6 @@ public class AppSyncDb implements DataProvider {
     }
 
     //User
-
     @Override
     public void getUserData(Runnable onSuccess, Runnable onFailure) {
         GraphQLCall.Callback<GetUserQuery.Data> getUserDataCallback = new GraphQLCall.Callback<GetUserQuery.Data>() {
@@ -655,7 +696,7 @@ public class AppSyncDb implements DataProvider {
                 if (!response.hasErrors()) {
                     assert response.data() != null;
                     assert response.data().getUser() != null;
-                    if(response.data().getUser() == null) {
+                    if (response.data().getUser() == null) {
                         Log.e(TAG, "getUserData: " + "no data exists for the user" + AWSMobileClient.getInstance().getUsername());
                         if (onFailure != null) {
                             onFailure.run();
@@ -663,12 +704,28 @@ public class AppSyncDb implements DataProvider {
                         return;
                     }
                     if (response.data().getUser().bookmarks() != null) {
-                        Log.i("Results", Objects.requireNonNull(response.data().getUser().bookmarks()).toString());
+                        Log.i("Results", "User bookmarks: " + Objects.requireNonNull(response.data().getUser().bookmarks()).toString());
                         DataStore.getUserData().setQuestionBookmarks(new ArrayList<String>(response.data().getUser().bookmarks()));
                         DataStore.getUserData().setEventsOrder(eventsOrderToHashMap(response.data().getUser().eventsOrder()));
                     } else {
                         Log.i("Results", "No bookmarks for the user " + DataStore.getUserData().getLogin());
-                        DataStore.getUserData().setQuestionBookmarks(null);
+//                        DataStore.getUserData().setQuestionBookmarks(new ArrayList<>());
+                    }
+
+                    if (response.data().getUser().donePublicEvents() != null) {
+                        Log.i("Results", "User done public events: " + Objects.requireNonNull(response.data().getUser().donePublicEvents()).toString());
+                        DataStore.getUserData().setDonePublicEvents(new ArrayList<>(response.data().getUser().donePublicEvents()));
+                    } else {
+                        Log.i("Results", "No done public events for the user " + DataStore.getUserData().getLogin());
+//                        DataStore.getUserData().setDonePublicEvents(new ArrayList<>());
+                    }
+
+                    if (response.data().getUser().activeOffers() != null) {
+                        Log.i("Results", "User's active offers: " + Objects.requireNonNull(response.data().getUser().donePublicEvents()).toString());
+                        DataStore.getUserData().setActiveOffersIds(new ArrayList<>(response.data().getUser().activeOffers()));
+                    } else {
+                        Log.i("Results", "No active offers for the user " + DataStore.getUserData().getLogin());
+//                        DataStore.getUserData().setActiveOffersIds(new ArrayList<>());
                     }
 
                     if (onSuccess != null) {
@@ -704,18 +761,34 @@ public class AppSyncDb implements DataProvider {
             @Override
             public void onResponse(@Nonnull Response<GetUserQuery.Data> response) {
                 if (!response.hasErrors()) {
-                    if(response.data().getUser() == null) {
+                    if (response.data().getUser() == null) {
                         Log.d(TAG, "getUserData: " + "no data exists for the user" + AWSMobileClient.getInstance().getUsername());
                         DataStore.setUserData(null);
                     } else {
                         DataStore.setUserData(UserData.getInstance());
                         if (response.data().getUser().bookmarks() != null) {
-                            Log.i("Results", Objects.requireNonNull(response.data().getUser().bookmarks()).toString());
+                            Log.i("Results", "Bookmarks: " + Objects.requireNonNull(response.data().getUser().bookmarks()).toString());
                             DataStore.getUserData().setQuestionBookmarks(new ArrayList<String>(response.data().getUser().bookmarks()));
                             DataStore.getUserData().setEventsOrder(eventsOrderToHashMap(response.data().getUser().eventsOrder()));
                         } else {
                             Log.i("Results", "No bookmarks for the user " + DataStore.getUserData().getLogin());
-                            DataStore.getUserData().setQuestionBookmarks(null);
+//                            DataStore.getUserData().setQuestionBookmarks(new ArrayList<>());
+                        }
+
+                        if (response.data().getUser().donePublicEvents() != null) {
+                            Log.i("Results", "User done public events: " + Objects.requireNonNull(response.data().getUser().donePublicEvents()).toString());
+                            DataStore.getUserData().setDonePublicEvents(new ArrayList<>(response.data().getUser().donePublicEvents()));
+                        } else {
+                            Log.i("Results", "No done public events for the user " + DataStore.getUserData().getLogin());
+//                            DataStore.getUserData().setDonePublicEvents(new ArrayList<>());
+                        }
+
+                        if (response.data().getUser().activeOffers() != null) {
+                            Log.i("Results", "User's active offers: " + Objects.requireNonNull(response.data().getUser().activeOffers()).toString());
+                            DataStore.getUserData().setActiveOffersIds(new ArrayList<>(response.data().getUser().activeOffers()));
+                        } else {
+                            Log.i("Results", "No active offers for the user " + DataStore.getUserData().getLogin());
+//                            DataStore.getUserData().setActiveOffersIds(new ArrayList<>());
                         }
                     }
 
@@ -785,9 +858,9 @@ public class AppSyncDb implements DataProvider {
         GraphQLCall.Callback<ListUserEventsQuery.Data> listUserEventsCallback = new GraphQLCall.Callback<ListUserEventsQuery.Data>() {
             @Override
             public void onResponse(@Nonnull Response<ListUserEventsQuery.Data> response) {
-                if(response.data().listUserEvents() != null && response.data().listUserEvents().items() != null) {
+                if (response.data().listUserEvents() != null && response.data().listUserEvents().items() != null) {
                     boolean tokenExists = false;
-                    if(response.data().listUserEvents().nextToken() != null && !response.data().listUserEvents().nextToken().isEmpty()) {
+                    if (response.data().listUserEvents().nextToken() != null && !response.data().listUserEvents().nextToken().isEmpty()) {
                         tokenExists = true;
                     }
 //                    Log.d(TAG, "getUserEvents list: " + response.data().listUserEvents().items().toString() + "; nextToken: " + tokenExists);
@@ -829,9 +902,9 @@ public class AppSyncDb implements DataProvider {
         GraphQLCall.Callback<ListPublicEventsQuery.Data> listPublicEventsCallback = new GraphQLCall.Callback<ListPublicEventsQuery.Data>() {
             @Override
             public void onResponse(@Nonnull Response<ListPublicEventsQuery.Data> response) {
-                if(response.data().listPublicEvents() != null && response.data().listPublicEvents().items() != null) {
+                if (response.data().listPublicEvents() != null && response.data().listPublicEvents().items() != null) {
                     boolean tokenExists = false;
-                    if(response.data().listPublicEvents().nextToken() != null && !response.data().listPublicEvents().nextToken().isEmpty()) {
+                    if (response.data().listPublicEvents().nextToken() != null && !response.data().listPublicEvents().nextToken().isEmpty()) {
                         tokenExists = true;
                     }
 //                    Log.d(TAG, "getPublicEvents list: " + response.data().listPublicEvents().items().toString() + "; nextToken: " + tokenExists);
@@ -1147,6 +1220,26 @@ public class AppSyncDb implements DataProvider {
             @Override
             public void onResponse(@Nonnull Response<ListStudyOffersQuery.Data> response) {
 
+                if (response.hasErrors()) {
+                    Log.e(TAG, "getStudyOffers: " + response.errors());
+                    return;
+                }
+
+                if (response.data().listStudyOffers() == null) {
+                    Log.e(TAG, "getStudyOffers: " + "listStudyOffers() == null");
+                    return;
+                }
+
+                if (response.data().listStudyOffers().items() == null) {
+                    Log.e(TAG, "getStudyOffers: " + "listStudyOffers().items() == null");
+                    return;
+                }
+
+                if (response.data().listStudyOffers().items().isEmpty()) {
+                    Log.e(TAG, "getStudyOffers: " + "listStudyOffers().items() is empty");
+                    return;
+                }
+
                 DataStore.setStudyOffers(studyOffersToArrayList(response.data().listStudyOffers().items()));
 
                 if (onSuccess != null) {
@@ -1170,7 +1263,7 @@ public class AppSyncDb implements DataProvider {
     }
 
     @Override
-    public void addStudyOffer(Runnable onSuccess, Runnable onFailure, StudyOffer studyOffer) {
+    public void addStudyOffer(Runnable onSuccess, Runnable onFailure, @Nonnull StudyOffer studyOffer) {
         if (studyOffer.getId().equals("")) {
             GraphQLCall.Callback<CreateStudyOfferMutation.Data> addStudyOfferCallback = new GraphQLCall.Callback<CreateStudyOfferMutation.Data>() {
                 @Override

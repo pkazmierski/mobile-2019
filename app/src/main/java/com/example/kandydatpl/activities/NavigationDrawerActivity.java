@@ -66,6 +66,8 @@ public class NavigationDrawerActivity extends AppCompatActivity implements Navig
             Intent loginIntent = new Intent(getApplicationContext(), AuthenticationActivity.class);
             loginIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(loginIntent);
+        } else if(id == R.id.nav_study_offers) {
+            startAnimatedActivity(new Intent(getApplicationContext(), StudyOffersActivity.class));
         }
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

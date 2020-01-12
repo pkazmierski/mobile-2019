@@ -7,6 +7,8 @@ import com.example.kandydatpl.models.StudyOffer;
 
 import java.util.HashMap;
 
+import javax.annotation.Nonnull;
+
 public interface DataProvider {
     //Questions
     void getQuestions(Runnable onSuccess, Runnable onFailure);
@@ -33,9 +35,10 @@ public interface DataProvider {
 
     //Study offers
     void getStudyOffers(Runnable onSuccess, Runnable onFailure);
+    void switchOfferStatus(Runnable onSuccess, Runnable onFailure, StudyOffer studyOffer);
 
     //Admin functions
-    void addStudyOffer(Runnable onSuccess, Runnable onFailure, StudyOffer studyOffer);
+    void addStudyOffer(Runnable onSuccess, Runnable onFailure, @Nonnull StudyOffer studyOffer);
     void modifyStudyOffer(Runnable onSuccess, Runnable onFailure, StudyOffer studyOffer);
     void removeStudyOffer(Runnable onSuccess, Runnable onFailure, StudyOffer studyOffer);
     void getUserDataOnLogin(Runnable onSuccess, Runnable onFailure);
