@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:background="#fff"
+    android:paddingLeft="?dialogPreferredPadding"
+    android:paddingRight="?dialogPreferredPadding"
+    android:orientation="vertical"
+   >
+
+    <TextView
+        android:id="@+id/contactText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="25dp"
+        android:ems="10"
+        android:text="Test"
+        />
+
+    <Button
+        android:id="@+id/pickContactButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Pick" />
+
+</LinearLayout>
