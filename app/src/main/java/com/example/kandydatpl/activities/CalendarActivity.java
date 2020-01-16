@@ -35,7 +35,7 @@ import static com.example.kandydatpl.logic.Logic.dataProvider;
 public class CalendarActivity extends NavigationDrawerActivity {
 
     CompactCalendarView compactCalendar;
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM YYYY", Locale.getDefault());
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("LLLL YYYY", Locale.getDefault());
     private List<ChecklistEvent> events = new ArrayList<ChecklistEvent>();
     private List<Event> eventCal = new ArrayList<Event>();
 
@@ -60,7 +60,17 @@ public class CalendarActivity extends NavigationDrawerActivity {
 
 
     private Runnable afterAllEventsSuccess = () -> runOnUiThread(() -> {
-        events = DataStore.getAllChecklistEvents();
+        events = new ArrayList<>(DataStore.getAllChecklistEvents());
+
+        List<ChecklistEvent> toRemove = new ArrayList<>();
+
+        for (ChecklistEvent ev : events) {
+            if (!ev.isUserCreated() && ev.getOfferId() != null && !DataStore.getUserData().getActiveOffersIds().contains(ev.getOfferId())) {
+                toRemove.add(ev);
+            }
+        }
+
+        events.removeAll(toRemove);
 
         for (ChecklistEvent e : events) {
             eventCal.add(new Event(Color.BLACK, e.getDeadline().getTime(), e.getTitle()));
