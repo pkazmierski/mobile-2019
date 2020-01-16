@@ -655,7 +655,7 @@ public class AppSyncDb implements DataProvider {
                 if (!response.hasErrors()) {
                     assert response.data() != null;
                     assert response.data().getUser() != null;
-                    if(response.data().getUser() == null) {
+                    if (response.data().getUser() == null) {
                         Log.e(TAG, "getUserData: " + "no data exists for the user" + AWSMobileClient.getInstance().getUsername());
                         if (onFailure != null) {
                             onFailure.run();
@@ -704,7 +704,7 @@ public class AppSyncDb implements DataProvider {
             @Override
             public void onResponse(@Nonnull Response<GetUserQuery.Data> response) {
                 if (!response.hasErrors()) {
-                    if(response.data().getUser() == null) {
+                    if (response.data().getUser() == null) {
                         Log.d(TAG, "getUserData: " + "no data exists for the user" + AWSMobileClient.getInstance().getUsername());
                         DataStore.setUserData(null);
                     } else {
@@ -785,9 +785,9 @@ public class AppSyncDb implements DataProvider {
         GraphQLCall.Callback<ListUserEventsQuery.Data> listUserEventsCallback = new GraphQLCall.Callback<ListUserEventsQuery.Data>() {
             @Override
             public void onResponse(@Nonnull Response<ListUserEventsQuery.Data> response) {
-                if(response.data().listUserEvents() != null && response.data().listUserEvents().items() != null) {
+                if (response.data().listUserEvents() != null && response.data().listUserEvents().items() != null) {
                     boolean tokenExists = false;
-                    if(response.data().listUserEvents().nextToken() != null && !response.data().listUserEvents().nextToken().isEmpty()) {
+                    if (response.data().listUserEvents().nextToken() != null && !response.data().listUserEvents().nextToken().isEmpty()) {
                         tokenExists = true;
                     }
 //                    Log.d(TAG, "getUserEvents list: " + response.data().listUserEvents().items().toString() + "; nextToken: " + tokenExists);
@@ -829,26 +829,29 @@ public class AppSyncDb implements DataProvider {
         GraphQLCall.Callback<ListPublicEventsQuery.Data> listPublicEventsCallback = new GraphQLCall.Callback<ListPublicEventsQuery.Data>() {
             @Override
             public void onResponse(@Nonnull Response<ListPublicEventsQuery.Data> response) {
-                if(response.data().listPublicEvents() != null && response.data().listPublicEvents().items() != null) {
+                if (response.hasErrors()) {
+                    Log.e(TAG, "getPublicEvents failed: " + response.errors().toString());
+                    if (onFailure != null) {
+                        onFailure.run();
+                    }
+                    return;
+                }
+
+                if (response.data().listPublicEvents() != null && response.data().listPublicEvents().items() != null) {
                     boolean tokenExists = false;
-                    if(response.data().listPublicEvents().nextToken() != null && !response.data().listPublicEvents().nextToken().isEmpty()) {
+                    if (response.data().listPublicEvents().nextToken() != null && !response.data().listPublicEvents().nextToken().isEmpty()) {
                         tokenExists = true;
                     }
 //                    Log.d(TAG, "getPublicEvents list: " + response.data().listPublicEvents().items().toString() + "; nextToken: " + tokenExists);
                 } else {
                     Log.e(TAG, "getPublicEvents contains nulls");
+                    return;
                 }
-                if (!response.hasErrors()) {
-                    DataStore.setPublicChecklistEvents(publicEventsToArrayList(response.data().listPublicEvents().items()));
 
-                    if (onSuccess != null) {
-                        onSuccess.run();
-                    }
-                } else {
-                    Log.e(TAG, "getPublicEvents failed: " + response.errors().toString());
-                    if (onFailure != null) {
-                        onFailure.run();
-                    }
+                DataStore.setPublicChecklistEvents(publicEventsToArrayList(response.data().listPublicEvents().items()));
+
+                if (onSuccess != null) {
+                    onSuccess.run();
                 }
             }
 
