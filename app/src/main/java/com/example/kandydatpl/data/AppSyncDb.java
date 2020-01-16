@@ -902,6 +902,14 @@ public class AppSyncDb implements DataProvider {
         GraphQLCall.Callback<ListPublicEventsQuery.Data> listPublicEventsCallback = new GraphQLCall.Callback<ListPublicEventsQuery.Data>() {
             @Override
             public void onResponse(@Nonnull Response<ListPublicEventsQuery.Data> response) {
+                if (response.hasErrors()) {
+                    Log.e(TAG, "getPublicEvents failed: " + response.errors().toString());
+                    if (onFailure != null) {
+                        onFailure.run();
+                    }
+                    return;
+                }
+
                 if (response.data().listPublicEvents() != null && response.data().listPublicEvents().items() != null) {
                     boolean tokenExists = false;
                     if (response.data().listPublicEvents().nextToken() != null && !response.data().listPublicEvents().nextToken().isEmpty()) {
@@ -910,18 +918,13 @@ public class AppSyncDb implements DataProvider {
 //                    Log.d(TAG, "getPublicEvents list: " + response.data().listPublicEvents().items().toString() + "; nextToken: " + tokenExists);
                 } else {
                     Log.e(TAG, "getPublicEvents contains nulls");
+                    return;
                 }
-                if (!response.hasErrors()) {
-                    DataStore.setPublicChecklistEvents(publicEventsToArrayList(response.data().listPublicEvents().items()));
 
-                    if (onSuccess != null) {
-                        onSuccess.run();
-                    }
-                } else {
-                    Log.e(TAG, "getPublicEvents failed: " + response.errors().toString());
-                    if (onFailure != null) {
-                        onFailure.run();
-                    }
+                DataStore.setPublicChecklistEvents(publicEventsToArrayList(response.data().listPublicEvents().items()));
+
+                if (onSuccess != null) {
+                    onSuccess.run();
                 }
             }
 
