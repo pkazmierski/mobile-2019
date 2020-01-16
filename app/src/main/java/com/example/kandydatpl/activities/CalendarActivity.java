@@ -1,5 +1,6 @@
 package com.example.kandydatpl.activities;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -8,6 +9,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.kandydatpl.R;
@@ -29,20 +32,26 @@ import java.util.Locale;
 
 import static com.example.kandydatpl.logic.Logic.dataProvider;
 
-public class CalendarActivity extends AppCompatActivity {
+public class CalendarActivity extends NavigationDrawerActivity {
 
     CompactCalendarView compactCalendar;
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM  YYYY", Locale.getDefault());
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM YYYY", Locale.getDefault());
     private List<ChecklistEvent> events = new ArrayList<ChecklistEvent>();
     private List<Event> eventCal = new ArrayList<Event>();
-    private ActionBar actionBar;
+
+    private Context ctx;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_calendar);
-        actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(false);
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        @SuppressLint("InflateParams")
+        View contentView = inflater.inflate(R.layout.activity_calendar, null, false);
+        drawer.addView(contentView, 0);
+
+        ctx = this;
+
+        actionBar.setTitle(dateFormat.format(new Date()));
 
         compactCalendar = (CompactCalendarView) findViewById(R.id.compactcalendar_view);
         compactCalendar.setUseThreeLetterAbbreviation(true);
@@ -53,26 +62,31 @@ public class CalendarActivity extends AppCompatActivity {
     private Runnable afterAllEventsSuccess = () -> runOnUiThread(() -> {
         events = DataStore.getAllChecklistEvents();
 
-        for (ChecklistEvent e : events){
-            eventCal.add(new Event(Color.BLACK, e.getDeadline().getTime(),e.getTitle()));
+        for (ChecklistEvent e : events) {
+            eventCal.add(new Event(Color.BLACK, e.getDeadline().getTime(), e.getTitle()));
         }
         compactCalendar.addEvents(eventCal);
         compactCalendar.setListener(new CompactCalendarView.CompactCalendarViewListener() {
             @Override
             public void onDayClick(Date dateClicked) {
-                Context context = getApplicationContext();
-                for ( Event e : eventCal ) {
-                    if (dateClicked.getTime() == e.getTimeInMillis()) {
-                        // add -> to go into checklistactivity and display only the events from that day
-                        Intent i = new Intent(getApplicationContext(),ChecklistEventActivity.class);
-                        startActivity(i);
-                    }
+                Event clickedEvent = null;
+                for (Event e : eventCal) {
+                    if (dateClicked.getTime() == e.getTimeInMillis())
+                        clickedEvent = e;
+                }
+                if (clickedEvent != null) {
+                    // add -> to go into checklistactivity and display only the events from that day
+                    Intent i = new Intent(ctx, ChecklistEventActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("filterDate", dateClicked);
+                    i.putExtras(bundle);
+                    startActivity(i);
                 }
             }
 
             @Override
             public void onMonthScroll(Date firstDayOfNewMonth) {
-                actionBar.setTitle(dateFormat.format(firstDayOfNewMonth));
+              actionBar.setTitle(dateFormat.format(firstDayOfNewMonth));
             }
         });
     });

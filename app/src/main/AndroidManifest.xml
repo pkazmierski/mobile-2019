@@ -23,7 +23,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name=".activities.CalendarActivity"></activity>
+        <activity
+            android:name=".activities.CalendarActivity"
+            android:label="Calendar"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.ContactBrowserActivity"
             android:theme="@style/AppTheme.NoActionBar" />
