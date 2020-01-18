@@ -22,6 +22,7 @@ public class DataStore {
     private static ArrayList<File> files = new ArrayList<>();
     private static ArrayList<StudyOffer> studyOffers = new ArrayList<>();
 
+
     public static ArrayList<Question> getQuestions() {
         return questions;
     }
@@ -124,11 +125,15 @@ public class DataStore {
     public static void setPublicChecklistEvents(ArrayList<ChecklistEvent> publicChecklistEvents) {
         DataStore.publicChecklistEvents = publicChecklistEvents;
         Iterator<ChecklistEvent> iter = allChecklistEvents.iterator();
+       // ArrayList<String> offersId = DataStore.getUserData().getActiveOffersId();
         while (iter.hasNext()) {
             ChecklistEvent e = iter.next();
             if (!e.isUserCreated()) {
                 iter.remove();
             }
+            /*if(offersId.contains(e.getStudyOfferId())){
+                iter.remove();
+            }*/
         }
         allChecklistEvents.addAll(publicChecklistEvents);
     }

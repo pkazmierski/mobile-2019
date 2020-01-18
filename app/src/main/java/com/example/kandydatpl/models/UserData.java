@@ -12,6 +12,7 @@ public class UserData {
     private static UserData instance;
     private HashMap<String, Integer> eventsOrder;
     private ArrayList<String> questionBookmarks;
+    private ArrayList<String> activeOffersId;
 
     private UserData() {
         userId = AWSMobileClient.getInstance().getIdentityId();
@@ -75,6 +76,17 @@ public class UserData {
 
     public void setEventsOrder(HashMap<String, Integer> eventsOrder) {
         this.eventsOrder = eventsOrder;
+    }
+
+    public ArrayList<String> getActiveOffersId() {
+        return activeOffersId;
+    }
+
+    public void setActiveOffersId(ArrayList<String> activeOffersId) {
+        if(activeOffersId == null)
+            this.activeOffersId = new ArrayList<>();
+        else
+            this.activeOffersId = activeOffersId;
     }
 
     @Override

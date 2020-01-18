@@ -67,7 +67,6 @@ import type.UpdateQuestionInput;
 import type.UpdateStudyOfferInput;
 import type.UpdateUserEventInput;
 import type.UpdateUserInput;
-
 import static com.example.kandydatpl.logic.Logic.appSyncClient;
 
 public class AppSyncDb implements DataProvider {
@@ -671,6 +670,13 @@ public class AppSyncDb implements DataProvider {
                         DataStore.getUserData().setQuestionBookmarks(null);
                     }
 
+                    if(response.data().getUser().activeOffers() !=null ){
+                        DataStore.getUserData().setActiveOffersId(new ArrayList<String>(response.data().getUser().activeOffers()) );
+                    } else {
+                        Log.i("Results", "No studyOffers for the user " + DataStore.getUserData().getLogin());
+                        DataStore.getUserData().setActiveOffersId(null);
+                    }
+
                     if (onSuccess != null) {
                         onSuccess.run();
                     }
@@ -716,6 +722,12 @@ public class AppSyncDb implements DataProvider {
                         } else {
                             Log.i("Results", "No bookmarks for the user " + DataStore.getUserData().getLogin());
                             DataStore.getUserData().setQuestionBookmarks(null);
+                        }
+                        if(response.data().getUser().activeOffers() !=null ){
+                            DataStore.getUserData().setActiveOffersId(new ArrayList<String>(response.data().getUser().activeOffers()) );
+                        } else {
+                            Log.i("Results", "No studyOffers for the user " + DataStore.getUserData().getLogin());
+                            DataStore.getUserData().setActiveOffersId(null);
                         }
                     }
 
@@ -1268,4 +1280,5 @@ public class AppSyncDb implements DataProvider {
         appSyncClient.mutate(DeleteStudyOfferMutation.builder().input(deleteStudyOfferInput).build())
                 .enqueue(deleteStudyOfferCallback);
     }
+
 }
