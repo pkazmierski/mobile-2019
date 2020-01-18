@@ -17,6 +17,7 @@ public class ChecklistEvent implements Serializable {
     private boolean userCreated;
     private boolean done;
     private Date deadline;
+    private String studyOfferId;
 
     public ChecklistEvent() {
     }
@@ -44,6 +45,16 @@ public class ChecklistEvent implements Serializable {
         this.userCreated = userCreated;
         this.done = done;
         this.deadline = deadline;
+    }
+
+    public ChecklistEvent(String id, String title, String description, boolean userCreated, boolean done, Date deadline, String studyOfferId) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.userCreated = userCreated;
+        this.done = done;
+        this.deadline = deadline;
+        this.studyOfferId = studyOfferId;
     }
 
     public String getId() {
@@ -94,6 +105,14 @@ public class ChecklistEvent implements Serializable {
         this.deadline = deadline;
     }
 
+    public String getStudyOfferId() {
+        return studyOfferId;
+    }
+
+    public void setStudyOfferId(String studyOfferId) {
+        this.studyOfferId = studyOfferId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -116,6 +135,7 @@ public class ChecklistEvent implements Serializable {
                 ", userCreated=" + userCreated +
                 ", done=" + done +
                 ", deadline=" + deadline +
+                ", studyOfferId='" + studyOfferId + '\'' +
                 '}';
     }
 }

@@ -130,7 +130,7 @@ public class AppSyncDb implements DataProvider {
 
         for (ListPublicEventsQuery.Item item : dbEvents) {
             try {
-                ChecklistEvent checklistEvent = new ChecklistEvent(item.id(), item.title(), item.description(), false, item.done(), awsDateFormat.parse(item.deadline()));
+                ChecklistEvent checklistEvent = new ChecklistEvent(item.id(), item.title(), item.description(), false, item.done(), awsDateFormat.parse(item.deadline()), item.offerId());
                 checklistEvents.add(checklistEvent);
             } catch (ParseException e) {
                 e.printStackTrace();
