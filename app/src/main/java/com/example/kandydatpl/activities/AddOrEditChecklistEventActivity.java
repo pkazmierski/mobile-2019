@@ -10,16 +10,27 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.kandydatpl.R;
+import com.example.kandydatpl.adapters.ContactsRecyclerViewAdapter;
+import com.example.kandydatpl.adapters.FilesRecyclerViewAdapter;
+import com.example.kandydatpl.data.DataStore;
 import com.example.kandydatpl.models.ChecklistEvent;
+import com.example.kandydatpl.models.Contact;
+import com.example.kandydatpl.models.File;
 
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.example.kandydatpl.activities.ChecklistEventActivity.editItemRequest;
 import static com.example.kandydatpl.activities.ChecklistEventActivity.newItemRequest;
@@ -34,7 +45,20 @@ public class AddOrEditChecklistEventActivity extends AppCompatActivity implement
     private EditText dateDisplay;
     private Calendar sampleDate;
     private SimpleDateFormat formatter;
+
+    private ChecklistEvent incomingItem;
+
+    private RecyclerView checklistEventContactsRV;
+    private RecyclerView checklistEventFilesRV;
+
+    private FilesRecyclerViewAdapter filesRecyclerViewAdapter;
+    private ContactsRecyclerViewAdapter contactsRecyclerViewAdapter;
+
     private static final String TAG = "AddOrEditChecklistEventActivity";
+
+    ArrayList<File> files = new ArrayList<>();
+    ArrayList<Contact> contacts = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,8 +73,8 @@ public class AddOrEditChecklistEventActivity extends AppCompatActivity implement
 
 
         Intent incomingIntent = getIntent();
-        ChecklistEvent incomingItem = (ChecklistEvent) incomingIntent.getSerializableExtra("item");
-        Log.e(TAG, "incomingItem: " + incomingItem.toString());
+        incomingItem = (ChecklistEvent) incomingIntent.getSerializableExtra("item");
+        Log.d(TAG, "incomingItem: " + incomingItem.toString());
 
         if (incomingItem.getDeadline() != null) {
             sampleDate.setTime(incomingItem.getDeadline());
@@ -70,7 +94,7 @@ public class AddOrEditChecklistEventActivity extends AppCompatActivity implement
         editDescription.setText(incomingItem.getDescription());
 
         saveButton.setOnClickListener(click -> {
-            if(!hasNetworkConnection()){
+            if (!hasNetworkConnection()) {
                 Toast.makeText(this, "Cannot save when no connection", Toast.LENGTH_SHORT).show();
             } else {
                 Intent listIntent = getIntent();
@@ -81,6 +105,73 @@ public class AddOrEditChecklistEventActivity extends AppCompatActivity implement
                 finish();
             }
         });
+
+        initContactsRV();
+        initFilesRV();
+
+        if (incomingItem.getContactIds() != null) {
+            dataProvider.getContacts(getContactsSuccess, getContactsFailure);
+        } else {
+            Log.d(TAG, "onCreate: no contacts assigned");
+        }
+
+        if (incomingItem.getFileIds() != null) {
+            dataProvider.getFiles(getFilesSuccess, getFilesFailure);
+        } else {
+            Log.d(TAG, "onCreate: no files assigned");
+        }
+    }
+
+    private void filterFiles() {
+        ArrayList<File> allFiles = DataStore.getFiles();
+        files.clear();
+        for (File file : allFiles) {
+            if (incomingItem.getFileIds().contains(file.getId()))
+                files.add(file);
+        }
+    }
+
+    private void filterContacts() {
+        ArrayList<Contact> allContacts = DataStore.getContacts();
+        contacts.clear();
+        for (Contact contact : allContacts) {
+            if (incomingItem.getContactIds().contains(contact.getId()))
+                contacts.add(contact);
+        }
+    }
+
+    private Runnable getFilesSuccess = () -> runOnUiThread(() -> {
+        filterFiles();
+        filesRecyclerViewAdapter.notifyDataSetChanged();
+    });
+
+    private Runnable getFilesFailure = () -> runOnUiThread(() ->
+            Toast.makeText(getApplicationContext(), "Get files failed", Toast.LENGTH_LONG).show());
+
+    private Runnable getContactsSuccess = () -> runOnUiThread(() -> {
+        filterContacts();
+        contactsRecyclerViewAdapter.notifyDataSetChanged();
+    });
+
+    private Runnable getContactsFailure = () -> runOnUiThread(() ->
+            Toast.makeText(getApplicationContext(), "Get contacts failed", Toast.LENGTH_LONG).show());
+
+    private void initFilesRV() {
+        checklistEventFilesRV = findViewById(R.id.checklistEventFilesRV);
+        checklistEventFilesRV.setNestedScrollingEnabled(false);
+        filesRecyclerViewAdapter = new FilesRecyclerViewAdapter(this, files);
+
+        checklistEventFilesRV.setAdapter(filesRecyclerViewAdapter);
+        checklistEventFilesRV.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    private void initContactsRV() {
+        checklistEventContactsRV = findViewById(R.id.checklistEventContactsRV);
+        checklistEventContactsRV.setNestedScrollingEnabled(false);
+        contactsRecyclerViewAdapter = new ContactsRecyclerViewAdapter(this, contacts);
+
+        checklistEventContactsRV.setAdapter(contactsRecyclerViewAdapter);
+        checklistEventContactsRV.setLayoutManager(new LinearLayoutManager(this));
     }
 
     private boolean hasNetworkConnection() {

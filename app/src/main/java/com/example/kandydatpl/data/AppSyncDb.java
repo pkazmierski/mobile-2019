@@ -12,6 +12,7 @@ import com.amazonaws.amplify.generated.graphql.CreateStudyOfferMutation;
 import com.amazonaws.amplify.generated.graphql.DeleteCommentMutation;
 import com.amazonaws.amplify.generated.graphql.DeleteUserEventMutation;
 import com.amazonaws.amplify.generated.graphql.DeleteStudyOfferMutation;
+import com.amazonaws.amplify.generated.graphql.GetPublicEventQuery;
 import com.amazonaws.amplify.generated.graphql.GetUserQuery;
 import com.amazonaws.amplify.generated.graphql.ListCommentsQuery;
 import com.amazonaws.amplify.generated.graphql.ListContactsQuery;
@@ -131,6 +132,8 @@ public class AppSyncDb implements DataProvider {
         for (ListPublicEventsQuery.Item item : dbEvents) {
             try {
                 ChecklistEvent checklistEvent = new ChecklistEvent(item.id(), item.title(), item.description(), false, item.done(), awsDateFormat.parse(item.deadline()));
+                checklistEvent.setFileIds(item.fileIds());
+                checklistEvent.setContactIds(item.contactIds());
                 checklistEvents.add(checklistEvent);
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -146,7 +149,7 @@ public class AppSyncDb implements DataProvider {
         for (ListContactsQuery.Item dbContact : dbContacts) {
             Contact contact = new Contact(dbContact.id(), dbContact.name());
             contact.setEmail(dbContact.email() == null ? "" : dbContact.email());
-            contact.setPhone(dbContact.phone() == null ? -1 : Integer.valueOf(dbContact.phone()));
+            contact.setPhone(dbContact.phone() == null ? 0 : Integer.valueOf(dbContact.phone()));
             contacts.add(contact);
         }
 
@@ -897,6 +900,46 @@ public class AppSyncDb implements DataProvider {
 
     }
 
+    public void getPublicEvent(Runnable onSuccess, Runnable onFailure, String eventId, ChecklistEvent checklistEvent) {
+        GraphQLCall.Callback<GetPublicEventQuery.Data> getPublicEventCallback = new GraphQLCall.Callback<GetPublicEventQuery.Data>() {
+            @Override
+            public void onResponse(@Nonnull Response<GetPublicEventQuery.Data> response) {
+                if (response.hasErrors()) {
+                    Log.e(TAG, "getPublicEvents failed: " + response.errors().toString());
+                    if (onFailure != null) {
+                        onFailure.run();
+                    }
+                    return;
+                }
+
+                if (response.data() == null || response.data().getPublicEvent() == null) {
+                    Log.e(TAG, "getPublicEvents contains nulls");
+                    return;
+                }
+
+                //todo fix
+
+                if (onSuccess != null) {
+                    onSuccess.run();
+                }
+            }
+
+            @Override
+            public void onFailure(@Nonnull ApolloException e) {
+                Log.e("ERROR", e.toString());
+                if (onFailure != null) {
+                    onFailure.run();
+                }
+            }
+        };
+
+        appSyncClient.query(GetPublicEventQuery.builder()
+                .id(eventId)
+                .build())
+                .responseFetcher(AppSyncResponseFetchers.CACHE_AND_NETWORK)
+                .enqueue(getPublicEventCallback);
+    }
+
     @Override
     public void getPublicEvents(Runnable onSuccess, Runnable onFailure) {
         GraphQLCall.Callback<ListPublicEventsQuery.Data> listPublicEventsCallback = new GraphQLCall.Callback<ListPublicEventsQuery.Data>() {
@@ -1164,10 +1207,16 @@ public class AppSyncDb implements DataProvider {
             @Override
             public void onResponse(@Nonnull Response<ListContactsQuery.Data> response) {
 
-                Log.d(TAG, "onResponse getContacts errors: " + response.errors());
-                Log.d(TAG, "onResponse getContacts: " + response.data().listContacts().items());
-
-                DataStore.setContacts(contactsToArrayList(response.data().listContacts().items()));
+                if (response.hasErrors())
+                    Log.e(TAG, "getContacts errors: " + response.errors());
+                else {
+                    if (response.data() != null && response.data().listContacts() != null && response.data().listContacts().items() != null) {
+                        Log.d(TAG, "onResponse getContacts: " + response.data().listContacts().items());
+                        DataStore.setContacts(contactsToArrayList(response.data().listContacts().items()));
+                    } else {
+                        Log.d(TAG, "onResponse getContacts: contains nulls");
+                    }
+                }
 
                 if (onSuccess != null) {
                     onSuccess.run();
@@ -1195,7 +1244,17 @@ public class AppSyncDb implements DataProvider {
             @Override
             public void onResponse(@Nonnull Response<ListFilesQuery.Data> response) {
 
-                DataStore.setFiles(filesToArrayList(response.data().listFiles().items()));
+                if (response.hasErrors()) {
+                    Log.e(TAG, "getFiles errors: " + response.errors());
+                } else {
+                    if (response.data() != null && response.data().listFiles() != null && response.data().listFiles().items() != null) {
+                        Log.d(TAG, "getFiles onResponse: " + response.data().listFiles().items());
+                        DataStore.setFiles(filesToArrayList(response.data().listFiles().items()));
+                    } else {
+                        Log.d(TAG, "onResponse getFiles: contains nulls");
+                    }
+                }
+
 
                 if (onSuccess != null) {
                     onSuccess.run();

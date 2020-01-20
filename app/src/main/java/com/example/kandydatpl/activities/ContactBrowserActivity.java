@@ -2,7 +2,6 @@ package com.example.kandydatpl.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,7 +11,6 @@ import android.widget.Toast;
 
 import com.example.kandydatpl.R;
 import com.example.kandydatpl.adapters.ContactsRecyclerViewAdapter;
-import com.example.kandydatpl.adapters.FilesRecyclerViewAdapter;
 import com.example.kandydatpl.data.DataStore;
 
 import static com.example.kandydatpl.logic.Logic.dataProvider;
@@ -31,16 +29,16 @@ public class ContactBrowserActivity extends NavigationDrawerActivity {
         View contentView = inflater.inflate(R.layout.activity_contact_browser, null, false);
         drawer.addView(contentView, 0);
 
-        dataProvider.getContacts(getFilesSuccess, getFilesFailure);
+        dataProvider.getContacts(getContactsSuccess, getContactsFailure);
 
         initRecyclerView();
     }
 
-    private Runnable getFilesSuccess = () -> runOnUiThread(() -> {
+    private Runnable getContactsSuccess = () -> runOnUiThread(() -> {
         adapter.notifyDataSetChanged();
     });
 
-    private Runnable getFilesFailure = () -> runOnUiThread(() ->
+    private Runnable getContactsFailure = () -> runOnUiThread(() ->
             Toast.makeText(getApplicationContext(), "Get contacts failed", Toast.LENGTH_LONG).show());
 
     private void initRecyclerView() {

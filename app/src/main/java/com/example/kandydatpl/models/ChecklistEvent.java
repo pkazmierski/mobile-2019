@@ -2,6 +2,7 @@ package com.example.kandydatpl.models;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 public class ChecklistEvent implements Serializable {
@@ -12,6 +13,8 @@ public class ChecklistEvent implements Serializable {
     private boolean userCreated;
     private boolean done;
     private Date deadline;
+    private List<String> contactIds;
+    private List<String> fileIds;
 
     public ChecklistEvent() {
     }
@@ -39,6 +42,22 @@ public class ChecklistEvent implements Serializable {
         this.userCreated = userCreated;
         this.done = done;
         this.deadline = deadline;
+    }
+
+    public List<String> getContactIds() {
+        return contactIds;
+    }
+
+    public void setContactIds(List<String> contactIds) {
+        this.contactIds = contactIds;
+    }
+
+    public List<String> getFileIds() {
+        return fileIds;
+    }
+
+    public void setFileIds(List<String> fileIds) {
+        this.fileIds = fileIds;
     }
 
     public String getId() {
@@ -111,6 +130,8 @@ public class ChecklistEvent implements Serializable {
                 ", userCreated=" + userCreated +
                 ", done=" + done +
                 ", deadline=" + deadline +
+                ", contactIds=" + contactIds +
+                ", fileIds=" + fileIds +
                 '}';
     }
 }

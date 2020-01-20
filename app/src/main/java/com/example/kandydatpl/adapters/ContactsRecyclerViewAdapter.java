@@ -46,11 +46,16 @@ public class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRe
             holder.contactPhoneTxt.setText(Integer.toString(contacts.get(position).getPhone()));
             holder.contactPhoneTxt.setOnClickListener(v -> Contact.openDialer(v.getContext(),
                     Integer.toString(contacts.get(position).getPhone())));
+        } else {
+            holder.contactPhoneTxt.setVisibility(View.GONE);
         }
-        if (contacts.get(position).getEmail() != null) {
+
+        if (contacts.get(position).getEmail() != null && contacts.get(position).getEmail() != "") {
             holder.contactEmailTxt.setText(contacts.get(position).getEmail());
             holder.contactEmailTxt.setOnClickListener(v -> Contact.openEmailClient(v.getContext(),
                     contacts.get(position).getEmail()));
+        } else {
+            holder.contactEmailTxt.setVisibility(View.GONE);
         }
     }
 
