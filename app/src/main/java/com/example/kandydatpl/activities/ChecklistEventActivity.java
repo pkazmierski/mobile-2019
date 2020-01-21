@@ -3,6 +3,7 @@ package com.example.kandydatpl.activities;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.icu.util.Calendar;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -24,11 +25,13 @@ import com.example.kandydatpl.data.DataStore;
 import com.example.kandydatpl.models.ChecklistEvent;
 import com.example.kandydatpl.models.UserData;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.example.kandydatpl.logic.Logic.dataProvider;
 
@@ -59,9 +62,9 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
 
         Intent dateFilterIntent = getIntent();
         Date filterDate = (Date) dateFilterIntent.getSerializableExtra("filterDate");
-        if (filterDate != null) { //do runnable success
-            //ArrayList<ChecklistEvent> checklistEvents = DataStore.getAllChecklistEvents().stream().filter(item -> item.getDeadline().after(filterDate)).collect(Collectors.toList());
-        }
+//        if (filterDate != null) { //do runnable success
+//            ArrayList<ChecklistEvent> checklistEvents = (ArrayList<ChecklistEvent>) DataStore.getAllChecklistEvents().stream().filter(item -> item.getDeadline().after(filterDate)).collect(Collectors.toList());
+//        }
 
         recyclerView = findViewById(R.id.taskListView);
         floatingActionButton = findViewById(R.id.addTaskButton);
@@ -73,7 +76,14 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
         });
 
 
-        adapter = new ChecklistEventRecyclerViewAdapter(DataStore.getAllChecklistEvents(), this);
+        if(filterDate != null){
+            adapter = new ChecklistEventRecyclerViewAdapter(DataStore.getAllChecklistEvents().stream().filter(item -> item.getDeadline().after(filterDate)).collect(Collectors.toList()), this);
+            dataProvider.getAllEvents(afterAllEventsSuccess, afterAllPublicEventsFailure, afterAllUserEventsFailure);
+        }
+        else {
+            adapter = new ChecklistEventRecyclerViewAdapter(DataStore.getAllChecklistEvents(), this);
+            dataProvider.getAllEvents(afterAllEventsSuccess, afterAllPublicEventsFailure, afterAllUserEventsFailure);
+        }
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -105,7 +115,7 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
             }
         });
         helper.attachToRecyclerView(recyclerView);
-        dataProvider.getAllEvents(afterAllEventsSuccess, afterAllPublicEventsFailure, afterAllUserEventsFailure);
+        //dataProvider.getAllEvents(afterAllEventsSuccess, afterAllPublicEventsFailure, afterAllUserEventsFailure);
     }
 
     private Runnable afterSetEventsOrderFailure = () -> runOnUiThread(() ->
