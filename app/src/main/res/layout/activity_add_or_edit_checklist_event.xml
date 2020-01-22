@@ -68,6 +68,8 @@
             android:id="@+id/pickDateButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/colorAccent"
+            android:textColor="@color/accentTextColor"
             android:text="Set date" />
 
         <android.support.v4.widget.NestedScrollView
@@ -98,6 +100,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Save"
+        android:background="@color/colorAccent"
+        android:textColor="@color/accentTextColor"
+        android:layout_margin="15dp"
         app:layout_constraintBottom_toBottomOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

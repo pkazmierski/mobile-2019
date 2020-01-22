@@ -30,7 +30,7 @@
         android:id="@+id/addToActiveOffersBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
+        android:background="@color/colorAccent"
         android:onClick="addToActiveOffersBtn"
         android:text="Add to active offers"
         android:textColor="@android:color/white" />
