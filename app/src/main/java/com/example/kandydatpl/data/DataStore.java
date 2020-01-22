@@ -1,5 +1,7 @@
 package com.example.kandydatpl.data;
 
+import android.util.Log;
+
 import com.example.kandydatpl.models.ChecklistEvent;
 import com.example.kandydatpl.models.Contact;
 import com.example.kandydatpl.models.File;
@@ -125,16 +127,26 @@ public class DataStore {
     public static void setPublicChecklistEvents(ArrayList<ChecklistEvent> publicChecklistEvents) {
         DataStore.publicChecklistEvents = publicChecklistEvents;
         Iterator<ChecklistEvent> iter = allChecklistEvents.iterator();
-       // ArrayList<String> offersId = DataStore.getUserData().getActiveOffersId();
+        ArrayList<String> offersId = userData.getActiveOffersId();
         while (iter.hasNext()) {
             ChecklistEvent e = iter.next();
+            // doesn't read offerId
+            // Log.i("myINFO", e.getStudyOfferId());
+            // but can read another patameter, for example
+            //   Log.i("myINFO", e.getTitle());
             if (!e.isUserCreated()) {
                 iter.remove();
             }
-            /*if(offersId.contains(e.getStudyOfferId())){
+
+         /*   if(!offersId.contains(e.getStudyOfferId())){
                 iter.remove();
-            }*/
+            } */
+            // reads offersId from userData fine, for example
+           // Log.i("myINFO", offersId.get(0));
+
         }
+
+        //}
         allChecklistEvents.addAll(publicChecklistEvents);
     }
 
