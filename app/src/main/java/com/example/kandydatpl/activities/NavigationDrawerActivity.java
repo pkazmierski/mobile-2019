@@ -15,6 +15,8 @@ import com.amazonaws.mobile.client.AWSMobileClient;
 import com.example.kandydatpl.R;
 import com.example.kandydatpl.data.DataStore;
 
+import java.util.Calendar;
+
 public class NavigationDrawerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     protected DrawerLayout drawer;
@@ -62,7 +64,11 @@ public class NavigationDrawerActivity extends AppCompatActivity implements Navig
             //intent.putExtra("filterDate", Calendar.getInstance().getTime());
             startAnimatedActivity(new Intent(getApplicationContext(), ChecklistEventActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-        } else if (id == R.id.nav_logout) {
+        } else if (id == R.id.nav_calendar){
+            //intent.putExtra("filterDate", Calendar.getInstance().getTime());
+            startAnimatedActivity(new Intent(getApplicationContext(), CalendarActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+        } else if(id == R.id.nav_logout) {
             AWSMobileClient.getInstance().signOut();
             DataStore.setUserData(null);
             Intent loginIntent = new Intent(getApplicationContext(), AuthenticationActivity.class);

@@ -1,6 +1,11 @@
 package com.example.kandydatpl.models;
 
+import android.graphics.Color;
+
+import com.github.sundeepk.compactcalendarview.domain.Event;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
