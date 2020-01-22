@@ -14,6 +14,11 @@
             android:title="Study offers" />
 
         <item
+            android:id="@+id/nav_active_study_offers"
+            android:icon="@drawable/ic_edit_black_24dp"
+            android:title="Active study offers" />
+
+        <item
             android:id="@+id/nav_questions"
             android:icon="@drawable/ic_menu_questions_24dp"
             android:title="Questions" />

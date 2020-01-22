@@ -17,14 +17,15 @@ import com.example.kandydatpl.data.DataStore;
 
 public class NavigationDrawerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    DrawerLayout drawer;
-    NavigationView navigationView;
+    protected DrawerLayout drawer;
+    protected NavigationView navigationView;
+    protected Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation_drawer);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -68,6 +69,8 @@ public class NavigationDrawerActivity extends AppCompatActivity implements Navig
             startActivity(loginIntent);
         } else if(id == R.id.nav_study_offers) {
             startAnimatedActivity(new Intent(getApplicationContext(), StudyOffersActivity.class));
+        } else if(id == R.id.nav_active_study_offers) {
+            startAnimatedActivity(new Intent(getApplicationContext(), StudyOffersResultsActivity.class).putExtra("showOnlyActive", true));
         }
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
