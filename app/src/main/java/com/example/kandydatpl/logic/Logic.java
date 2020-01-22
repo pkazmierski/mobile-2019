@@ -18,23 +18,27 @@ public class Logic {
     public static AWSAppSyncClient appSyncClient;
     public static DataProvider dataProvider = AppSyncDb.getInstance();
     public static DateFormat defaultFormat = new SimpleDateFormat("dd/MM/yyyy");
+    public static boolean appSyncInitialized = false;
 
     public static void initAppSync(Context ctx) {
-        appSyncClient = AWSAppSyncClient.builder()
-                .context(ctx)
-                .awsConfiguration(new AWSConfiguration(ctx))
-                .region(Regions.EU_CENTRAL_1)
-                .cognitoUserPoolsAuthProvider(new CognitoUserPoolsAuthProvider() {
-                    @Override
-                    public String getLatestAuthToken() {
-                        try {
-                            return AWSMobileClient.getInstance().getTokens().getIdToken().getTokenString();
-                        } catch (Exception e){
-                            Log.e("APPSYNC_ERROR", e.getLocalizedMessage());
-                            return e.getLocalizedMessage();
+        if(!appSyncInitialized) {
+            appSyncClient = AWSAppSyncClient.builder()
+                    .context(ctx)
+                    .awsConfiguration(new AWSConfiguration(ctx))
+                    .region(Regions.EU_CENTRAL_1)
+                    .cognitoUserPoolsAuthProvider(new CognitoUserPoolsAuthProvider() {
+                        @Override
+                        public String getLatestAuthToken() {
+                            try {
+                                return AWSMobileClient.getInstance().getTokens().getIdToken().getTokenString();
+                            } catch (Exception e) {
+                                Log.e("APPSYNC_ERROR", e.getLocalizedMessage());
+                                return e.getLocalizedMessage();
+                            }
                         }
-                    }
-                })
-                .build();
+                    })
+                    .build();
+            appSyncInitialized = true;
+        }
     }
 }

@@ -12,7 +12,7 @@ public class UserData {
     private String fullName;
     private static UserData instance;
     private HashMap<String, Integer> eventsOrder;
-    private ArrayList<String> questionBookmarks;
+    private ArrayList<String> questionBookmarks = new ArrayList<>();
     private ArrayList<String> activeOffersIds = new ArrayList<>();
     private ArrayList<String> donePublicEvents = new ArrayList<>();
 

@@ -1,6 +1,7 @@
 package com.example.kandydatpl.activities;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.icu.util.Calendar;
@@ -17,12 +18,14 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
 import com.example.kandydatpl.R;
 import com.example.kandydatpl.adapters.ChecklistEventRecyclerViewAdapter;
 import com.example.kandydatpl.data.DataStore;
+import com.example.kandydatpl.logic.Logic;
 import com.example.kandydatpl.models.ChecklistEvent;
 import com.example.kandydatpl.models.UserData;
 
@@ -46,6 +49,7 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
     public static int editItemRequest = 2;
     private RecyclerView recyclerView;
     private FloatingActionButton floatingActionButton;
+    private ProgressDialog getUserDataDialog;
 
     private List<ChecklistEvent> checklistEvents = new ArrayList<>();
     private Date filterDate;
@@ -58,6 +62,50 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
         View contentView = inflater.inflate(R.layout.activity_checklist, null, false);
         drawer.addView(contentView, 0);
 
+        if (!Logic.appSyncInitialized) {
+            hideSoftKeyBoard();
+
+            Logic.initAppSync(getApplicationContext());
+
+            getUserDataDialog = new ProgressDialog(ChecklistEventActivity.this);
+
+            getUserDataDialog.setMessage("Getting user data...");
+            getUserDataDialog.setTitle("Database access");
+            getUserDataDialog.setIndeterminate(true);
+            getUserDataDialog.setCancelable(false);
+            getUserDataDialog.show();
+
+            Runnable getDataSuccess = () -> runOnUiThread(() -> {
+                if (DataStore.getUserData() == null) {
+                    dataProvider.createNewUserData(createUserDataSuccess, createUserDataFailure);
+                    DataStore.setUserData(UserData.getInstance());
+                    UserData.getInstance().setQuestionBookmarks(new ArrayList<>());
+                    UserData.getInstance().setEventsOrder(new HashMap<>());
+                } else {
+                    getUserDataDialog.dismiss();
+                    activityInit();
+                }
+            });
+
+            dataProvider.getUserDataOnLogin(getDataSuccess, getUserDataFailure);
+        } else {
+            activityInit();
+        }
+    }
+
+    private Runnable getUserDataFailure = () -> runOnUiThread(() ->
+            Toast.makeText(getApplicationContext(), "Failed to get user data", Toast.LENGTH_LONG).show());
+
+    private Runnable createUserDataSuccess = () -> runOnUiThread(() -> {
+        getUserDataDialog.dismiss();
+        activityInit();
+        Toast.makeText(getApplicationContext(), "Created user data", Toast.LENGTH_LONG).show();
+    });
+
+    private Runnable createUserDataFailure = () -> runOnUiThread(() ->
+            Toast.makeText(getApplicationContext(), "Failed to create user data", Toast.LENGTH_LONG).show());
+
+    private void activityInit() {
         Intent dateFilterIntent = getIntent();
         filterDate = (Date) dateFilterIntent.getSerializableExtra("filterDate");
 
@@ -106,6 +154,14 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
         helper.attachToRecyclerView(recyclerView);
 
         dataProvider.getAllEvents(afterAllEventsSuccess, afterAllPublicEventsFailure, afterAllUserEventsFailure);
+    }
+
+    private void hideSoftKeyBoard() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+
+        if (imm.isAcceptingText()) { // verify if the soft keyboard is open
+            imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }
     }
 
     private Runnable afterSetEventsOrderFailure = () -> runOnUiThread(() ->

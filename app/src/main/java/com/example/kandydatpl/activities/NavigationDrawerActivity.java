@@ -42,9 +42,10 @@ public class NavigationDrawerActivity extends AppCompatActivity implements Navig
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.nav_home) {
-            startAnimatedActivity(new Intent(getApplicationContext(), MainActivity.class));
-        } else if (id == R.id.nav_questions) {
+//        if (id == R.id.nav_home) {
+//            startAnimatedActivity(new Intent(getApplicationContext(), MainActivity.class));
+//        } else
+        if (id == R.id.nav_questions) {
             startAnimatedActivity(new Intent(getApplicationContext(), QuestionsActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
         } else if (id == R.id.nav_question_bookmarks) {
@@ -57,19 +58,19 @@ public class NavigationDrawerActivity extends AppCompatActivity implements Navig
         } else if (id == R.id.nav_contacts) {
             startAnimatedActivity(new Intent(getApplicationContext(), ContactBrowserActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-        } else if (id == R.id.nav_checklist){
+        } else if (id == R.id.nav_checklist) {
             //intent.putExtra("filterDate", Calendar.getInstance().getTime());
             startAnimatedActivity(new Intent(getApplicationContext(), ChecklistEventActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-        } else if(id == R.id.nav_logout) {
+        } else if (id == R.id.nav_logout) {
             AWSMobileClient.getInstance().signOut();
             DataStore.setUserData(null);
             Intent loginIntent = new Intent(getApplicationContext(), AuthenticationActivity.class);
             loginIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(loginIntent);
-        } else if(id == R.id.nav_study_offers) {
+        } else if (id == R.id.nav_study_offers) {
             startAnimatedActivity(new Intent(getApplicationContext(), StudyOffersActivity.class));
-        } else if(id == R.id.nav_active_study_offers) {
+        } else if (id == R.id.nav_active_study_offers) {
             startAnimatedActivity(new Intent(getApplicationContext(), StudyOffersResultsActivity.class).putExtra("showOnlyActive", true));
         }
 
