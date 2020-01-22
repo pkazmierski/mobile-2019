@@ -71,6 +71,8 @@ public class QuestionsActivity extends NavigationDrawerActivity {
         bookmarksOnly = getIntent().getBooleanExtra("bookmarksOnly", false);
         if(bookmarksOnly) {
             addNewQuestionBtn.hide();
+            String questionBookmarksTitle = getResources().getString(R.string.question_bookmarks);
+            actionBar.setTitle(questionBookmarksTitle);
         }
         initRecyclerView();
         dataProvider.getQuestions(afterQuestionsAcquiredSuccess, afterQuestionsAcquiredFailure);

@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:hint="Question"
+        android:hint="@string/question"
         android:inputType="textMultiLine" />
 
     <Button
@@ -24,5 +24,5 @@
         android:textColor="@color/accentTextColor"
         android:background="@color/colorAccent"
         android:onClick="addNewQuestion"
-        android:text="Add" />
+        android:text="@string/add" />
 </LinearLayout>

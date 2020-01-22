@@ -12,7 +12,7 @@
         android:id="@+id/studyOfferTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Title"
+        android:text="@string/title"
         android:textColor="@android:color/black"
         android:layout_marginBottom="5dp"
         android:textSize="20sp" />
@@ -21,7 +21,7 @@
         android:id="@+id/studyOfferContent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Study offer contents"
+        android:text="@string/study_offer_contents"
         android:textColor="@android:color/black"
         android:layout_marginBottom="10dp"
         android:textSize="16sp" />
@@ -32,6 +32,6 @@
         android:layout_height="wrap_content"
         android:background="@color/colorAccent"
         android:onClick="addToActiveOffersBtn"
-        android:text="Add to active offers"
+        android:text="@string/add_to_active_offers"
         android:textColor="@android:color/white" />
 </LinearLayout>

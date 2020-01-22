@@ -44,7 +44,7 @@ public class StudyOfferDetailsActivity extends AppCompatActivity {
         studyOfferContent.setText(studyOffer.getContent());
 
         if (DataStore.getUserData().getActiveOffersIds().contains(studyOffer.getId())) {
-            addToActiveOffersBtn.setText("Remove from active offers");
+            addToActiveOffersBtn.setText(getString(R.string.remove_from_active_offers));
             adding = false;
         }
     }

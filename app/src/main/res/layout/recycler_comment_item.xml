@@ -28,7 +28,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Full name of the user"
+                android:text="@string/full_name_of_the_user"
                 android:textStyle="bold" />
 
             <TextView
@@ -36,7 +36,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Comment's content" />
+                android:text="@string/comment_s_content" />
         </LinearLayout>
 
         <TextView

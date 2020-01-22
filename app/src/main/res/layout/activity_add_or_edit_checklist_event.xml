@@ -25,35 +25,35 @@
             android:id="@+id/titleTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Title" />
+            android:text="@string/title" />
 
         <EditText
             android:id="@+id/titleEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Enter title"
+            android:hint="@string/enter_title"
             android:inputType="textPersonName" />
 
         <TextView
             android:id="@+id/descriptionTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Description" />
+            android:text="@string/description" />
 
         <EditText
             android:id="@+id/descriptionEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Enter description"
+            android:hint="@string/enter_description"
             android:inputType="textPersonName" />
 
         <TextView
             android:id="@+id/dateTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Date" />
+            android:text="@string/date" />
 
         <EditText
             android:id="@+id/dateDisplay"
@@ -61,8 +61,8 @@
             android:layout_height="wrap_content"
             android:editable="false"
             android:ems="10"
-            android:hint="Date"
-            android:inputType="textPersonName" />
+            android:hint="@string/date"
+            android:inputType="date" />
 
         <Button
             android:id="@+id/pickDateButton"
@@ -70,7 +70,7 @@
             android:layout_height="wrap_content"
             android:background="@color/colorAccent"
             android:textColor="@color/accentTextColor"
-            android:text="Set date" />
+            android:text="@string/set_date" />
 
         <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -99,7 +99,7 @@
         android:id="@+id/saveButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Save"
+        android:text="@string/save"
         android:background="@color/colorAccent"
         android:textColor="@color/accentTextColor"
         android:layout_margin="15dp"

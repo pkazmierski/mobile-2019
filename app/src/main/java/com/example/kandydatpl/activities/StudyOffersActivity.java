@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.allyants.chipview.ChipAdapter;
@@ -19,7 +20,9 @@ import com.example.kandydatpl.logic.Logic;
 import com.example.kandydatpl.models.StudyOffer;
 import com.example.kandydatpl.utils.CustomChipAdapter;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.LinkedHashSet;
 
 public class StudyOffersActivity extends NavigationDrawerActivity {
@@ -40,6 +43,18 @@ public class StudyOffersActivity extends NavigationDrawerActivity {
         runOnUiThread(() -> {
             adapter = new CustomChipAdapter(searchData);
             cvTag.setAdapter(adapter);
+
+            Field f = null; //NoSuchFieldException
+            try {
+                f = cvTag.getClass().getDeclaredField("etSearch");
+                f.setAccessible(true);
+                EditText etSearch = (EditText) f.get(cvTag); //IllegalAccessException
+                String searchPrompt = getResources().getString(R.string.search);
+                etSearch.setHint(searchPrompt);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
         });
     };
 

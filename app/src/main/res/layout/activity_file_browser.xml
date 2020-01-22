@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="Search"
+        android:hint="@string/search"
         android:inputType="textFilter"
         android:selectAllOnFocus="true"
         android:singleLine="true"

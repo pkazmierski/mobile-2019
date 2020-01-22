@@ -23,7 +23,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="15dp"
                 android:gravity="center"
-                android:text="TestText"
+                android:text="@string/testtext"
                 android:textColor="#000"
                 android:textSize="20sp"
                 android:textStyle="bold" />

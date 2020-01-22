@@ -11,42 +11,42 @@
         <item
             android:id="@+id/nav_study_offers"
             android:icon="@drawable/ic_school_black_24dp"
-            android:title="Study offers" />
+            android:title="@string/study_offers" />
 
         <item
             android:id="@+id/nav_active_study_offers"
             android:icon="@drawable/ic_edit_black_24dp"
-            android:title="Active study offers" />
+            android:title="@string/active_study_offers" />
 
         <item
             android:id="@+id/nav_questions"
             android:icon="@drawable/ic_menu_questions_24dp"
-            android:title="Questions" />
+            android:title="@string/questions" />
         <item
             android:id="@+id/nav_question_bookmarks"
             android:icon="@drawable/ic_menu_question_bookmarks_border_24dp"
-            android:title="Question bookmarks" />
+            android:title="@string/question_bookmarks" />
         <item
             android:id="@+id/nav_files"
             android:icon="@drawable/ic_menu_files_24dp"
-            android:title="Files" />
+            android:title="@string/files" />
         <item
             android:id="@+id/nav_contacts"
             android:icon="@drawable/ic_menu_contacts_24dp"
-            android:title="Contacts" />
+            android:title="@string/contacts" />
         <item
             android:id="@+id/nav_checklist"
             android:icon="@drawable/ic_menu_list_24dp"
-            android:title="Checklist" />
+            android:title="@string/checklist" />
         <item
             android:id="@+id/nav_calendar"
             android:icon="@drawable/ic_date_range_black_24dp"
-            android:title="Calendar" />
+            android:title="@string/calendar" />
 
         <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_vpn_key_gray_24dp"
-            android:title="Logout" />
+            android:title="@string/logout" />
     </group>
 
 </menu>

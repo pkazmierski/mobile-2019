@@ -25,7 +25,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:padding="15dp"
-            android:text="QuestionContent"
+            android:text="@string/questioncontent"
             android:textSize="17sp"
             android:textStyle="bold" />
 
@@ -57,7 +57,7 @@
             android:layout_weight="6"
             android:ems="10"
             android:gravity="start|top"
-            android:hint="Comment"
+            android:hint="@string/comment"
             android:inputType="textMultiLine" />
 
         <ImageButton
