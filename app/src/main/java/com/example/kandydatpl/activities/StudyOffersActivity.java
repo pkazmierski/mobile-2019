@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
+import com.allyants.chipview.ChipAdapter;
 import com.allyants.chipview.ChipView;
 import com.allyants.chipview.SimpleChipAdapter;
 import com.example.kandydatpl.R;
@@ -16,6 +17,7 @@ import com.example.kandydatpl.data.AppSyncDb;
 import com.example.kandydatpl.data.DataStore;
 import com.example.kandydatpl.logic.Logic;
 import com.example.kandydatpl.models.StudyOffer;
+import com.example.kandydatpl.utils.CustomChipAdapter;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -23,7 +25,7 @@ import java.util.LinkedHashSet;
 public class StudyOffersActivity extends NavigationDrawerActivity {
     private static final String TAG = "StudyOffersActivity";
     ChipView cvTag;
-    SimpleChipAdapter adapter;
+    com.allyants.chipview.ChipAdapter adapter;
 
     LinkedHashSet<String> tags = new LinkedHashSet<>();
     ArrayList<Object> searchData = new ArrayList<>();
@@ -36,7 +38,7 @@ public class StudyOffersActivity extends NavigationDrawerActivity {
         searchData = new ArrayList<>(tags);
 //        Log.d(TAG, "searchData: " + searchData);
         runOnUiThread(() -> {
-            adapter = new SimpleChipAdapter(searchData);
+            adapter = new CustomChipAdapter(searchData);
             cvTag.setAdapter(adapter);
         });
     };
