@@ -1,11 +1,8 @@
 package com.example.kandydatpl.activities;
 
 import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.icu.util.Calendar;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -13,17 +10,13 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.kandydatpl.R;
-import com.example.kandydatpl.adapters.ContactsRecyclerViewAdapter;
 import com.example.kandydatpl.models.ChecklistEvent;
 
 import java.text.SimpleDateFormat;
@@ -38,10 +31,6 @@ public class AddOrEditChecklistEventActivity extends AppCompatActivity implement
     private EditText editDescription;
     private Button saveButton;
     private Button pickDateButton;
-    private Button addContactButton;
-    private Button saveContactButton;
-    private Dialog contactDialog;
-    private EditText contactDisplay;
     private EditText dateDisplay;
     private Calendar sampleDate;
     private SimpleDateFormat formatter;
@@ -54,13 +43,9 @@ public class AddOrEditChecklistEventActivity extends AppCompatActivity implement
         editDescription = findViewById(R.id.descriptionEditText);
         saveButton = findViewById(R.id.saveButton);
         pickDateButton = findViewById(R.id.pickDateButton);
-        addContactButton = findViewById(R.id.addcontactButton);
-        saveContactButton = findViewById(R.id.saveContactButton);
         dateDisplay = findViewById(R.id.dateDisplay);
-        contactDisplay = findViewById(R.id.contactDisplay);
         sampleDate = Calendar.getInstance();
         formatter = new SimpleDateFormat("dd/MM/yyyy");
-        contactDialog = new Dialog(this);
 
 
         Intent incomingIntent = getIntent();
@@ -96,21 +81,6 @@ public class AddOrEditChecklistEventActivity extends AppCompatActivity implement
                 finish();
             }
         });
-
-        addContactButton.setOnClickListener((v) -> {
-            Button  pickContactButton;
-            TextView contactText;
-            contactDialog.setContentView(R.layout.activity_add_contact);
-            contactDialog.setCanceledOnTouchOutside(true);
-            pickContactButton = (Button) contactDialog.findViewById(R.id.pickContactButton);
-            contactText = (TextView) contactDialog.findViewById(R.id.contactText);
-            pickContactButton.setOnClickListener((w) -> {
-                contactDisplay.setText(contactText.getText());
-            });
-            contactDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            contactDialog.show();
-        });
-
     }
 
     private boolean hasNetworkConnection() {
@@ -134,5 +104,6 @@ public class AddOrEditChecklistEventActivity extends AppCompatActivity implement
         sampleDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
         dateDisplay.setText(formatter.format(sampleDate.getTime()));
     }
+
 
 }

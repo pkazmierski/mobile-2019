@@ -65,30 +65,4 @@
             android:layout_height="wrap_content"
             android:text="Save" />
 
-        <TextView
-            android:id="@+id/contactTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Contacts" />
-
-        <Button
-            android:id="@+id/addcontactButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Choose Contact" />
-        <EditText
-            android:id="@+id/contactDisplay"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:editable="false"
-            android:ems="10"
-            android:hint="Contact"
-            android:inputType="textPersonName" />
-
-        <Button
-            android:id="@+id/saveContactButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Save" />
-
 </LinearLayout>
