@@ -8,7 +8,6 @@ import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,47 +28,49 @@ import java.util.List;
 public class ChecklistEventRecyclerViewAdapter extends RecyclerView.Adapter<ChecklistEventRecyclerViewAdapter.ViewHolder> {
 
     private static final String TAG = "ChecklistEventRVAdapter";
-    private List<ChecklistEvent> listItemTexts = new ArrayList<>();
+    private List<ChecklistEvent> checklistEvents = new ArrayList<>();
     private Activity context;
     private SimpleDateFormat formatter;
-
-
 
     private ChecklistEvent recentlyDeletedItem;
     private int recentlyDeletedItemPosition;
 
-    public void setListItemTexts(List<ChecklistEvent> listItemTexts) {
-        this.listItemTexts = listItemTexts;
+    public List<ChecklistEvent> getChecklistEvents() {
+        return checklistEvents;
     }
 
-    public ChecklistEventRecyclerViewAdapter(List<ChecklistEvent> listItemTexts, Activity context) {
-        this.listItemTexts = listItemTexts;
+    public void setChecklistEvents(List<ChecklistEvent> checklistEvents) {
+        this.checklistEvents = checklistEvents;
+    }
+
+    public ChecklistEventRecyclerViewAdapter(List<ChecklistEvent> checklistEvents, Activity context) {
+        this.checklistEvents = checklistEvents;
         this.context = context;
     }
 
     public void refresh(List<ChecklistEvent> listItemTexts){
-        this.listItemTexts = listItemTexts;
+        this.checklistEvents = listItemTexts;
         notifyDataSetChanged();
     }
 
     public void add(ChecklistEvent newItem) {
-        listItemTexts.add(newItem);
+        checklistEvents.add(newItem);
         notifyDataSetChanged();
     }
 
     public void remove(int position) {
-        listItemTexts.remove(position);
+        checklistEvents.remove(position);
         //notifyItemRemoved(position);
         notifyDataSetChanged();
     }
 
     public void edit(ChecklistEvent item, int index) {
-        listItemTexts.set(index, item);
+        checklistEvents.set(index, item);
         notifyDataSetChanged();
     }
 
     public ChecklistEvent getItemFromList(int index) {
-        return listItemTexts.get(index);
+        return checklistEvents.get(index);
     }
 
     @NonNull
@@ -83,7 +84,7 @@ public class ChecklistEventRecyclerViewAdapter extends RecyclerView.Adapter<Chec
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i) {
-        ChecklistEvent item = listItemTexts.get(i);
+        ChecklistEvent item = checklistEvents.get(i);
         viewHolder.listItem.setText(item.getTitle());
 
         viewHolder.dateDisplay.setText(formatter.format(item.getDeadline().getTime()));
@@ -127,21 +128,21 @@ public class ChecklistEventRecyclerViewAdapter extends RecyclerView.Adapter<Chec
     }
 
     public void deleteItem(int position) {
-        recentlyDeletedItem = listItemTexts.get(position);
+        recentlyDeletedItem = checklistEvents.get(position);
         recentlyDeletedItemPosition = position;
-        listItemTexts.remove(position);
+        checklistEvents.remove(position);
         notifyItemRemoved(position);
     }
 
     public void undoDelete() {
-        listItemTexts.add(recentlyDeletedItemPosition,
+        checklistEvents.add(recentlyDeletedItemPosition,
                 recentlyDeletedItem);
         notifyItemInserted(recentlyDeletedItemPosition);
     }
 
     @Override
     public int getItemCount() {
-        return listItemTexts.size();
+        return checklistEvents.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -184,8 +185,8 @@ public class ChecklistEventRecyclerViewAdapter extends RecyclerView.Adapter<Chec
 
         HashMap<String, Integer> changedOrderMap = new HashMap<>();
 
-        for (ChecklistEvent event : listItemTexts) {
-            changedOrderMap.put(event.getId(), listItemTexts.indexOf(event));
+        for (ChecklistEvent event : checklistEvents) {
+            changedOrderMap.put(event.getId(), checklistEvents.indexOf(event));
         }
         return changedOrderMap;
     }

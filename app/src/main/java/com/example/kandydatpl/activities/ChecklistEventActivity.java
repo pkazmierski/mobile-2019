@@ -14,6 +14,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -37,7 +38,7 @@ import static com.example.kandydatpl.logic.Logic.dataProvider;
 
 @RequiresApi(api = Build.VERSION_CODES.N)
 public class ChecklistEventActivity extends NavigationDrawerActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
-
+    private static final String TAG = "ChecklistEventActivity";
     private List<String> items;
     private ChecklistEventRecyclerViewAdapter adapter;
 
@@ -46,25 +47,19 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
     private RecyclerView recyclerView;
     private FloatingActionButton floatingActionButton;
 
-    public ChecklistEventActivity() {
-
-    }
+    private List<ChecklistEvent> checklistEvents = new ArrayList<>();
+    private Date filterDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_checklist);
-
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         @SuppressLint("InflateParams")
         View contentView = inflater.inflate(R.layout.activity_checklist, null, false);
         drawer.addView(contentView, 0);
 
         Intent dateFilterIntent = getIntent();
-        Date filterDate = (Date) dateFilterIntent.getSerializableExtra("filterDate");
-//        if (filterDate != null) { //do runnable success
-//            ArrayList<ChecklistEvent> checklistEvents = (ArrayList<ChecklistEvent>) DataStore.getAllChecklistEvents().stream().filter(item -> item.getDeadline().after(filterDate)).collect(Collectors.toList());
-//        }
+        filterDate = (Date) dateFilterIntent.getSerializableExtra("filterDate");
 
         recyclerView = findViewById(R.id.taskListView);
         floatingActionButton = findViewById(R.id.addTaskButton);
@@ -75,36 +70,30 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
             startActivityForResult(intent, newItemRequest);
         });
 
+        adapter = new ChecklistEventRecyclerViewAdapter(checklistEvents, this);
 
-        if(filterDate != null){
-            adapter = new ChecklistEventRecyclerViewAdapter(DataStore.getAllChecklistEvents().stream().filter(item -> item.getDeadline().after(filterDate)).collect(Collectors.toList()), this);
-            dataProvider.getAllEvents(afterAllEventsSuccess, afterAllPublicEventsFailure, afterAllUserEventsFailure);
-        }
-        else {
-            adapter = new ChecklistEventRecyclerViewAdapter(DataStore.getAllChecklistEvents(), this);
-            dataProvider.getAllEvents(afterAllEventsSuccess, afterAllPublicEventsFailure, afterAllUserEventsFailure);
-        }
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.LEFT) {
+        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder dragged, @NonNull RecyclerView.ViewHolder target) {
 
-                int position_dragged = dragged.getAdapterPosition();
-                int position_target = target.getAdapterPosition();
-
-                Collections.swap(DataStore.getAllChecklistEvents(), position_dragged, position_target);
-                dataProvider.setEventsOrder(null, afterSetEventsOrderFailure, adapter.getEventsOrder());
-                adapter.notifyItemMoved(position_dragged, position_target);
+//                int position_dragged = dragged.getAdapterPosition();
+//                int position_target = target.getAdapterPosition();
+//
+//                Collections.swap(DataStore.getAllChecklistEvents(), position_dragged, position_target);
+//                dataProvider.setEventsOrder(null, afterSetEventsOrderFailure, adapter.getEventsOrder());
+//                Log.d(TAG, "onMove: " + adapter.getEventsOrder().toString());
+//                adapter.notifyItemMoved(position_dragged, position_target);
                 return false;
             }
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
                 int index = viewHolder.getAdapterPosition();
-                if(!adapter.getItemFromList(index).isUserCreated()) {
-                    Toast.makeText(recyclerView.getContext(),"You can't delete system events", Toast.LENGTH_SHORT).show();
+                if (!adapter.getItemFromList(index).isUserCreated()) {
+                    Toast.makeText(recyclerView.getContext(), "You can't delete system events", Toast.LENGTH_SHORT).show();
                     adapter.notifyDataSetChanged();
                     return;
                 }
@@ -115,7 +104,8 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
             }
         });
         helper.attachToRecyclerView(recyclerView);
-        //dataProvider.getAllEvents(afterAllEventsSuccess, afterAllPublicEventsFailure, afterAllUserEventsFailure);
+
+        dataProvider.getAllEvents(afterAllEventsSuccess, afterAllPublicEventsFailure, afterAllUserEventsFailure);
     }
 
     private Runnable afterSetEventsOrderFailure = () -> runOnUiThread(() ->
@@ -123,31 +113,63 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
 
     private Runnable afterAllEventsSuccess = () -> runOnUiThread(() -> {
         List<ChecklistEvent> checklistEvents = DataStore.getAllChecklistEvents();
-        HashMap<String, Integer> checkListEventsOrder = UserData.getInstance().getEventsOrder();
+//        HashMap<String, Integer> checkListEventsOrder = UserData.getInstance().getEventsOrder();
 
         Collections.sort(checklistEvents, new Comparator<ChecklistEvent>() {
             @Override
             public int compare(ChecklistEvent lhs, ChecklistEvent rhs) {
-                return lhs.getDeadline().compareTo(rhs.getDeadline()) > 0 ? -1 : 1;
+                return lhs.getDeadline().compareTo(rhs.getDeadline()) > 0 ? 1 : -1;
             }
         }); //first, sort by date
 
-        for (String eventId : checkListEventsOrder.keySet()) {
-            ChecklistEvent event = null;
-            for (ChecklistEvent tempEvent : checklistEvents) { //find the event by ID
-                if (tempEvent.getId().equals(eventId))
-                    event = tempEvent;
-            }
-            if (event != null) {
-                //propely place those events that exist in order list and event list
-                int targetIndex = checkListEventsOrder.get(event.getId());
-                int sourceIndex = checklistEvents.indexOf(event);
-                Collections.swap(checklistEvents, targetIndex, sourceIndex);
-            } else {
-                //if the event does not exist in the event array, it's desynchronized, so force sync
-                dataProvider.setEventsOrder(null, afterSetEventsOrderFailure, adapter.getEventsOrder());
+//        for (String eventId : checkListEventsOrder.keySet()) {
+//            ChecklistEvent event = null;
+//            for (ChecklistEvent tempEvent : checklistEvents) { //find the event by ID
+//                if (tempEvent.getId().equals(eventId))
+//                    event = tempEvent;
+//            }
+//            if (event != null) {
+//                //propely place those events that exist in order list and event list
+//                int targetIndex = checkListEventsOrder.get(event.getId());
+//                if (targetIndex >= checklistEvents.size()) {
+//                    dataProvider.setEventsOrder(null, afterSetEventsOrderFailure, adapter.getEventsOrder());
+//                    break;
+//                }
+//                int sourceIndex = checklistEvents.indexOf(event);
+//                Collections.swap(checklistEvents, targetIndex, sourceIndex);
+//            } else {
+//                //if the event does not exist in the event array, it's desynchronized, so force sync
+//                dataProvider.setEventsOrder(null, afterSetEventsOrderFailure, adapter.getEventsOrder());
+//                break;
+//            }
+//        }
+
+        List<ChecklistEvent> filteredChecklistEvents;
+        if (filterDate != null) {
+            filteredChecklistEvents = DataStore.getAllChecklistEvents().stream().filter(item -> {
+                Calendar cal1 = Calendar.getInstance();
+                Calendar cal2 = Calendar.getInstance();
+                cal1.setTime(item.getDeadline());
+                cal2.setTime(filterDate);
+                return cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR) &&
+                        cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR);
+            }).collect(Collectors.toList());
+        } else {
+            filteredChecklistEvents = DataStore.getAllChecklistEvents();
+        }
+
+        List<ChecklistEvent> toRemove = new ArrayList<>();
+
+        for (ChecklistEvent ev : filteredChecklistEvents) {
+            if (!ev.isUserCreated() && ev.getOfferId() != null && !DataStore.getUserData().getActiveOffersIds().contains(ev.getOfferId())) {
+                toRemove.add(ev);
             }
         }
+
+        filteredChecklistEvents.removeAll(toRemove);
+
+        adapter.setChecklistEvents(filteredChecklistEvents);
+
         adapter.notifyDataSetChanged();
     });
 
@@ -187,10 +209,10 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
         Snackbar snackbar = Snackbar.make(view, R.string.snack_bar_text,
                 Snackbar.LENGTH_LONG);
         snackbar.setAction(R.string.snack_bar_undo, v -> adapter.undoDelete());
-        snackbar.addCallback(new Snackbar.Callback(){
+        snackbar.addCallback(new Snackbar.Callback() {
             @Override
             public void onDismissed(Snackbar snackbar, int event) {
-                if(event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
+                if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
                     dataProvider.removeSingleUserEvent(afterRemoveEventSuccess, afterRemoveEventFailure, adapter.getRecentlyDeletedItem());
                     dataProvider.setEventsOrder(null, afterSetEventsOrderFailure, adapter.getEventsOrder());
                 }

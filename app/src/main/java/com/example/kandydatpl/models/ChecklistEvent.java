@@ -15,6 +15,7 @@ public class ChecklistEvent implements Serializable {
     private Date deadline;
     private List<String> contactIds;
     private List<String> fileIds;
+    private String offerId;
 
     public ChecklistEvent() {
     }
@@ -42,6 +43,24 @@ public class ChecklistEvent implements Serializable {
         this.userCreated = userCreated;
         this.done = done;
         this.deadline = deadline;
+    }
+
+    public ChecklistEvent(String id, String title, String description, boolean userCreated, boolean done, Date deadline, String offerId) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.userCreated = userCreated;
+        this.done = done;
+        this.deadline = deadline;
+        this.offerId = offerId;
+    }
+
+    public String getOfferId() {
+        return offerId;
+    }
+
+    public void setOfferId(String offerId) {
+        this.offerId = offerId;
     }
 
     public List<String> getContactIds() {
