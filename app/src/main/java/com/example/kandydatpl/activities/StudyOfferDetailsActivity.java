@@ -51,16 +51,16 @@ public class StudyOfferDetailsActivity extends AppCompatActivity {
 
     public void addToActiveOffersBtn(View view) {
         Runnable addedToActiveOffersSuccess = () -> runOnUiThread(() -> {
-            Toast.makeText(ctx, "Added to active offers", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ctx, getString(R.string.added_to_active_offers), Toast.LENGTH_SHORT).show();
             finish();
         });
-        Runnable addedToActiveOffersFailure = () -> runOnUiThread(() -> Toast.makeText(ctx, "Failed to add to active offers", Toast.LENGTH_SHORT).show());
+        Runnable addedToActiveOffersFailure = () -> runOnUiThread(() -> Toast.makeText(ctx, getString(R.string.failed_to_add_to_active_offers), Toast.LENGTH_SHORT).show());
 
         Runnable removedFromActiveOffersSuccess = () -> runOnUiThread(() -> {
-            Toast.makeText(ctx, "Removed from active offers", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ctx, getString(R.string.removed_from_active_offers), Toast.LENGTH_SHORT).show();
             finish();
         });
-        Runnable removedFromActiveOffersFailure = () -> runOnUiThread(() -> Toast.makeText(ctx, "Failed to remove from active offers", Toast.LENGTH_SHORT).show());
+        Runnable removedFromActiveOffersFailure = () -> runOnUiThread(() -> Toast.makeText(ctx, getString(R.string.failed_to_remove_from_active_offers), Toast.LENGTH_SHORT).show());
 
         if (adding)
             AppSyncDb.getInstance().switchOfferStatus(addedToActiveOffersSuccess, addedToActiveOffersFailure, studyOffer);

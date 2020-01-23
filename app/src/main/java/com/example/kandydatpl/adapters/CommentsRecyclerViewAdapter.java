@@ -66,7 +66,7 @@ public class CommentsRecyclerViewAdapter extends RecyclerView.Adapter<CommentsRe
                 });
 
                 Runnable afterUnlikeFailure = () -> ((Activity) ctx).runOnUiThread(() ->
-                        Toast.makeText(ctx, "Failed to unlike the comment", Toast.LENGTH_LONG).show());
+                        Toast.makeText(ctx, ctx.getString(R.string.failed_to_unlike_the_comment), Toast.LENGTH_LONG).show());
 
                 dataProvider.changeLikeStatusComment(afterUnlikeSuccess, afterUnlikeFailure, currentComment, false);
             }
@@ -81,7 +81,7 @@ public class CommentsRecyclerViewAdapter extends RecyclerView.Adapter<CommentsRe
                 });
 
                 Runnable afterLikeFailure = () -> ((Activity) ctx).runOnUiThread(() ->
-                        Toast.makeText(ctx, "Failed to like the comment", Toast.LENGTH_LONG).show());
+                        Toast.makeText(ctx, ctx.getString(R.string.failed_to_like_the_comment), Toast.LENGTH_LONG).show());
 
                 dataProvider.changeLikeStatusComment(afterLikeSuccess, afterLikeFailure, currentComment, true);
             }

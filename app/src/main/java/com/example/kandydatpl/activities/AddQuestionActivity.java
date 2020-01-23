@@ -34,10 +34,10 @@ public class AddQuestionActivity extends AppCompatActivity {
     }
 
     private Runnable afterQuestionCreatedSuccess = () -> runOnUiThread(() -> {
-        Toast.makeText(getApplicationContext(), "Question sent", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), getString(R.string.question_sent), Toast.LENGTH_SHORT).show();
         finish();
     });
 
     private Runnable afterQuestionCreatedFailure = () -> runOnUiThread(() ->
-            Toast.makeText(getApplicationContext(), "Failed to send the question", Toast.LENGTH_LONG).show());
+            Toast.makeText(getApplicationContext(), getString(R.string.failed_to_send_the_question), Toast.LENGTH_LONG).show());
 }

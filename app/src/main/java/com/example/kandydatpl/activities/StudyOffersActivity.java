@@ -59,7 +59,7 @@ public class StudyOffersActivity extends NavigationDrawerActivity {
     };
 
     private Runnable getStudyOffersFailure = () -> {
-        Toast.makeText(this, "Failed to retrieve study offers", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.failed_to_retrieve_study_offers), Toast.LENGTH_SHORT).show();
     };
 
     @Override

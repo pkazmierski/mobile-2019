@@ -80,7 +80,7 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
 
             if (DataStore.getUserData().isQuestionBookmarked(questions.get(position))) {
                 Runnable afterUnBookmarkSuccess = () -> ((Activity) ctx).runOnUiThread(() -> {
-                    Toast.makeText(ctx, "Removed from bookmarks", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, ctx.getString(R.string.remove_from_bookmarks), Toast.LENGTH_SHORT).show();
                     holder.bookmarkQuestionBtn.setImageDrawable(ResourcesCompat.getDrawable(ctx.getResources(), R.drawable.ic_bookmark_border_gray_20dp, null));
 
                     if (ctx instanceof QuestionsActivity) {
@@ -92,16 +92,16 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
                     }
                 });
                 Runnable afterUnBookmarkFailure = () -> ((Activity) ctx).runOnUiThread(() ->
-                    Toast.makeText(ctx, "Failed to remove from bookmarks", Toast.LENGTH_LONG).show());
+                    Toast.makeText(ctx, ctx.getString(R.string.failed_to_remove_from_bookmarks), Toast.LENGTH_LONG).show());
 
                 dataProvider.bookmarkQuestion(afterUnBookmarkSuccess, afterUnBookmarkFailure, questions.get(position), false);
             } else {
                 Runnable afterBookmarkSuccess = () -> ((Activity) ctx).runOnUiThread(() -> {
-                    Toast.makeText(ctx, "Added to bookmarks", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, ctx.getString(R.string.added_to_bookmarks), Toast.LENGTH_SHORT).show();
                     holder.bookmarkQuestionBtn.setImageDrawable(ResourcesCompat.getDrawable(ctx.getResources(), R.drawable.ic_bookmark_gray_20dp, null));
                 });
                 Runnable afterBookmarkFailure = () -> ((Activity) ctx).runOnUiThread(() ->
-                        Toast.makeText(ctx, "Failed to bookmark", Toast.LENGTH_LONG).show());
+                        Toast.makeText(ctx, ctx.getString(R.string.failed_to_bookmark), Toast.LENGTH_LONG).show());
 
 
                 dataProvider.bookmarkQuestion(afterBookmarkSuccess, afterBookmarkFailure, questions.get(position), true);

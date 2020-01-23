@@ -62,19 +62,19 @@ public class QuestionDetailsActivity extends NavigationDrawerActivity {
 
     private Runnable afterCommentSentSuccess = () -> runOnUiThread(() -> {
         sendCommentContentTxt.setText("");
-        Toast.makeText(getApplicationContext(), "Comment sent", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), getString(R.string.comment_sent), Toast.LENGTH_SHORT).show();
         adapter.notifyItemInserted(0);
         recyclerView.smoothScrollToPosition(0);
     });
 
     private Runnable afterCommentSentFailure = () -> runOnUiThread(() ->
-            Toast.makeText(getApplicationContext(), "Failed to send the comment", Toast.LENGTH_LONG).show());
+            Toast.makeText(getApplicationContext(), getString(R.string.failed_to_send_the_comment), Toast.LENGTH_LONG).show());
 
     private Runnable afterCommentListAcquiredSuccess = () -> runOnUiThread(() ->
             adapter.notifyDataSetChanged());
 
     private Runnable afterCommentListAcquiredFailure = () -> runOnUiThread(() ->
-            Toast.makeText(getApplicationContext(), "Get comment list failed", Toast.LENGTH_LONG).show());
+            Toast.makeText(getApplicationContext(), getString(R.string.get_comment_list_failed), Toast.LENGTH_LONG).show());
 
     private void initRecyclerView() {
         Log.d(TAG, "initRecyclerView: init recyclerview");

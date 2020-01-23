@@ -95,7 +95,7 @@ public class AddOrEditChecklistEventActivity extends AppCompatActivity implement
 
         saveButton.setOnClickListener(click -> {
             if (!hasNetworkConnection()) {
-                Toast.makeText(this, "Cannot save when no connection", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.cannot_save_without_the_internet_connection), Toast.LENGTH_SHORT).show();
             } else {
                 Intent listIntent = getIntent();
                 ChecklistEvent listItem = new ChecklistEvent(requestCode == newItemRequest ? "" : incomingItem.getId(), editTitle.getText().toString(), editDescription.getText().toString(), incomingItem.isDone(), sampleDate.getTime());
@@ -146,7 +146,7 @@ public class AddOrEditChecklistEventActivity extends AppCompatActivity implement
     });
 
     private Runnable getFilesFailure = () -> runOnUiThread(() ->
-            Toast.makeText(getApplicationContext(), "Get files failed", Toast.LENGTH_LONG).show());
+            Toast.makeText(getApplicationContext(), getString(R.string.get_files_failed), Toast.LENGTH_LONG).show());
 
     private Runnable getContactsSuccess = () -> runOnUiThread(() -> {
         filterContacts();
@@ -154,7 +154,7 @@ public class AddOrEditChecklistEventActivity extends AppCompatActivity implement
     });
 
     private Runnable getContactsFailure = () -> runOnUiThread(() ->
-            Toast.makeText(getApplicationContext(), "Get contacts failed", Toast.LENGTH_LONG).show());
+            Toast.makeText(getApplicationContext(), getString(R.string.get_contacts_failed), Toast.LENGTH_LONG).show());
 
     private void initFilesRV() {
         checklistEventFilesRV = findViewById(R.id.checklistEventFilesRV);

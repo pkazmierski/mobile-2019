@@ -102,10 +102,10 @@ public class CalendarActivity extends NavigationDrawerActivity {
     });
 
     private Runnable afterAllPublicEventsFailure = () -> runOnUiThread(() ->
-            Toast.makeText(this, "Public events fetch failed", Toast.LENGTH_SHORT).show());
+            Toast.makeText(this, getString(R.string.public_events_fetch_failed), Toast.LENGTH_SHORT).show());
 
     private Runnable afterAllUserEventsFailure = () -> runOnUiThread(() ->
-            Toast.makeText(this, "User events fetch failed", Toast.LENGTH_SHORT).show());
+            Toast.makeText(this, getString(R.string.user_events_fetch_failed), Toast.LENGTH_SHORT).show());
 
 }
 

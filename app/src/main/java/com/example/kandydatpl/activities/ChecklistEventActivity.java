@@ -69,8 +69,8 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
 
             getUserDataDialog = new ProgressDialog(ChecklistEventActivity.this);
 
-            getUserDataDialog.setMessage("Getting user data...");
-            getUserDataDialog.setTitle("Database access");
+            getUserDataDialog.setMessage(getString(R.string.getting_user_data));
+            getUserDataDialog.setTitle(getString(R.string.database_access));
             getUserDataDialog.setIndeterminate(true);
             getUserDataDialog.setCancelable(false);
             getUserDataDialog.show();
@@ -94,16 +94,16 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
     }
 
     private Runnable getUserDataFailure = () -> runOnUiThread(() ->
-            Toast.makeText(getApplicationContext(), "Failed to get user data", Toast.LENGTH_LONG).show());
+            Toast.makeText(getApplicationContext(), getString(R.string.failed_to_get_user_data), Toast.LENGTH_LONG).show());
 
     private Runnable createUserDataSuccess = () -> runOnUiThread(() -> {
         getUserDataDialog.dismiss();
         activityInit();
-        Toast.makeText(getApplicationContext(), "Created user data", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), getString(R.string.created_user_data), Toast.LENGTH_LONG).show();
     });
 
     private Runnable createUserDataFailure = () -> runOnUiThread(() ->
-            Toast.makeText(getApplicationContext(), "Failed to create user data", Toast.LENGTH_LONG).show());
+            Toast.makeText(getApplicationContext(), getString(R.string.failed_to_create_user_data), Toast.LENGTH_LONG).show());
 
     private void activityInit() {
         Intent dateFilterIntent = getIntent();
@@ -141,7 +141,7 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
                 int index = viewHolder.getAdapterPosition();
                 if (!adapter.getItemFromList(index).isUserCreated()) {
-                    Toast.makeText(recyclerView.getContext(), "You can't delete system events", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(recyclerView.getContext(), getString(R.string.you_cannot_delete_system_events), Toast.LENGTH_SHORT).show();
                     adapter.notifyDataSetChanged();
                     return;
                 }
@@ -165,7 +165,7 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
     }
 
     private Runnable afterSetEventsOrderFailure = () -> runOnUiThread(() ->
-            Toast.makeText(this, "Cannot save the new events order", Toast.LENGTH_SHORT).show());
+            Toast.makeText(this, getString(R.string.cannot_save_the_new_events_order), Toast.LENGTH_SHORT).show());
 
     private Runnable afterAllEventsSuccess = () -> runOnUiThread(() -> {
         List<ChecklistEvent> checklistEvents = DataStore.getAllChecklistEvents();
@@ -230,18 +230,18 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
     });
 
     private Runnable afterAllPublicEventsFailure = () -> runOnUiThread(() ->
-            Toast.makeText(this, "Public events fetch failed", Toast.LENGTH_SHORT).show());
+            Toast.makeText(this, getString(R.string.public_events_fetch_failed), Toast.LENGTH_SHORT).show());
 
     private Runnable afterAllUserEventsFailure = () -> runOnUiThread(() ->
-            Toast.makeText(this, "User events fetch failed", Toast.LENGTH_SHORT).show());
+            Toast.makeText(this, getString(R.string.user_events_fetch_failed), Toast.LENGTH_SHORT).show());
 
     private Runnable afterAddEventSuccess = () -> runOnUiThread(() -> {
-        Toast.makeText(this, "Item added!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.item_added), Toast.LENGTH_SHORT).show();
         adapter.notifyDataSetChanged();
     });
 
     private Runnable afterEditEventSuccess = () -> runOnUiThread(() -> {
-        Toast.makeText(this, "Item changed!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.item_changed), Toast.LENGTH_SHORT).show();
         dataProvider.getAllEvents(afterAllEventsSuccess, afterAllPublicEventsFailure, afterAllUserEventsFailure);
     });
 
@@ -250,15 +250,15 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
     });
 
     private Runnable afterRemoveEventFailure = () -> runOnUiThread(() -> {
-        Toast.makeText(this, "Item remove failed", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.item_removal_failed), Toast.LENGTH_SHORT).show();
         adapter.notifyDataSetChanged();
     });
 
     private Runnable afterAddEventFailure = () -> runOnUiThread(() ->
-            Toast.makeText(this, "Failed to add the item", Toast.LENGTH_SHORT).show());
+            Toast.makeText(this, getString(R.string.failed_to_add_the_item), Toast.LENGTH_SHORT).show());
 
     private Runnable afterEditEventFailure = () -> runOnUiThread(() ->
-            Toast.makeText(this, "Failed to edit the item", Toast.LENGTH_SHORT).show());
+            Toast.makeText(this, getString(R.string.failed_to_edit_the_item), Toast.LENGTH_SHORT).show());
 
     private void showUndoSnackbar() {
         View view = recyclerView.findViewById(R.id.parent_layout);
@@ -304,7 +304,7 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         items.remove(position);
         adapter.notifyDataSetChanged();
-        Toast.makeText(this, "Delete", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.delete), Toast.LENGTH_SHORT).show();
 
     }
 

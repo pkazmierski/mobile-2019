@@ -39,7 +39,7 @@ public class ContactBrowserActivity extends NavigationDrawerActivity {
     });
 
     private Runnable getContactsFailure = () -> runOnUiThread(() ->
-            Toast.makeText(getApplicationContext(), "Get contacts failed", Toast.LENGTH_LONG).show());
+            Toast.makeText(getApplicationContext(), getString(R.string.get_contacts_failed), Toast.LENGTH_LONG).show());
 
     private void initRecyclerView() {
         recyclerView = findViewById(R.id.contactsRecyclerView);

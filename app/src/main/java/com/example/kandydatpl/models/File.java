@@ -14,6 +14,8 @@ import android.webkit.MimeTypeMap;
 import android.webkit.URLUtil;
 import android.widget.Toast;
 
+import com.example.kandydatpl.R;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
@@ -55,7 +57,7 @@ public class File {
     public void downloadFile(Context context) {
         if(ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-            Toast.makeText(context, "You have no permission to download this file", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, context.getString(R.string.you_do_not_have_permissions_to_download_this_file), Toast.LENGTH_SHORT).show();
         }else{
             String fileName = URLUtil.guessFileName(link, null, null);
             String mimeType = getMimeFromFileName(fileName);

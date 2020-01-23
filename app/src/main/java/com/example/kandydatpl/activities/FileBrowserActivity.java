@@ -44,7 +44,7 @@ public class FileBrowserActivity extends NavigationDrawerActivity {
     });
 
     private Runnable getFilesFailure = () -> runOnUiThread(() ->
-            Toast.makeText(getApplicationContext(), "Get files failed", Toast.LENGTH_LONG).show());
+            Toast.makeText(getApplicationContext(), getString(R.string.get_files_failed), Toast.LENGTH_LONG).show());
 
     private void initRecyclerView() {
         recyclerView = findViewById(R.id.filesRecyclerView);

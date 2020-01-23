@@ -121,13 +121,13 @@ public class MainActivity extends NavigationDrawerActivity {
     }
 
     private Runnable getUserDataFailure = () -> runOnUiThread(() ->
-            Toast.makeText(getApplicationContext(), "Failed to get user data", Toast.LENGTH_LONG).show());
+            Toast.makeText(getApplicationContext(), getString(R.string.failed_to_get_user_data), Toast.LENGTH_LONG).show());
 
     private Runnable createUserDataSuccess = () -> runOnUiThread(() ->
-            Toast.makeText(getApplicationContext(), "Created user data", Toast.LENGTH_LONG).show());
+            Toast.makeText(getApplicationContext(), getString(R.string.created_user_data), Toast.LENGTH_LONG).show());
 
     private Runnable createUserDataFailure = () -> runOnUiThread(() ->
-            Toast.makeText(getApplicationContext(), "Failed to create user data", Toast.LENGTH_LONG).show());
+            Toast.makeText(getApplicationContext(), getString(R.string.failed_to_create_user_data), Toast.LENGTH_LONG).show());
 
     public void goToQuestions(View view) {
         Intent questionsIntent = new Intent(this, QuestionsActivity.class);

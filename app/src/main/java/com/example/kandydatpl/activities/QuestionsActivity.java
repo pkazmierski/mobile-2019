@@ -111,7 +111,7 @@ public class QuestionsActivity extends NavigationDrawerActivity {
     });
 
     private Runnable afterQuestionsAcquiredFailure = () -> runOnUiThread(() ->
-            Toast.makeText(getApplicationContext(), "Get questions failed", Toast.LENGTH_LONG).show());
+            Toast.makeText(getApplicationContext(), getString(R.string.get_questions_failed), Toast.LENGTH_LONG).show());
 
     public void addNewQuestion(View view) {
         Intent goToNewQuestionActivity = new Intent(this, AddQuestionActivity.class);

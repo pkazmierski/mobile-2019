@@ -78,7 +78,7 @@ public class StudyOffersResultsActivity extends NavigationDrawerActivity {
     }
 
     private Runnable afterStudyOffersFailure = () -> runOnUiThread(() ->
-            Toast.makeText(this, "Public events fetch failed", Toast.LENGTH_SHORT).show());
+            Toast.makeText(this, getString(R.string.publi_events_fetch_failed), Toast.LENGTH_SHORT).show());
 
     private Runnable afterStudyOffersSuccess = () -> {
         matchingOffers.clear();
