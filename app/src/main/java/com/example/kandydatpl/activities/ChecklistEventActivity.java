@@ -63,8 +63,6 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
         drawer.addView(contentView, 0);
 
         if (!Logic.appSyncInitialized) {
-            hideSoftKeyBoard();
-
             Logic.initAppSync(getApplicationContext());
 
             getUserDataDialog = new ProgressDialog(ChecklistEventActivity.this);
@@ -83,6 +81,7 @@ public class ChecklistEventActivity extends NavigationDrawerActivity implements 
                     UserData.getInstance().setEventsOrder(new HashMap<>());
                 } else {
                     getUserDataDialog.dismiss();
+//                    hideSoftKeyBoard();
                     activityInit();
                 }
             });
