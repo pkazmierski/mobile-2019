@@ -7,7 +7,7 @@
     android:paddingTop="?attr/actionBarSize"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.CalendarActivity">
+    tools:context="pl.mobile.kandydatpl.activities.CalendarActivity">
     <com.github.sundeepk.compactcalendarview.CompactCalendarView
         android:id="@+id/compactcalendar_view"
         android:layout_width="417dp"

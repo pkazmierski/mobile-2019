@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:paddingTop="?actionBarSize"
     android:orientation="vertical"
-    tools:context=".activities.FileBrowserActivity">
+    tools:context="pl.mobile.kandydatpl.activities.FileBrowserActivity">
 
     <EditText
         android:id="@+id/filterFilesInputTxt"

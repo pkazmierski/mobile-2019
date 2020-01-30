@@ -143,4 +143,6 @@
     <string name="added_to_bookmarks">Added to bookmarks</string>
     <string name="getting_user_data">Getting user data...</string>
     <string name="database_access">Database access</string>
+    <string name="_0">0</string>
+    <string name="like_button">Like button</string>
 </resources>

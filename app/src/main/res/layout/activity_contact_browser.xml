@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:paddingTop="?actionBarSize"
-    tools:context=".activities.ContactBrowserActivity">
+    tools:context="pl.mobile.kandydatpl.activities.ContactBrowserActivity">
 
     <EditText
         android:id="@+id/filterContactsInputTxt"

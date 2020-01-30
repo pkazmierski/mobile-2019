@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingTop="?actionBarSize"
-    tools:context=".activities.QuestionDetailsActivity">
+    tools:context="pl.mobile.kandydatpl.activities.QuestionDetailsActivity">
 
     <LinearLayout
         android:id="@+id/topLinearLayout"

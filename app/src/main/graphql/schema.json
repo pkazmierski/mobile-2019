@@ -1675,9 +1675,13 @@
                         "description": null,
                         "args": [],
                         "type": {
-                            "kind": "SCALAR",
-                            "name": "String",
-                            "ofType": null
+                            "kind": "NON_NULL",
+                            "name": null,
+                            "ofType": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            }
                         },
                         "isDeprecated": false,
                         "deprecationReason": null
@@ -1710,18 +1714,6 @@
                                 "name": "AWSDateTime",
                                 "ofType": null
                             }
-                        },
-                        "isDeprecated": false,
-                        "deprecationReason": null
-                    },
-                    {
-                        "name": "owner",
-                        "description": null,
-                        "args": [],
-                        "type": {
-                            "kind": "SCALAR",
-                            "name": "String",
-                            "ofType": null
                         },
                         "isDeprecated": false,
                         "deprecationReason": null
@@ -4247,9 +4239,13 @@
                         "name": "creator",
                         "description": null,
                         "type": {
-                            "kind": "SCALAR",
-                            "name": "String",
-                            "ofType": null
+                            "kind": "NON_NULL",
+                            "name": null,
+                            "ofType": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            }
                         },
                         "defaultValue": null
                     },
@@ -5303,18 +5299,7 @@
                     {
                         "name": "onCreateComment",
                         "description": null,
-                        "args": [
-                            {
-                                "name": "owner",
-                                "description": null,
-                                "type": {
-                                    "kind": "SCALAR",
-                                    "name": "String",
-                                    "ofType": null
-                                },
-                                "defaultValue": null
-                            }
-                        ],
+                        "args": [],
                         "type": {
                             "kind": "OBJECT",
                             "name": "Comment",
@@ -5326,18 +5311,7 @@
                     {
                         "name": "onUpdateComment",
                         "description": null,
-                        "args": [
-                            {
-                                "name": "owner",
-                                "description": null,
-                                "type": {
-                                    "kind": "SCALAR",
-                                    "name": "String",
-                                    "ofType": null
-                                },
-                                "defaultValue": null
-                            }
-                        ],
+                        "args": [],
                         "type": {
                             "kind": "OBJECT",
                             "name": "Comment",
@@ -5349,18 +5323,7 @@
                     {
                         "name": "onDeleteComment",
                         "description": null,
-                        "args": [
-                            {
-                                "name": "owner",
-                                "description": null,
-                                "type": {
-                                    "kind": "SCALAR",
-                                    "name": "String",
-                                    "ofType": null
-                                },
-                                "defaultValue": null
-                            }
-                        ],
+                        "args": [],
                         "type": {
                             "kind": "OBJECT",
                             "name": "Comment",

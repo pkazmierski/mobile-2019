@@ -7,6 +7,6 @@
     android:paddingTop="?attr/actionBarSize"
     android:layout_margin="15dp"
     android:id="@+id/studyOffersResultsListView"
-    tools:context=".activities.StudyOffersResultsActivity">
+    tools:context="pl.mobile.kandydatpl.activities.StudyOffersResultsActivity">
 
 </ListView>
